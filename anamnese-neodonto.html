@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEODONTO – Ficha de Anamnese</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0ABFBC;
+  --teal2: #0891B2;
+  --navy: #0A1628;
+  --card: #111E30;
+  --card2: #162236;
+  --border: rgba(10,191,188,0.18);
+  --text: #E8F4F8;
+  --muted: #6A8FA8;
+  --danger: #FF5C7A;
+  --warn: #F5A623;
+  --green: #2ECC71;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+header {
+  background: linear-gradient(135deg, var(--teal), var(--teal2));
+  padding: 32px 24px 28px;
+  text-align: center;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  color: #fff;
+}
+
+.logo-sub {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 2px;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 28px 16px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-row {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.cols-2 { grid-template-columns: 1fr 1fr; }
+.cols-1 { grid-template-columns: 1fr; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="tel"],
+input[type="email"],
+select,
+textarea {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(10,191,188,0.1);
+}
+
+input::placeholder, textarea::placeholder { color: var(--muted); }
+
+select option { background: var(--card); color: var(--text); }
+
+textarea { resize: vertical; min-height: 80px; }
+
+/* Checkboxes grid */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.check-item:hover { border-color: var(--teal); }
+
+.check-item input[type="checkbox"] { display: none; }
+
+.check-item .check-box {
+  width: 18px; height: 18px;
+  border: 2px solid var(--muted);
+  border-radius: 5px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  font-size: 0.7rem;
+}
+
+.check-item input:checked ~ .check-box {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+
+.check-item input:checked ~ .check-box::after { content: '✓'; }
+
+.check-item.checked {
+  border-color: var(--teal);
+  background: rgba(10,191,188,0.06);
+}
+
+.check-label { font-size: 0.88rem; color: var(--text); }
+
+/* Radio buttons */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.radio-item input[type="radio"] { display: none; }
+
+.radio-item .radio-dot {
+  width: 16px; height: 16px;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+
+.radio-item input:checked ~ .radio-dot {
+  border-color: var(--teal);
+}
+.radio-item input:checked ~ .radio-dot::after {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--teal);
+  border-radius: 50%;
+  display: block;
+}
+
+.radio-item:has(input:checked) {
+  border-color: var(--teal);
+  background: rgba(10,191,188,0.06);
+}
+
+.radio-label { font-size: 0.88rem; }
+
+/* Section divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* Fun section */
+.fun-banner {
+  background: linear-gradient(135deg, rgba(10,191,188,0.12), rgba(8,145,178,0.08));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.fun-banner p {
+  color: var(--teal);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* Submit */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--teal), var(--teal2));
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-top: 8px;
+}
+.btn-submit:hover { opacity: 0.88; }
+.btn-submit:active { transform: scale(0.99); }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.mensagem {
+  display: none;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 16px;
+  text-align: center;
+}
+.mensagem.sucesso {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3);
+  color: var(--green);
+  display: block;
+}
+.mensagem.erro {
+  background: rgba(255,92,122,0.1);
+  border: 1px solid rgba(255,92,122,0.3);
+  color: var(--danger);
+  display: block;
+}
+
+/* Selfie */
+.selfie-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.selfie-preview {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  border: 3px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--card2);
+  cursor: pointer;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.selfie-preview:hover { border-color: var(--teal); }
+
+.selfie-preview img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+  border-radius: 50%;
+}
+
+.selfie-placeholder {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.selfie-placeholder span { font-size: 2rem; display: block; margin-bottom: 6px; }
+
+.selfie-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+
+.selfie-btn {
+  background: rgba(10,191,188,0.1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 16px;
+  color: var(--teal);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.selfie-btn:hover { background: rgba(10,191,188,0.2); }
+
+.selfie-btn.danger {
+  background: rgba(255,92,122,0.08);
+  border-color: rgba(255,92,122,0.2);
+  color: var(--danger);
+  display: none;
+}
+
+/* Camera modal */
+.camera-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.camera-modal.open { display: flex; }
+.camera-modal video {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 16px;
+  background: #000;
+}
+.camera-actions { display: flex; gap: 12px; }
+.cam-btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.cam-btn.capture { background: var(--teal); color: #fff; }
+.cam-btn.cancel { background: rgba(255,255,255,0.1); color: var(--text); }
+
+.obrigatorio { color: var(--teal); }
+
+@media (max-width: 580px) {
+  .cols-2 { grid-template-columns: 1fr; }
+  .card { padding: 20px 16px; }
+  .check-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NEODONTO</div>
+  <div class="logo-sub">Ficha de Anamnese do Paciente</div>
+</header>
+
+<div class="container">
+
+  <!-- DADOS PESSOAIS -->
+  <div class="card">
+    <div class="card-title">👤 Dados Pessoais</div>
+
+    <div class="form-row cols-1">
+      <div class="form-group">
+        <label>Nome Completo <span class="obrigatorio">*</span></label>
+        <input type="text" id="nome" placeholder="Seu nome completo" required />
+      </div>
+    </div>
+
+    <div class="form-row cols-2">
+      <div class="form-group">
+        <label>Data de Nascimento <span class="obrigatorio">*</span></label>
+        <input type="date" id="nascimento" required />
+      </div>
+      <div class="form-group">
+        <label>CPF</label>
+        <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" />
+      </div>
+    </div>
+
+    <div class="form-row cols-2">
+      <div class="form-group">
+        <label>Telefone / WhatsApp <span class="obrigatorio">*</span></label>
+        <input type="tel" id="telefone" placeholder="(00) 00000-0000" required />
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="email" placeholder="email@exemplo.com" />
+      </div>
+    </div>
+
+    <div class="form-row cols-1">
+      <div class="form-group">
+        <label>Responsável / Contato de Emergência</label>
+        <input type="text" id="responsavel" placeholder="Nome e telefone (se menor ou necessário)" />
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:6px">
+      <label>Foto / Selfie</label>
+      <div class="selfie-area">
+        <div class="selfie-preview" id="selfiePreview" onclick="document.getElementById('selfieUpload').click()">
+          <img id="selfieImg" src="" alt="Selfie" />
+          <div class="selfie-placeholder" id="selfiePlaceholder">
+            <span>📷</span>
+            Toque para<br>adicionar foto
+          </div>
+        </div>
+        <div class="selfie-btns">
+          <button type="button" class="selfie-btn" onclick="abrirCamera()">📸 Tirar selfie</button>
+          <button type="button" class="selfie-btn" onclick="document.getElementById('selfieUpload').click()">🖼️ Escolher da galeria</button>
+          <button type="button" class="selfie-btn danger" id="selfieRemover" onclick="removerSelfie()">✕ Remover</button>
+        </div>
+        <input type="file" id="selfieUpload" accept="image/*" capture="user" style="display:none" onchange="carregarImagem(event)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMERA MODAL -->
+  <div class="camera-modal" id="cameraModal">
+    <video id="cameraVideo" autoplay playsinline></video>
+    <div class="camera-actions">
+      <button class="cam-btn capture" onclick="tirarFoto()">📸 Capturar</button>
+      <button class="cam-btn cancel" onclick="fecharCamera()">Cancelar</button>
+    </div>
+    <canvas id="cameraCanvas" style="display:none"></canvas>
+  </div>
+
+  <!-- MOTIVO DA CONSULTA -->
+  <div class="card">
+    <div class="card-title">🦷 Motivo da Consulta</div>
+    <div class="form-group">
+      <label>Por que veio nos visitar hoje? <span class="obrigatorio">*</span></label>
+      <div class="radio-group" id="motivoGroup">
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Dor de dente">
+          <div class="radio-dot"></div>
+          <span class="radio-label">🦷 Dor de dente</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Limpeza/Manutenção">
+          <div class="radio-dot"></div>
+          <span class="radio-label">🧹 Limpeza</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Aparelho / Ortodontia">
+          <div class="radio-dot"></div>
+          <span class="radio-label">😁 Aparelho</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Implante">
+          <div class="radio-dot"></div>
+          <span class="radio-label">🔩 Implante</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Clareamento">
+          <div class="radio-dot"></div>
+          <span class="radio-label">✨ Clareamento</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Extração">
+          <div class="radio-dot"></div>
+          <span class="radio-label">😬 Extração</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Consulta de rotina">
+          <div class="radio-dot"></div>
+          <span class="radio-label">📋 Rotina</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="motivo" value="Outros">
+          <div class="radio-dot"></div>
+          <span class="radio-label">➕ Outros</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAÚDE GERAL -->
+  <div class="card">
+    <div class="card-title">❤️ Saúde Geral</div>
+    <div class="form-group">
+      <label>Possui alguma dessas condições? (marque todas que se aplicam)</label>
+      <div class="check-grid" id="saudeGeralGroup">
+        <label class="check-item"><input type="checkbox" value="Diabetes"><div class="check-box"></div><span class="check-label">Diabetes</span></label>
+        <label class="check-item"><input type="checkbox" value="Hipertensão"><div class="check-box"></div><span class="check-label">Hipertensão</span></label>
+        <label class="check-item"><input type="checkbox" value="Doença cardíaca"><div class="check-box"></div><span class="check-label">Doença cardíaca</span></label>
+        <label class="check-item"><input type="checkbox" value="Problemas renais"><div class="check-box"></div><span class="check-label">Problemas renais</span></label>
+        <label class="check-item"><input type="checkbox" value="Problemas de coagulação"><div class="check-box"></div><span class="check-label">Prob. coagulação</span></label>
+        <label class="check-item"><input type="checkbox" value="Gestante"><div class="check-box"></div><span class="check-label">Gestante</span></label>
+        <label class="check-item"><input type="checkbox" value="HIV/AIDS"><div class="check-box"></div><span class="check-label">HIV/AIDS</span></label>
+        <label class="check-item"><input type="checkbox" value="Câncer/Quimioterapia"><div class="check-box"></div><span class="check-label">Câncer/Quimio</span></label>
+        <label class="check-item"><input type="checkbox" value="Nenhuma condição"><div class="check-box"></div><span class="check-label">Nenhuma</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERGIAS -->
+  <div class="card">
+    <div class="card-title">⚠️ Alergias</div>
+    <div class="form-group">
+      <label>Possui alergia a algum medicamento ou substância?</label>
+      <div class="check-grid" id="alergiasGroup">
+        <label class="check-item"><input type="checkbox" value="Penicilina / Amoxicilina"><div class="check-box"></div><span class="check-label">Penicilina</span></label>
+        <label class="check-item"><input type="checkbox" value="Anti-inflamatórios"><div class="check-box"></div><span class="check-label">Anti-inflam.</span></label>
+        <label class="check-item"><input type="checkbox" value="Anestesia local"><div class="check-box"></div><span class="check-label">Anestesia local</span></label>
+        <label class="check-item"><input type="checkbox" value="Látex"><div class="check-box"></div><span class="check-label">Látex</span></label>
+        <label class="check-item"><input type="checkbox" value="Dipirona"><div class="check-box"></div><span class="check-label">Dipirona</span></label>
+        <label class="check-item"><input type="checkbox" value="Não tenho alergias"><div class="check-box"></div><span class="check-label">Sem alergias</span></label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label>Outras alergias (especifique)</label>
+      <input type="text" id="outraAlergia" placeholder="Ex: dipirona, iodo..." />
+    </div>
+  </div>
+
+  <!-- MEDICAMENTOS -->
+  <div class="card">
+    <div class="card-title">💊 Medicamentos</div>
+    <div class="form-group">
+      <label>Está tomando algum medicamento atualmente?</label>
+      <div class="check-grid" id="medicamentosGroup">
+        <label class="check-item"><input type="checkbox" value="Anticoagulante"><div class="check-box"></div><span class="check-label">Anticoagulante</span></label>
+        <label class="check-item"><input type="checkbox" value="Anti-hipertensivo"><div class="check-box"></div><span class="check-label">Anti-hipertensivo</span></label>
+        <label class="check-item"><input type="checkbox" value="Antidepressivo"><div class="check-box"></div><span class="check-label">Antidepressivo</span></label>
+        <label class="check-item"><input type="checkbox" value="Insulina"><div class="check-box"></div><span class="check-label">Insulina</span></label>
+        <label class="check-item"><input type="checkbox" value="Corticoides"><div class="check-box"></div><span class="check-label">Corticoides</span></label>
+        <label class="check-item"><input type="checkbox" value="Não uso medicamentos"><div class="check-box"></div><span class="check-label">Não uso</span></label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label>Outros medicamentos</label>
+      <input type="text" id="outroMedicamento" placeholder="Nome do medicamento e dose..." />
+    </div>
+  </div>
+
+  <!-- SAÚDE BUCAL -->
+  <div class="card">
+    <div class="card-title">🦷 Saúde Bucal</div>
+    <div class="form-group">
+      <label>Marque o que se aplica</label>
+      <div class="check-grid" id="saudeBucalGroup">
+        <label class="check-item"><input type="checkbox" value="Sensibilidade nos dentes"><div class="check-box"></div><span class="check-label">Sensibilidade</span></label>
+        <label class="check-item"><input type="checkbox" value="Sangramento na gengiva"><div class="check-box"></div><span class="check-label">Sangramento</span></label>
+        <label class="check-item"><input type="checkbox" value="Range os dentes (bruxismo)"><div class="check-box"></div><span class="check-label">Bruxismo</span></label>
+        <label class="check-item"><input type="checkbox" value="Uso prótese dentária"><div class="check-box"></div><span class="check-label">Prótese</span></label>
+        <label class="check-item"><input type="checkbox" value="Já fiz tratamento de canal"><div class="check-box"></div><span class="check-label">Canal</span></label>
+        <label class="check-item"><input type="checkbox" value="Nunca fui ao dentista antes"><div class="check-box"></div><span class="check-label">1ª consulta</span></label>
+        <label class="check-item"><input type="checkbox" value="Tudo bem com minha boca"><div class="check-box"></div><span class="check-label">Tudo bem</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANSIEDADE -->
+  <div class="card">
+    <div class="card-title">😰 Ansiedade no Dentista</div>
+    <div class="form-group">
+      <label>Como você se sente vindo ao dentista?</label>
+      <div class="radio-group">
+        <label class="radio-item">
+          <input type="radio" name="ansiedade" value="Tranquilo, sem problemas">
+          <div class="radio-dot"></div>
+          <span class="radio-label">😊 Tranquilo</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="ansiedade" value="Um pouco ansioso">
+          <div class="radio-dot"></div>
+          <span class="radio-label">😅 Um pouco ansioso</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="ansiedade" value="Muito ansioso / tenho medo">
+          <div class="radio-dot"></div>
+          <span class="radio-label">😨 Muito ansioso</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="ansiedade" value="Fobia de dentista">
+          <div class="radio-dot"></div>
+          <span class="radio-label">😱 Fobia</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- HÁBITOS -->
+  <div class="card">
+    <div class="card-title">🌿 Hábitos</div>
+    <div class="form-group">
+      <label>Marque os que se aplicam</label>
+      <div class="check-grid" id="habitosGroup">
+        <label class="check-item"><input type="checkbox" value="Fumante"><div class="check-box"></div><span class="check-label">🚬 Fumante</span></label>
+        <label class="check-item"><input type="checkbox" value="Consome álcool"><div class="check-box"></div><span class="check-label">🍺 Álcool</span></label>
+        <label class="check-item"><input type="checkbox" value="Consome muito açúcar"><div class="check-box"></div><span class="check-label">🍭 Açúcar</span></label>
+        <label class="check-item"><input type="checkbox" value="Range os dentes ao dormir"><div class="check-box"></div><span class="check-label">😴 Range ao dormir</span></label>
+        <label class="check-item"><input type="checkbox" value="Bebe muita água"><div class="check-box"></div><span class="check-label">💧 Bebe água</span></label>
+        <label class="check-item"><input type="checkbox" value="Nenhum dos acima"><div class="check-box"></div><span class="check-label">Nenhum</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO DIVERTIDA -->
+  <div class="fun-banner">
+    <p>🎉 Quase lá! Agora vem a parte divertida — queremos te conhecer melhor!</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚽ Sobre Você</div>
+
+    <div class="form-row cols-1">
+      <div class="form-group">
+        <label>Qual é o seu time do coração?</label>
+        <input type="text" id="timeFutebol" placeholder="Ex: Flamengo, Corinthians, nenhum..." />
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="form-group">
+      <label>Que tipo de música você curte?</label>
+      <div class="check-grid" id="musicaGroup">
+        <label class="check-item"><input type="checkbox" value="Sertanejo"><div class="check-box"></div><span class="check-label">🤠 Sertanejo</span></label>
+        <label class="check-item"><input type="checkbox" value="Funk"><div class="check-box"></div><span class="check-label">🎵 Funk</span></label>
+        <label class="check-item"><input type="checkbox" value="Rock"><div class="check-box"></div><span class="check-label">🎸 Rock</span></label>
+        <label class="check-item"><input type="checkbox" value="Pop"><div class="check-box"></div><span class="check-label">🎤 Pop</span></label>
+        <label class="check-item"><input type="checkbox" value="Gospel"><div class="check-box"></div><span class="check-label">🙏 Gospel</span></label>
+        <label class="check-item"><input type="checkbox" value="Pagode / Samba"><div class="check-box"></div><span class="check-label">🥁 Pagode</span></label>
+        <label class="check-item"><input type="checkbox" value="Eletrônica"><div class="check-box"></div><span class="check-label">🎧 Eletrônica</span></label>
+        <label class="check-item"><input type="checkbox" value="MPB"><div class="check-box"></div><span class="check-label">🎶 MPB</span></label>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="form-group">
+      <label>O que você mais curte fazer no tempo livre?</label>
+      <div class="check-grid" id="lazerGroup">
+        <label class="check-item"><input type="checkbox" value="Assistir séries/filmes"><div class="check-box"></div><span class="check-label">📺 Séries</span></label>
+        <label class="check-item"><input type="checkbox" value="Praticar esportes"><div class="check-box"></div><span class="check-label">⚽ Esportes</span></label>
+        <label class="check-item"><input type="checkbox" value="Viajar"><div class="check-box"></div><span class="check-label">✈️ Viajar</span></label>
+        <label class="check-item"><input type="checkbox" value="Jogar games"><div class="check-box"></div><span class="check-label">🎮 Games</span></label>
+        <label class="check-item"><input type="checkbox" value="Cozinhar"><div class="check-box"></div><span class="check-label">👨‍🍳 Cozinhar</span></label>
+        <label class="check-item"><input type="checkbox" value="Ler"><div class="check-box"></div><span class="check-label">📚 Ler</span></label>
+        <label class="check-item"><input type="checkbox" value="Academia / Fitness"><div class="check-box"></div><span class="check-label">💪 Academia</span></label>
+        <label class="check-item"><input type="checkbox" value="Redes sociais"><div class="check-box"></div><span class="check-label">📱 Social</span></label>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="form-group">
+      <label>Gênero de filmes/séries favorito?</label>
+      <div class="check-grid" id="filmesGroup">
+        <label class="check-item"><input type="checkbox" value="Ação e aventura"><div class="check-box"></div><span class="check-label">💥 Ação</span></label>
+        <label class="check-item"><input type="checkbox" value="Comédia"><div class="check-box"></div><span class="check-label">😂 Comédia</span></label>
+        <label class="check-item"><input type="checkbox" value="Terror / Suspense"><div class="check-box"></div><span class="check-label">👻 Terror</span></label>
+        <label class="check-item"><input type="checkbox" value="Romance"><div class="check-box"></div><span class="check-label">❤️ Romance</span></label>
+        <label class="check-item"><input type="checkbox" value="Documentários"><div class="check-box"></div><span class="check-label">🎬 Docs</span></label>
+        <label class="check-item"><input type="checkbox" value="Animação"><div class="check-box"></div><span class="check-label">🎨 Animação</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <button class="btn-submit" id="btnEnviar" onclick="enviarFormulario()">
+    ENVIAR FICHA →
+  </button>
+  <div class="mensagem" id="mensagem"></div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",
+    authDomain: "neodonto-808ea.firebaseapp.com",
+    projectId: "neodonto-808ea",
+    storageBucket: "neodonto-808ea.firebasestorage.app",
+    messagingSenderId: "602833895297",
+    appId: "1:602833895297:web:6744ea4b28739aced43280"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Selfie
+  let selfieBase64 = null;
+  let cameraStream = null;
+
+  window.carregarImagem = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      selfieBase64 = e.target.result;
+      mostrarSelfie(selfieBase64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  function mostrarSelfie(src) {
+    document.getElementById('selfieImg').src = src;
+    document.getElementById('selfieImg').style.display = 'block';
+    document.getElementById('selfiePlaceholder').style.display = 'none';
+    document.getElementById('selfieRemover').style.display = 'inline-block';
+  }
+
+  window.removerSelfie = function() {
+    selfieBase64 = null;
+    document.getElementById('selfieImg').src = '';
+    document.getElementById('selfieImg').style.display = 'none';
+    document.getElementById('selfiePlaceholder').style.display = 'block';
+    document.getElementById('selfieRemover').style.display = 'none';
+    document.getElementById('selfieUpload').value = '';
+  };
+
+  window.abrirCamera = async function() {
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      document.getElementById('cameraVideo').srcObject = cameraStream;
+      document.getElementById('cameraModal').classList.add('open');
+    } catch(e) {
+      // fallback: abrir upload
+      document.getElementById('selfieUpload').click();
+    }
+  };
+
+  window.fecharCamera = function() {
+    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+    document.getElementById('cameraModal').classList.remove('open');
+  };
+
+  window.tirarFoto = function() {
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('cameraCanvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    selfieBase64 = canvas.toDataURL('image/jpeg', 0.7);
+    mostrarSelfie(selfieBase64);
+    fecharCamera();
+  };
+
+  // Helpers
+  function getChecked(groupId) {
+    return Array.from(document.querySelectorAll(`#${groupId} input:checked`)).map(i => i.value);
+  }
+
+  function getRadio(name) {
+    const r = document.querySelector(`input[name="${name}"]:checked`);
+    return r ? r.value : '';
+  }
+
+  // Checkboxes interativos
+  document.querySelectorAll('.check-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const cb = item.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      item.classList.toggle('checked', cb.checked);
+    });
+  });
+
+  // Máscara CPF
+  document.getElementById('cpf').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    this.value = v;
+  });
+
+  // Máscara telefone
+  document.getElementById('telefone').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    else if (v.length > 6) v = v.replace(/(\d{2})(\d{4,5})(\d{0,4})/, '($1) $2-$3');
+    else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+    this.value = v;
+  });
+
+  // Enviar
+  window.enviarFormulario = async function() {
+    const nome = document.getElementById('nome').value.trim();
+    const nascimento = document.getElementById('nascimento').value;
+    const telefone = document.getElementById('telefone').value.trim();
+    const motivo = getRadio('motivo');
+
+    if (!nome || !nascimento || !telefone || !motivo) {
+      const msg = document.getElementById('mensagem');
+      msg.className = 'mensagem erro';
+      msg.textContent = '⚠️ Preencha os campos obrigatórios: nome, data de nascimento, telefone e motivo da consulta.';
+      msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const btn = document.getElementById('btnEnviar');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const dados = {
+      dadosPessoais: {
+        nome,
+        nascimento,
+        cpf: document.getElementById('cpf').value,
+        telefone,
+        email: document.getElementById('email').value,
+        responsavel: document.getElementById('responsavel').value,
+        selfie: selfieBase64 || null,
+      },
+      motivoConsulta: motivo,
+      saudeGeral: getChecked('saudeGeralGroup'),
+      alergias: [
+        ...getChecked('alergiasGroup'),
+        ...(document.getElementById('outraAlergia').value ? [document.getElementById('outraAlergia').value] : [])
+      ],
+      medicamentos: [
+        ...getChecked('medicamentosGroup'),
+        ...(document.getElementById('outroMedicamento').value ? [document.getElementById('outroMedicamento').value] : [])
+      ],
+      saudeBucal: getChecked('saudeBucalGroup'),
+      ansiedade: getRadio('ansiedade'),
+      habitos: getChecked('habitosGroup'),
+      timeFutebol: document.getElementById('timeFutebol').value,
+      musica: getChecked('musicaGroup'),
+      lazer: getChecked('lazerGroup'),
+      filmes: getChecked('filmesGroup'),
+      enviadoEm: serverTimestamp()
+    };
+
+    try {
+      await addDoc(collection(db, 'anamneses'), dados);
+      const msg = document.getElementById('mensagem');
+      msg.className = 'mensagem sucesso';
+      msg.textContent = '✅ Ficha enviada com sucesso! Obrigado, ' + nome.split(' ')[0] + '! Até já 😊';
+      msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      btn.textContent = '✅ Enviado!';
+    } catch(e) {
+      const msg = document.getElementById('mensagem');
+      msg.className = 'mensagem erro';
+      msg.textContent = '❌ Erro ao enviar. Verifique sua conexão e tente novamente.';
+      btn.disabled = false;
+      btn.textContent = 'ENVIAR FICHA →';
+    }
+  };
+</script>
+</body>
+</html>
