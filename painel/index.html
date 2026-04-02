@@ -204,6 +204,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     <div class="s-sub">ADMIN PANEL</div>
     <div class="s-label">Menu</div>
     <button class="s-btn active" id="btnMenuPacientes" onclick="mudarAba('pacientes')"><span class="s-icon">🦷</span> Pacientes</button>
+    <button class="s-btn" id="btnMenuKids" onclick="mudarAba('kids')"><span class="s-icon">👶</span> Kids</button>
     <button class="s-btn" id="btnMenuFeedbacks" onclick="mudarAba('feedbacks')"><span class="s-icon">⭐</span> Feedbacks</button>
     <div class="s-spacer"></div>
     <button class="s-logout" onclick="fazerLogout()"><span>🚪</span> Sair</button>
@@ -233,6 +234,28 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
           <div class="badge" id="countBadge">0 fichas</div>
         </div>
         <div id="tableArea"><div class="loading"><div class="spinner"></div>Carregando fichas...</div></div>
+      </div>
+    </div>
+
+
+    <!-- ABA KIDS -->
+    <div id="abaKids" style="display:none;">
+      <div class="topbar">
+        <div class="topbar-title">Fichas Kids 👶</div>
+        <div class="topbar-right">
+          <input type="text" class="search-box" id="searchKids" placeholder="🔍 Buscar criança..." oninput="filtrarKids()">
+          <button class="refresh-btn" onclick="carregarKids()">↻ Atualizar</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card"><div class="stat-icon">👶</div><div class="stat-val" id="totalKids">—</div><div class="stat-label">Total kids</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="kidsHoje">—</div><div class="stat-label">Fichas hoje</div></div>
+        <div class="stat-card"><div class="stat-icon">⚠️</div><div class="stat-val" id="kidsAlergias">—</div><div class="stat-label">Com alergias</div></div>
+        <div class="stat-card"><div class="stat-icon">😰</div><div class="stat-val" id="kidsMedo">—</div><div class="stat-label">Com ansiedade</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-header"><div class="table-title">Pacientes Kids</div><div class="badge" id="kidsCountBadge">0 fichas</div></div>
+        <div id="kidsTableArea"><div class="loading"><div class="spinner"></div>Carregando fichas kids...</div></div>
       </div>
     </div>
 
@@ -628,6 +651,76 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       </div>`;
 
     document.getElementById('modalBg').classList.add('open');
+  };
+
+
+  // ── KIDS ──
+  let todosKids = [];
+  window.carregarKids = async function() {
+    document.getElementById('kidsTableArea').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
+    try {
+      const q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
+      const snap = await getDocs(q);
+      const todas = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      todosKids = todas.filter(p => p.tipo === 'infantil' || p.nomeCrianca || p.dadosPessoais?.escola);
+      renderizarKids(todosKids);
+      const hoje = new Date().toDateString();
+      document.getElementById('totalKids').textContent = todosKids.length;
+      document.getElementById('kidsHoje').textContent = todosKids.filter(p => p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje).length;
+      document.getElementById('kidsAlergias').textContent = todosKids.filter(p => p.alergias && p.alergias.length>0 && !p.alergias.includes('Não tenho alergias')).length;
+      document.getElementById('kidsMedo').textContent = todosKids.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia'))).length;
+    } catch(e) {
+      document.getElementById('kidsTableArea').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><h3>Erro ao carregar</h3></div>`;
+    }
+  };
+
+  function renderizarKids(lista) {
+    document.getElementById('kidsCountBadge').textContent = lista.length + ' fichas';
+    if(lista.length===0){
+      document.getElementById('kidsTableArea').innerHTML = `<div class="empty"><div class="empty-icon">👶</div><h3>Nenhuma ficha kids</h3><p>As fichas infantis aparecerão aqui.</p></div>`;
+      return;
+    }
+    const rows = lista.map((p,i) => {
+      const nome = p.dadosPessoais?.nome || p.nomeCrianca || '—';
+      const resp = p.dadosPessoais?.responsavel || p.nomeResponsavel || '—';
+      const tel  = p.dadosPessoais?.telefone || p.whatsappResponsavel || '—';
+      const data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '—';
+      const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Não tenho alergias');
+      return `<tr>
+        <td><div class="td-paciente"><div class="avatar-placeholder">👶</div><div class="td-name">${nome}</div></div></td>
+        <td><div class="td-muted">${resp}</div></td>
+        <td><div class="td-muted">${tel}</div></td>
+        <td>${temAlergia?'<span class="td-tag danger">⚠️ Alergia</span>':'<span class="td-tag">✅ Ok</span>'}</td>
+        <td><div class="td-muted">${data}</div></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('kidsTableArea').innerHTML = `<table><thead><tr><th>Criança</th><th>Responsável</th><th>Telefone</th><th>Alertas</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  window.filtrarKids = function() {
+    const q = document.getElementById('searchKids').value.toLowerCase();
+    const r = todosKids.filter(p => (p.dadosPessoais?.nome||p.nomeCrianca||'').toLowerCase().includes(q)||(p.dadosPessoais?.responsavel||p.nomeResponsavel||'').toLowerCase().includes(q));
+    renderizarKids(r);
+  };
+
+  // mudarAba - atualizar para incluir kids
+  window.mudarAba = function(aba) {
+    ['abaPacientes','abaKids','abaFeedbacks'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+    ['btnMenuPacientes','btnMenuKids','btnMenuFeedbacks'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.remove('active');
+    });
+    const abaId = 'aba' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    const btnId = 'btnMenu' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    const abaEl = document.getElementById(abaId);
+    const btnEl = document.getElementById(btnId);
+    if(abaEl) abaEl.style.display = 'block';
+    if(btnEl) btnEl.classList.add('active');
+    if(aba==='kids' && todosKids.length===0) carregarKids();
+    if(aba==='feedbacks' && todosFeedbacks.length===0) carregarFeedbacks();
   };
 
   window.fecharModal = function(e) {
