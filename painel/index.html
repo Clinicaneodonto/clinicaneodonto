@@ -320,7 +320,6 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
 
   let todosPacientes = [];
   let todosFeedbacks = [];
-  let abaAtual = 'pacientes';
 
   // ── AUTH ──
   onAuthStateChanged(auth, user => {
@@ -346,14 +345,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
   window.fazerLogout = async function() { await signOut(auth); };
 
   // ── ABAS ──
-  window.mudarAba = function(aba) {
-    abaAtual = aba;
-    document.getElementById('abaPacientes').style.display  = aba === 'pacientes'  ? 'block' : 'none';
-    document.getElementById('abaFeedbacks').style.display  = aba === 'feedbacks'  ? 'block' : 'none';
-    document.getElementById('btnMenuPacientes').classList.toggle('active', aba === 'pacientes');
-    document.getElementById('btnMenuFeedbacks').classList.toggle('active', aba === 'feedbacks');
-    if (aba === 'feedbacks' && todosFeedbacks.length === 0) carregarFeedbacks();
-  };
+
 
   // ── PACIENTES ──
   window.carregarDados = async function() {
