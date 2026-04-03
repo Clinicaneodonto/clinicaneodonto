@@ -466,7 +466,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const comNps    = lista.filter(f => f.nps !== null && f.nps !== undefined);
     const npsMedia  = comNps.length ? (comNps.reduce((s,f)=>s+f.nps,0)/comNps.length).toFixed(1) : '-';
     document.getElementById('fbNps').textContent    = npsMedia;
-    const comNota   = lista.filter(f => f.notaGeral);
+    const comNota   = lista.filter(f => f.avaliacao_geral);
     const notaMedia = comNota.length ? (comNota.reduce((s,f)=>s+f.notaGeral,0)/comNota.length).toFixed(1) : '-';
     document.getElementById('fbNota').textContent   = notaMedia ? `${notaMedia}` : '-';
     const google    = lista.filter(f => f.autorizaGoogle).length;
@@ -478,7 +478,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     lista.forEach(f => {
       if (!f.dentista) return;
       if (!mapa[f.dentista]) mapa[f.dentista] = { notas: [], count: 0 };
-      if (f.notaDentista) mapa[f.dentista].notas.push(f.notaDentista);
+      if (f.avaliacao_dentista) mapa[f.dentista].notas.push(f.notaDentista);
       mapa[f.dentista].count++;
     });
 
@@ -570,7 +570,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const nome     = f.anonimo ? ' Anonimo' : (f.nome || '-');
     const data     = f.criadoEm ? new Date(f.criadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
     const nClass   = npsClass(f.nps);
-    const destaques = (f.destaques||[]).map(d=>`<span class="m-tag">${d}</span>`).join('') || '<span class="m-empty">Nenhum selecionado</span>';
+    const destaques = (f.destaques_positivos||[]).map(d=>`<span class="m-tag">${d}</span>`).join('') || '<span class="m-empty">Nenhum selecionado</span>';
 
     document.getElementById('modalContent').innerHTML = `
       <div class="modal-head">
@@ -583,7 +583,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
         <div class="fb-modal-stars">
           <div class="fb-modal-star-item"><div class="fb-modal-star-label">Geral</div>${renderStars(f.notaGeral||0)}</div>
           <div class="fb-modal-star-item"><div class="fb-modal-star-label">Dentista</div>${renderStars(f.notaDentista||0)}</div>
-          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Recepcao</div>${renderStars(f.notaRecepcao||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Recepcao</div>${renderStars(f.avaliacao_recepcao||0)}</div>
           <div class="fb-modal-star-item"><div class="fb-modal-star-label">NPS</div><span class="nps-badge ${nClass}" style="width:auto;padding:4px 12px;">${f.nps!==null&&f.nps!==undefined?f.nps:'-'}</span></div>
         </div>
         <div class="m-section"><div class="m-section-title"> Como se sentiu</div><div class="m-tags"><span class="m-tag">${f.emocao||'-'}</span></div></div>
