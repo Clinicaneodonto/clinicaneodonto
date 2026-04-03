@@ -450,7 +450,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     document.getElementById('fbTableArea').innerHTML  = `<div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>`;
     document.getElementById('dentistaGrid').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
     try {
-      const q    = query(collection(db, 'feedbacks'), orderBy('criadoEm', 'desc'));
+      const q    = collection(db, 'feedbacks');
       const snap = await getDocs(q);
       todosFeedbacks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderizarFeedbacks(todosFeedbacks);
