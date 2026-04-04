@@ -360,7 +360,7 @@
     .emoji-card:has(input:checked) {
       border-color: var(--tiffany) !important;
       background: var(--tiffany-light) !important;
-      box-shadow: 0 4px 14px rgba(10,191,188,0.25);
+      box-shadow:outline: 3px solid var(--tiffany); 0 4px 14px rgba(10,191,188,0.25);
     }.emoji-card:has(input:checked) .emoji-label {
       color: var(--tiffany);
       font-weight: 900;
@@ -380,7 +380,7 @@
     }
 
     .emoji-card input {
-      display: none;
+      position: absolute; opacity: 0; width: 0; height: 0;
     }
 
     /* STAR RATING */
