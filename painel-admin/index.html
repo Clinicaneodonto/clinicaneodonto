@@ -467,7 +467,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const npsMedia  = comNps.length ? (comNps.reduce((s,f)=>s+f.nps,0)/comNps.length).toFixed(1) : '-';
     document.getElementById('fbNps').textContent    = npsMedia;
     const comNota   = lista.filter(f => (f.avaliacao_geral || 0));
-    const notaMedia = comNota.length ? (comNota.reduce((s,f)=>s+f.notaGeral,0)/comNota.length).toFixed(1) : '-';
+    const notaMedia = comNota.length ? (comNota.reduce((s,f)=>s+f.avaliacao_geral,0)/comNota.length).toFixed(1) : '-';
     document.getElementById('fbNota').textContent   = notaMedia ? `${notaMedia}` : '-';
     const google    = lista.filter(f => f.autorizaGoogle).length;
     document.getElementById('fbGoogle').textContent = google;
@@ -478,7 +478,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     lista.forEach(f => {
       if (!f.dentista) return;
       if (!mapa[f.dentista]) mapa[f.dentista] = { notas: [], count: 0 };
-      if (f.avaliacao_dentista) mapa[f.dentista].notas.push(f.notaDentista);
+      if (f.avaliacao_dentista) mapa[f.dentista].notas.push(f.avaliacao_dentista);
       mapa[f.dentista].count++;
     });
 
@@ -532,7 +532,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       const data     = ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) ? new Date(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp).seconds*1000).toLocaleDateString('pt-BR') : '-';
       const nps      = f.nps !== null && f.nps !== undefined ? f.nps : '-';
       const nClass   = npsClass(f.nps);
-      const nota     = f.notaGeral || 0;
+      const nota     = f.avaliacao_geral || 0;
       return `<tr onclick="abrirModalFeedback(${i})">
         <td><div class="td-name">${f.anonimo ? ' '+nome : nome}</div></td>
         <td><div class="td-muted">${dentista}</div></td>
@@ -581,8 +581,8 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       </div>
       <div class="modal-body">
         <div class="fb-modal-stars">
-          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Geral</div>${renderStars(f.notaGeral||0)}</div>
-          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Dentista</div>${renderStars(f.notaDentista||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Geral</div>${renderStars(f.avaliacao_geral||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Dentista</div>${renderStars(f.avaliacao_dentista||0)}</div>
           <div class="fb-modal-star-item"><div class="fb-modal-star-label">Recepcao</div>${renderStars(f.avaliacao_recepcao||0)}</div>
           <div class="fb-modal-star-item"><div class="fb-modal-star-label">NPS</div><span class="nps-badge ${nClass}" style="width:auto;padding:4px 12px;">${f.nps!==null&&f.nps!==undefined?f.nps:'-'}</span></div>
         </div>
