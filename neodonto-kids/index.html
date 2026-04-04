@@ -326,11 +326,15 @@
       background: var(--tiffany-light);
     }
 
-    /* EMOJI CARDS */
+        /* EMOJI CARDS - CSS puro sem JS */
     .emoji-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       gap: 10px;
+    }
+
+    .emoji-card-input {
+      display: none;
     }
 
     .emoji-card {
@@ -340,27 +344,36 @@
       text-align: center;
       cursor: pointer;
       background: #fff;
+      display: block;
       user-select: none;
       -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
+    }
+
+    .emoji-card:active {
+      background: #e0fafa;
+      border-color: #0abfbc;
+    }
+
+    .emoji-card-input:checked + .emoji-card {
+      border: 3px solid #0abfbc !important;
+      background: #e0fafa !important;
+    }
+
+    .emoji-card-input:checked + .emoji-card .emoji-label {
+      color: #0abfbc;
+      font-weight: 900;
     }
 
     .emoji-card .emoji-big {
       font-size: 2rem;
       display: block;
       margin-bottom: 4px;
-      pointer-events: none;
     }
 
     .emoji-card .emoji-label {
       font-size: 0.72rem;
       font-weight: 800;
       color: #1a3a5c;
-      pointer-events: none;
-    }
-
-    .emoji-card input {
-      display: none;
     }
 
     /* STAR RATING */
@@ -865,46 +878,46 @@
     <div class="field" style="margin-bottom:18px;">
       <label>Brincadeira favorita 🎮</label>
       <div class="emoji-grid" style="margin-top:8px;" id="brincadeiras">
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Videogame" />
+        <input type="checkbox" name="brinca" value="Videogame" id="ec_1" class="emoji-card-input">
+        <label for="ec_1" class="emoji-card">
           <span class="emoji-big">🎮</span>
           <span class="emoji-label">Videogame</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Bonecas" />
+        </label>
+        <input type="checkbox" name="brinca" value="Bonecas" id="ec_2" class="emoji-card-input">
+        <label for="ec_2" class="emoji-card">
           <span class="emoji-big">🪆</span>
           <span class="emoji-label">Bonecas</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Futebol" />
+        </label>
+        <input type="checkbox" name="brinca" value="Futebol" id="ec_3" class="emoji-card-input">
+        <label for="ec_3" class="emoji-card">
           <span class="emoji-big">⚽</span>
           <span class="emoji-label">Futebol</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Pular corda" />
+        </label>
+        <input type="checkbox" name="brinca" value="Pular corda" id="ec_4" class="emoji-card-input">
+        <label for="ec_4" class="emoji-card">
           <span class="emoji-big">🪢</span>
           <span class="emoji-label">Pular corda</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Desenhar" />
+        </label>
+        <input type="checkbox" name="brinca" value="Desenhar" id="ec_5" class="emoji-card-input">
+        <label for="ec_5" class="emoji-card">
           <span class="emoji-big">🖍️</span>
           <span class="emoji-label">Desenhar</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Lego" />
+        </label>
+        <input type="checkbox" name="brinca" value="Lego" id="ec_6" class="emoji-card-input">
+        <label for="ec_6" class="emoji-card">
           <span class="emoji-big">🧱</span>
           <span class="emoji-label">Lego</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Dançar" />
+        </label>
+        <input type="checkbox" name="brinca" value="Dançar" id="ec_7" class="emoji-card-input">
+        <label for="ec_7" class="emoji-card">
           <span class="emoji-big">💃</span>
           <span class="emoji-label">Dançar</span>
-        </div>
-        <div class="emoji-card" data-grp="brinca" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="brinca" value="Ler / histórias" />
+        </label>
+        <input type="checkbox" name="brinca" value="Ler / histórias" id="ec_8" class="emoji-card-input">
+        <label for="ec_8" class="emoji-card">
           <span class="emoji-big">📚</span>
           <span class="emoji-label">Ler</span>
-        </div>
+        </label>
       </div>
     </div>
 
@@ -912,46 +925,46 @@
     <div class="field" style="margin-bottom:18px;">
       <label>Personagem / desenho favorito 🦸</label>
       <div class="emoji-grid" style="margin-top:8px;" id="personagens">
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Super-heróis" />
+        <input type="checkbox" name="personagem" value="Super-heróis" id="ec_9" class="emoji-card-input">
+        <label for="ec_9" class="emoji-card">
           <span class="emoji-big">🦸</span>
           <span class="emoji-label">Super-heróis</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Princesas" />
+        </label>
+        <input type="checkbox" name="personagem" value="Princesas" id="ec_10" class="emoji-card-input">
+        <label for="ec_10" class="emoji-card">
           <span class="emoji-big">👸</span>
           <span class="emoji-label">Princesas</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Dinossauros" />
+        </label>
+        <input type="checkbox" name="personagem" value="Dinossauros" id="ec_11" class="emoji-card-input">
+        <label for="ec_11" class="emoji-card">
           <span class="emoji-big">🦕</span>
           <span class="emoji-label">Dinossauros</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Unicórnios" />
+        </label>
+        <input type="checkbox" name="personagem" value="Unicórnios" id="ec_12" class="emoji-card-input">
+        <label for="ec_12" class="emoji-card">
           <span class="emoji-big">🦄</span>
           <span class="emoji-label">Unicórnios</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Carros/corrida" />
+        </label>
+        <input type="checkbox" name="personagem" value="Carros/corrida" id="ec_13" class="emoji-card-input">
+        <label for="ec_13" class="emoji-card">
           <span class="emoji-big">🏎️</span>
           <span class="emoji-label">Carrinho</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Animais" />
+        </label>
+        <input type="checkbox" name="personagem" value="Animais" id="ec_14" class="emoji-card-input">
+        <label for="ec_14" class="emoji-card">
           <span class="emoji-big">🐶</span>
           <span class="emoji-label">Animais</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Astronautas" />
+        </label>
+        <input type="checkbox" name="personagem" value="Astronautas" id="ec_15" class="emoji-card-input">
+        <label for="ec_15" class="emoji-card">
           <span class="emoji-big">🚀</span>
           <span class="emoji-label">Astronautas</span>
-        </div>
-        <div class="emoji-card" data-grp="personagem" onclick="var inp=this.querySelector('input');inp.checked=!inp.checked;this.style.cssText=inp.checked?'border:3px solid #0abfbc;background:#e0fafa;':'border:3px solid #c8ecec;background:#fff;';" >
-          <input type="checkbox" name="personagem" value="Outro" />
+        </label>
+        <input type="checkbox" name="personagem" value="Outro" id="ec_16" class="emoji-card-input">
+        <label for="ec_16" class="emoji-card">
           <span class="emoji-big">⭐</span>
           <span class="emoji-label">Outro</span>
-        </div>
+        </label>
       </div>
     </div>
 
@@ -990,31 +1003,31 @@
     <div class="field" style="margin-bottom:20px;">
       <label>Como a criança está se sentindo HOJE?</label>
       <div class="emoji-grid" style="grid-template-columns: repeat(5, 1fr); margin-top:10px;">
-        <div class="emoji-card" data-grp="sentimentoHoje" onclick="var cs=document.querySelectorAll('[data-grp=sentimentoHoje]');cs.forEach(function(x){x.style.cssText='border:3px solid #c8ecec;background:#fff';});this.style.cssText='border:3px solid #0abfbc;background:#e0fafa;';this.querySelector('input').checked=true;" >
-          <input type="radio" name="sentimentoHoje" value="Muito animada" />
+        <input type="radio" name="sentimentoHoje" value="Muito animada" id="ec_17" class="emoji-card-input">
+        <label for="ec_17" class="emoji-card">
           <span class="emoji-big">🤩</span>
           <span class="emoji-label">Animada!</span>
-        </div>
-        <div class="emoji-card" data-grp="sentimentoHoje" onclick="var cs=document.querySelectorAll('[data-grp=sentimentoHoje]');cs.forEach(function(x){x.style.cssText='border:3px solid #c8ecec;background:#fff';});this.style.cssText='border:3px solid #0abfbc;background:#e0fafa;';this.querySelector('input').checked=true;" >
-          <input type="radio" name="sentimentoHoje" value="Normal" />
+        </label>
+        <input type="radio" name="sentimentoHoje" value="Normal" id="ec_18" class="emoji-card-input">
+        <label for="ec_18" class="emoji-card">
           <span class="emoji-big">😊</span>
           <span class="emoji-label">Normal</span>
-        </div>
-        <div class="emoji-card" data-grp="sentimentoHoje" onclick="var cs=document.querySelectorAll('[data-grp=sentimentoHoje]');cs.forEach(function(x){x.style.cssText='border:3px solid #c8ecec;background:#fff';});this.style.cssText='border:3px solid #0abfbc;background:#e0fafa;';this.querySelector('input').checked=true;" >
-          <input type="radio" name="sentimentoHoje" value="Um pouco nervosa" />
+        </label>
+        <input type="radio" name="sentimentoHoje" value="Um pouco nervosa" id="ec_19" class="emoji-card-input">
+        <label for="ec_19" class="emoji-card">
           <span class="emoji-big">😬</span>
           <span class="emoji-label">Nervosa</span>
-        </div>
-        <div class="emoji-card" data-grp="sentimentoHoje" onclick="var cs=document.querySelectorAll('[data-grp=sentimentoHoje]');cs.forEach(function(x){x.style.cssText='border:3px solid #c8ecec;background:#fff';});this.style.cssText='border:3px solid #0abfbc;background:#e0fafa;';this.querySelector('input').checked=true;" >
-          <input type="radio" name="sentimentoHoje" value="Com medo" />
+        </label>
+        <input type="radio" name="sentimentoHoje" value="Com medo" id="ec_20" class="emoji-card-input">
+        <label for="ec_20" class="emoji-card">
           <span class="emoji-big">😨</span>
           <span class="emoji-label">Com medo</span>
-        </div>
-        <div class="emoji-card" data-grp="sentimentoHoje" onclick="var cs=document.querySelectorAll('[data-grp=sentimentoHoje]');cs.forEach(function(x){x.style.cssText='border:3px solid #c8ecec;background:#fff';});this.style.cssText='border:3px solid #0abfbc;background:#e0fafa;';this.querySelector('input').checked=true;" >
-          <input type="radio" name="sentimentoHoje" value="Não quer estar aqui" />
+        </label>
+        <input type="radio" name="sentimentoHoje" value="Não quer estar aqui" id="ec_21" class="emoji-card-input">
+        <label for="ec_21" class="emoji-card">
           <span class="emoji-big">😤</span>
           <span class="emoji-label">Resistente</span>
-        </div>
+        </label>
       </div>
     </div>
 
