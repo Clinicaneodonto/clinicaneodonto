@@ -752,7 +752,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
 
     document.getElementById('modalContent').innerHTML = `
       <div class="modal-head">
-        <div class="modal-name">👶 ${nome}</div>
+        ${p.foto ? `<img class="modal-avatar" src="${p.foto}" alt="Foto" />` : `<div class="modal-avatar-placeholder">👶</div>`}         <div class="modal-name">👶 ${nome}</div>
         <div class="modal-date">📅 ${nasc} &nbsp;|&nbsp; ${idade} &nbsp;|&nbsp; ${sexo}</div>
         <div class="modal-date" style="margin-top:4px">👨‍👩‍👧 Responsável: ${resp} &nbsp;|&nbsp; 📱 ${tel}</div>
         <div class="modal-date" style="margin-top:4px">📋 Enviado em: ${data}</div>
