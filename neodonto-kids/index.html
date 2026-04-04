@@ -354,6 +354,16 @@
       border-color: #0abfbc;
     }
 
+    .emoji-card:has(input:checked) {
+      border: 3px solid #0abfbc !important;
+      background: #e0fafa !important;
+    }
+
+    .emoji-card:has(input:checked) .emoji-label {
+      color: #0abfbc;
+      font-weight: 900;
+    }
+
     .emoji-card-input:checked + .emoji-card {
       border: 3px solid #0abfbc !important;
       background: #e0fafa !important;
@@ -878,43 +888,35 @@
     <div class="field" style="margin-bottom:18px;">
       <label>Brincadeira favorita 🎮</label>
       <div class="emoji-grid" style="margin-top:8px;" id="brincadeiras">
-        <input type="checkbox" name="brinca" value="Videogame" id="ec_1" class="emoji-card-input">
-        <label for="ec_1" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Videogame" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🎮</span>
           <span class="emoji-label">Videogame</span>
         </label>
-        <input type="checkbox" name="brinca" value="Bonecas" id="ec_2" class="emoji-card-input">
-        <label for="ec_2" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Bonecas" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🪆</span>
           <span class="emoji-label">Bonecas</span>
         </label>
-        <input type="checkbox" name="brinca" value="Futebol" id="ec_3" class="emoji-card-input">
-        <label for="ec_3" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Futebol" class="emoji-card-input" style="display:none">
           <span class="emoji-big">⚽</span>
           <span class="emoji-label">Futebol</span>
         </label>
-        <input type="checkbox" name="brinca" value="Pular corda" id="ec_4" class="emoji-card-input">
-        <label for="ec_4" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Pular corda" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🪢</span>
           <span class="emoji-label">Pular corda</span>
         </label>
-        <input type="checkbox" name="brinca" value="Desenhar" id="ec_5" class="emoji-card-input">
-        <label for="ec_5" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Desenhar" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🖍️</span>
           <span class="emoji-label">Desenhar</span>
         </label>
-        <input type="checkbox" name="brinca" value="Lego" id="ec_6" class="emoji-card-input">
-        <label for="ec_6" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Lego" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🧱</span>
           <span class="emoji-label">Lego</span>
         </label>
-        <input type="checkbox" name="brinca" value="Dançar" id="ec_7" class="emoji-card-input">
-        <label for="ec_7" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Dançar" class="emoji-card-input" style="display:none">
           <span class="emoji-big">💃</span>
           <span class="emoji-label">Dançar</span>
         </label>
-        <input type="checkbox" name="brinca" value="Ler / histórias" id="ec_8" class="emoji-card-input">
-        <label for="ec_8" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="brinca" value="Ler / histórias" class="emoji-card-input" style="display:none">
           <span class="emoji-big">📚</span>
           <span class="emoji-label">Ler</span>
         </label>
@@ -925,43 +927,35 @@
     <div class="field" style="margin-bottom:18px;">
       <label>Personagem / desenho favorito 🦸</label>
       <div class="emoji-grid" style="margin-top:8px;" id="personagens">
-        <input type="checkbox" name="personagem" value="Super-heróis" id="ec_9" class="emoji-card-input">
-        <label for="ec_9" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Super-heróis" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🦸</span>
           <span class="emoji-label">Super-heróis</span>
         </label>
-        <input type="checkbox" name="personagem" value="Princesas" id="ec_10" class="emoji-card-input">
-        <label for="ec_10" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Princesas" class="emoji-card-input" style="display:none">
           <span class="emoji-big">👸</span>
           <span class="emoji-label">Princesas</span>
         </label>
-        <input type="checkbox" name="personagem" value="Dinossauros" id="ec_11" class="emoji-card-input">
-        <label for="ec_11" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Dinossauros" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🦕</span>
           <span class="emoji-label">Dinossauros</span>
         </label>
-        <input type="checkbox" name="personagem" value="Unicórnios" id="ec_12" class="emoji-card-input">
-        <label for="ec_12" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Unicórnios" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🦄</span>
           <span class="emoji-label">Unicórnios</span>
         </label>
-        <input type="checkbox" name="personagem" value="Carros/corrida" id="ec_13" class="emoji-card-input">
-        <label for="ec_13" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Carros/corrida" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🏎️</span>
           <span class="emoji-label">Carrinho</span>
         </label>
-        <input type="checkbox" name="personagem" value="Animais" id="ec_14" class="emoji-card-input">
-        <label for="ec_14" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Animais" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🐶</span>
           <span class="emoji-label">Animais</span>
         </label>
-        <input type="checkbox" name="personagem" value="Astronautas" id="ec_15" class="emoji-card-input">
-        <label for="ec_15" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Astronautas" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🚀</span>
           <span class="emoji-label">Astronautas</span>
         </label>
-        <input type="checkbox" name="personagem" value="Outro" id="ec_16" class="emoji-card-input">
-        <label for="ec_16" class="emoji-card">
+        <label class="emoji-card"><input type="checkbox" name="personagem" value="Outro" class="emoji-card-input" style="display:none">
           <span class="emoji-big">⭐</span>
           <span class="emoji-label">Outro</span>
         </label>
@@ -1003,28 +997,23 @@
     <div class="field" style="margin-bottom:20px;">
       <label>Como a criança está se sentindo HOJE?</label>
       <div class="emoji-grid" style="grid-template-columns: repeat(5, 1fr); margin-top:10px;">
-        <input type="radio" name="sentimentoHoje" value="Muito animada" id="ec_17" class="emoji-card-input">
-        <label for="ec_17" class="emoji-card">
+        <label class="emoji-card"><input type="radio" name="sentimentoHoje" value="Muito animada" class="emoji-card-input" style="display:none">
           <span class="emoji-big">🤩</span>
           <span class="emoji-label">Animada!</span>
         </label>
-        <input type="radio" name="sentimentoHoje" value="Normal" id="ec_18" class="emoji-card-input">
-        <label for="ec_18" class="emoji-card">
+        <label class="emoji-card"><input type="radio" name="sentimentoHoje" value="Normal" class="emoji-card-input" style="display:none">
           <span class="emoji-big">😊</span>
           <span class="emoji-label">Normal</span>
         </label>
-        <input type="radio" name="sentimentoHoje" value="Um pouco nervosa" id="ec_19" class="emoji-card-input">
-        <label for="ec_19" class="emoji-card">
+        <label class="emoji-card"><input type="radio" name="sentimentoHoje" value="Um pouco nervosa" class="emoji-card-input" style="display:none">
           <span class="emoji-big">😬</span>
           <span class="emoji-label">Nervosa</span>
         </label>
-        <input type="radio" name="sentimentoHoje" value="Com medo" id="ec_20" class="emoji-card-input">
-        <label for="ec_20" class="emoji-card">
+        <label class="emoji-card"><input type="radio" name="sentimentoHoje" value="Com medo" class="emoji-card-input" style="display:none">
           <span class="emoji-big">😨</span>
           <span class="emoji-label">Com medo</span>
         </label>
-        <input type="radio" name="sentimentoHoje" value="Não quer estar aqui" id="ec_21" class="emoji-card-input">
-        <label for="ec_21" class="emoji-card">
+        <label class="emoji-card"><input type="radio" name="sentimentoHoje" value="Não quer estar aqui" class="emoji-card-input" style="display:none">
           <span class="emoji-big">😤</span>
           <span class="emoji-label">Resistente</span>
         </label>
