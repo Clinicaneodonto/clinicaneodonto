@@ -353,6 +353,18 @@
       background: var(--tiffany-light);
       transform: scale(1.05);
       box-shadow: 0 4px 14px rgba(10,191,188,0.18);
+    }.emoji-card.selected .emoji-label {
+      color: var(--tiffany);
+      font-weight: 900;
+    }
+    .emoji-card:has(input:checked) {
+      border-color: var(--tiffany) !important;
+      background: var(--tiffany-light) !important;
+      box-shadow: 0 4px 14px rgba(10,191,188,0.25);
+    }.emoji-card:has(input:checked) .emoji-label {
+      color: var(--tiffany);
+      font-weight: 900;
+    }
     }
 
     .emoji-card .emoji-big {
