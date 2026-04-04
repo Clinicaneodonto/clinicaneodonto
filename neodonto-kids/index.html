@@ -1207,34 +1207,15 @@
     reader.readAsDataURL(file);
   });
 
-  // ---- EMOJI CARDS click toggle ----
+ // ---- EMOJI CARDS click toggle ----
   document.querySelectorAll('.emoji-card input').forEach(inp => {
     inp.addEventListener('change', () => {
       if (inp.type === 'radio') {
         document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
           r.closest('.emoji-card').classList.remove('selected');
         });
-        inp.closest('.emoji-card').classList.add('selected');
-      } else {
-        inp.closest('.emoji-card').classList.toggle('selected', inp.checked);
       }
-    });
-  });
-  // Force visual no touch
-  document.querySelectorAll('.emoji-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const inp = card.querySelector('input');
-      if (!inp) return;
-      if (inp.type === 'radio') {
-        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
-          r.closest('.emoji-card').classList.remove('selected');
-        });
-        card.classList.add('selected');
-      } else {
-        setTimeout(() => {
-          card.classList.toggle('selected', inp.checked);
-        }, 10);
-      }
+      inp.closest('.emoji-card').classList.toggle('selected', inp.checked);
     });
   });
 
