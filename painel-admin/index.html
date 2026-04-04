@@ -658,9 +658,9 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       renderizarKids(todosKids);
       const hoje = new Date().toDateString();
       document.getElementById('totalKids').textContent = todosKids.length;
-      document.getElementById('kidsHoje').textContent = todosKids.filter(p => p.enviadoEm && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString()===hoje).length;
-      document.getElementById('kidsAlergias').textContent = todosKids.filter(p => p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias')).length;
-      document.getElementById('kidsMedo').textContent = todosKids.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia'))).length;
+      document.getElementById('kidsHoje').textContent = todosKids.filter(p => (p.criadoEm||p.enviadoEm) && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString()===hoje).length;
+      document.getElementById('kidsAlergias').textContent = todosKids.filter(p => p.saudeGeral?.alergiaMedicamento==='Sim' || p.saudeGeral?.alergiaLatex==='Sim' || p.saudeGeral?.outrasAlergias || (p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias'))).length;
+      document.getElementById('kidsMedo').textContent = todosKids.filter(p => { const s = p.comportamento?.sentimentoHoje || p.ansiedade || ''; return s.toLowerCase().includes('ansios') || s.toLowerCase().includes('medo') || s.toLowerCase().includes('nervos'); }).length;
     } catch(e) {
       document.getElementById('kidsTableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>`;
     }
@@ -794,6 +794,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       </div>
       <div class="modal-actions">
         <button class="print-btn" onclick="imprimirKids(${index})">🖨️ Imprimir ficha</button>
+        <button class="pdf-btn" onclick="salvarPDFKids(${index})">📄 Salvar PDF</button>
       </div>`;
 
     document.getElementById('modalBg').classList.add('open');
@@ -846,6 +847,111 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
         </div>
       </div>`;
     setTimeout(() => { window.print(); document.getElementById('printArea').style.display='none'; }, 300);
+  };
+
+  window.salvarPDFKids = function(index) {
+    const { jsPDF } = window.jspdf;
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || 'Crianca';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const idade= p.crianca?.idade || '-';
+    const resp = p.responsavel?.nome || '-';
+    const tel  = p.responsavel?.whatsapp || '-';
+    const plano= p.responsavel?.plano || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const s    = p.saudeGeral    || {};
+    const sb   = p.saudeBucal   || {};
+    const al   = p.alimentacao  || {};
+    const mc   = p.mundoCrianca || {};
+    const co   = p.comportamento|| {};
+    const av   = p.avaliacao    || {};
+    const fmt  = v => v || '-';
+    const fmtArr = arr => Array.isArray(arr) && arr.length ? arr.join(', ') : '-';
+
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const W = 210; let y = 0;
+
+    // Header
+    doc.setFillColor(10,191,188); doc.rect(0,0,W,32,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(22); doc.setFont('helvetica','bold');
+    doc.text('NEODONTO Kids',14,14);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text('Ficha de Anamnese Infantil',14,21);
+    doc.text('Emitida em: '+new Date().toLocaleString('pt-BR'),14,27); y=42;
+
+    function secao(titulo, linhas) {
+      if(y>260){doc.addPage();y=20;}
+      doc.setTextColor(10,191,188); doc.setFontSize(10); doc.setFont('helvetica','bold');
+      doc.text(titulo,14,y);
+      doc.setDrawColor(10,191,188); doc.setLineWidth(0.3); doc.line(14,y+2,W-14,y+2); y+=8;
+      doc.setTextColor(50,50,50); doc.setFontSize(9); doc.setFont('helvetica','normal');
+      linhas.forEach(([label, val]) => {
+        if(!val || val==='-') return;
+        if(y>270){doc.addPage();y=20;}
+        doc.setFont('helvetica','bold'); doc.text(label+':',14,y);
+        doc.setFont('helvetica','normal');
+        const lines = doc.splitTextToSize(String(val), W-65);
+        doc.text(lines,60,y); y+=6*lines.length;
+      });
+      y+=4;
+    }
+
+    secao('CRIANÇA', [
+      ['Nome', nome], ['Nascimento', nasc], ['Idade', idade],
+      ['Sexo', p.crianca?.sexo], ['Escola', p.crianca?.escola]
+    ]);
+    secao('RESPONSÁVEL', [
+      ['Nome', resp], ['Parentesco', p.responsavel?.parentesco],
+      ['WhatsApp', tel], ['Plano', plano]
+    ]);
+    secao('SAÚDE GERAL', [
+      ['Condições', fmtArr(s.condicoes)],
+      ['Alergia med.', s.alergiaMedicamento==='Sim' ? 'Sim — '+fmt(s.alergiaMedDesc) : 'Não'],
+      ['Alergia látex', fmt(s.alergiaLatex)],
+      ['Outras alergias', s.outrasAlergias],
+      ['Medicamentos', s.tomaMedicamento==='Sim' ? fmt(s.medicamentos) : 'Não toma'],
+      ['Acomp. médico', s.acompanhamentoMedico]
+    ]);
+    secao('SAÚDE BUCAL', [
+      ['Já foi ao dentista', sb.jaDentista],
+      ['Frequência escovação', sb.frequenciaEscovacao],
+      ['Ajuda na escovação', sb.ajudaEscovacao],
+      ['Hábitos bucais', fmtArr(sb.habitosBucais)],
+      ['Queixa principal', sb.queixaPrincipal]
+    ]);
+    secao('ALIMENTAÇÃO', [
+      ['Comidas favoritas', fmtArr(al.comidaFavorita)],
+      ['Frequência doces', al.frequenciaDoces],
+      ['Refrigerante', al.refrigerante],
+      ['Come na cama', al.comeNaCama]
+    ]);
+    secao('MUNDO DA CRIANÇA', [
+      ['Brincadeiras', fmtArr(mc.brincadeiras)],
+      ['Personagens', fmtArr(mc.personagens)],
+      ['Cor favorita', mc.corFavorita],
+      ['Animal favorito', mc.animalFavorito]
+    ]);
+    secao('COMPORTAMENTO', [
+      ['Sentimento hoje', co.sentimentoHoje],
+      ['Reação a novidades', co.reacaoNova],
+      ['Conforto', fmtArr(co.confortoOptions)],
+      ['Observações', co.observacoes]
+    ]);
+    secao('AVALIAÇÃO', [
+      ['Como soube', av.comoSoube],
+      ['Estrelas', av.estrelas ? av.estrelas+'/5' : '-'],
+      ['Mensagem à equipe', av.mensagemEquipe]
+    ]);
+
+    // Footer
+    const pages = doc.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      doc.setFontSize(8); doc.setTextColor(180,180,180);
+      doc.text('NEODONTO Odontologia — Goiânia, GO | (62) 4106-1198',14,290);
+      doc.text('Página '+i+' de '+pages, W-30,290);
+    }
+    doc.save('anamnese-kids-'+nome.split(' ')[0].toLowerCase()+'.pdf');
   };
 
   window.fecharModal = function(e) {
