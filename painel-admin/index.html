@@ -351,7 +351,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
   window.carregarDados = async function() {
     document.getElementById('tableArea').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando fichas...</div>`;
     try {
-      const q    = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
+      const q    = query(collection(db, 'anamneses'), orderBy('criadoEm', 'desc'));
       const snap = await getDocs(q);
       todosPacientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderizarPacientes(todosPacientes);
