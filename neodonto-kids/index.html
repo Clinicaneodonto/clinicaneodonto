@@ -1197,24 +1197,22 @@
   });
 
   // ---- EMOJI CARDS click toggle ----
-  document.querySelectorAll('.emoji-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const inp = card.querySelector('input');
+  document.querySelectorAll('.emoji-card input').forEach(inp => {
+    inp.addEventListener('change', () => {
       if (inp.type === 'radio') {
-        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => r.closest('.emoji-card').classList.remove('selected'));
-        card.classList.add('selected');
+        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
+          r.closest('.emoji-card').classList.remove('selected');
+        });
+        inp.closest('.emoji-card').classList.add('selected');
       } else {
-        card.classList.toggle('selected');
+        inp.closest('.emoji-card').classList.toggle('selected', inp.checked);
       }
     });
   });
 
-  // Sync emoji card on radio change
-  document.querySelectorAll('.emoji-card input[type="radio"]').forEach(inp => {
-    inp.addEventListener('change', () => {
-      document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => r.closest('.emoji-card').classList.remove('selected'));
-      inp.closest('.emoji-card').classList.add('selected');
-    });
+  // Inicializa estado selecionado
+  document.querySelectorAll('.emoji-card input:checked').forEach(inp => {
+    inp.closest('.emoji-card').classList.add('selected');
   });
 
   // ---- CHECK ITEMS highlight ----
