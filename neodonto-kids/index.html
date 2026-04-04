@@ -1220,6 +1220,23 @@
       }
     });
   });
+  // Force visual no touch
+  document.querySelectorAll('.emoji-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const inp = card.querySelector('input');
+      if (!inp) return;
+      if (inp.type === 'radio') {
+        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
+          r.closest('.emoji-card').classList.remove('selected');
+        });
+        card.classList.add('selected');
+      } else {
+        setTimeout(() => {
+          card.classList.toggle('selected', inp.checked);
+        }, 10);
+      }
+    });
+  });
 
   // Inicializa estado selecionado
   document.querySelectorAll('.emoji-card input:checked').forEach(inp => {
