@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta property="og:title" content="Ficha Infantil | NEODONTO Odontologia" /><meta property="og:description" content="Ficha de anamnese infantil da NEODONTO. Preencha antes da consulta do seu filho!" /><meta property="og:image" content="https://clinicaneodonto.com.br/og-neodonto.png" /><meta property="og:url" content="https://clinicaneodonto.com.br/anamnese/kids" /><meta property="og:image" content="https://clinicaneodonto.com.br/og-neodonto.png" /><meta property="og:url" content="https://clinicaneodonto.com.br/anamnese/kids" /><meta property="og:title" content="Ficha Infantil | NEODONTO Odontologia" /><meta property="og:description" content="Ficha de anamnese infantil da NEODONTO. Preencha antes da consulta do seu filho!" /><meta property="og:image" content="https://clinicaneodonto.com.br/og-neodonto.png" /><meta property="og:url" content="https://clinicaneodonto.com.br/anamnese/kids" />
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NEODONTO Kids – Ficha da Criança</title>
@@ -348,10 +348,10 @@
       border-color: var(--tiffany-mid);
     }
 
-    .emoji-card.selected {
-      border-color: var(--tiffany);
-      background: var(--tiffany-light);
-      transform: scale(1.05);
+    .emoji-card.selected,
+    .emoji-card:has(input:checked) {
+      border-color: var(--tiffany) !important;
+      background: var(--tiffany-light) !important;
       box-shadow: 0 4px 14px rgba(10,191,188,0.18);
     }
 
@@ -367,9 +367,7 @@
       color: var(--azul);
     }
 
-    .emoji-card input {
-      display: none;
-    }
+    .emoji-card input { position: absolute; opacity: 0; width: 0; height: 0; }
 
     /* STAR RATING */
     .star-row {
@@ -1197,24 +1195,22 @@
   });
 
   // ---- EMOJI CARDS click toggle ----
-  document.querySelectorAll('.emoji-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const inp = card.querySelector('input');
+  document.querySelectorAll('.emoji-card input').forEach(inp => {
+    inp.addEventListener('change', () => {
       if (inp.type === 'radio') {
-        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => r.closest('.emoji-card').classList.remove('selected'));
-        card.classList.add('selected');
+        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
+          r.closest('.emoji-card').classList.remove('selected');
+        });
+        inp.closest('.emoji-card').classList.add('selected');
       } else {
-        card.classList.toggle('selected');
+        inp.closest('.emoji-card').classList.toggle('selected', inp.checked);
       }
     });
   });
 
-  // Sync emoji card on radio change
-  document.querySelectorAll('.emoji-card input[type="radio"]').forEach(inp => {
-    inp.addEventListener('change', () => {
-      document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => r.closest('.emoji-card').classList.remove('selected'));
-      inp.closest('.emoji-card').classList.add('selected');
-    });
+  // Inicializa estado selecionado
+  document.querySelectorAll('.emoji-card input:checked').forEach(inp => {
+    inp.closest('.emoji-card').classList.add('selected');
   });
 
   // ---- CHECK ITEMS highlight ----
@@ -1359,6 +1355,3 @@
 </script>
 </body>
 </html>
-
-
-
