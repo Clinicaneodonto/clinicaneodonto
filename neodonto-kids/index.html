@@ -1197,15 +1197,24 @@
   });
 
   // ---- EMOJI CARDS click toggle ----
-  document.querySelectorAll('.emoji-card input').forEach(inp => {
-    inp.addEventListener('change', () => {
+  document.querySelectorAll('.emoji-card').forEach(card => {
+    const clone = card.cloneNode(true);
+    card.parentNode.replaceChild(clone, card);
+  });
+  document.querySelectorAll('.emoji-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const inp = card.querySelector('input');
+      if (!inp) return;
       if (inp.type === 'radio') {
-        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
+        document.querySelectorAll('input[name='+inp.name+']').forEach(r => {
+          r.checked = false;
           r.closest('.emoji-card').classList.remove('selected');
         });
-        inp.closest('.emoji-card').classList.add('selected');
+        inp.checked = true;
+        card.classList.add('selected');
       } else {
-        inp.closest('.emoji-card').classList.toggle('selected', inp.checked);
+        inp.checked = !inp.checked;
+        card.classList.toggle('selected', inp.checked);
       }
     });
   });
