@@ -358,16 +358,15 @@
       font-weight: 900;
     }
     .emoji-card:has(input:checked) {
-      background: #0abfbc !important;
-      background: var(--tiffany-light) !important;
-      box-shadow:outline: 3px solid var(--tiffany); 0 4px 14px rgba(10,191,188,0.25);
-    }.emoji-card:has(input:checked) .emoji-label {
-      color: #ffffff;
-      font-weight: 900;
-    }
-    }
-
-    .emoji-card .emoji-big {
+  border-color: var(--tiffany) !important;
+  background: var(--tiffany-light) !important;
+  box-shadow: 0 4px 14px rgba(10,191,188,0.25);
+}
+.emoji-card:has(input:checked) .emoji-label {
+  color: var(--tiffany);
+  font-weight: 900;
+}
+     .emoji-card .emoji-big {
       font-size: 2rem;
       display: block;
       margin-bottom: 4px;
