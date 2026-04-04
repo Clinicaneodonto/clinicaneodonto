@@ -365,7 +365,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
   function atualizarStats(lista) {
     document.getElementById('totalPacientes').textContent = lista.length;
     const hoje = new Date().toDateString();
-    document.getElementById('totalHoje').textContent      = lista.filter(p => p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString() === hoje).length;
+    document.getElementById('totalHoje').textContent      = lista.filter(p => p.enviadoEm && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString() === hoje).length;
     document.getElementById('totalAlergias').textContent  = lista.filter(p => p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias')).length;
     document.getElementById('totalMedo').textContent      = lista.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso') || p.ansiedade.includes('medo') || p.ansiedade.includes('Fobia'))).length;
   }
@@ -380,7 +380,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       const nome  = p.dadosPessoais?.nome || '-';
       const tel   = p.dadosPessoais?.telefone || '-';
       const motivo = p.motivoConsulta || '-';
-      const data  = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '-';
+      const data  = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleDateString('pt-BR') : '-';
       const temAlergia = p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias');
       const temMedo    = p.ansiedade && (p.ansiedade.includes('ansioso') || p.ansiedade.includes('medo') || p.ansiedade.includes('Fobia'));
       const selfie     = p.dadosPessoais?.selfie;
@@ -603,7 +603,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const nascRaw= p.dadosPessoais?.nascimento || '';
     const nasc   = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
     const tel    = p.dadosPessoais?.telefone || '-';
-    const data   = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const data   = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
 
     function tagList(arr, cls='') {
       if (!arr||arr.length===0) return `<span class="m-empty">Nenhum informado</span>`;
@@ -658,7 +658,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       renderizarKids(todosKids);
       const hoje = new Date().toDateString();
       document.getElementById('totalKids').textContent = todosKids.length;
-      document.getElementById('kidsHoje').textContent = todosKids.filter(p => p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje).length;
+      document.getElementById('kidsHoje').textContent = todosKids.filter(p => p.enviadoEm && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString()===hoje).length;
       document.getElementById('kidsAlergias').textContent = todosKids.filter(p => p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias')).length;
       document.getElementById('kidsMedo').textContent = todosKids.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia'))).length;
     } catch(e) {
@@ -677,7 +677,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
       const nome = p.crianca?.nome || p.dadosPessoais?.nome || p.nomeCrianca || '-';
       const resp = p.responsavel?.nome || p.dadosPessoais?.responsavel || p.nomeResponsavel || '-';
       const tel  = p.responsavel?.whatsapp || p.dadosPessoais?.telefone || p.whatsappResponsavel || '-';
-      const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleDateString('pt-BR') : (p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '-');
+      const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleDateString('pt-BR') : (p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleDateString('pt-BR') : '-');
       const temAlergia = (p.saudeGeral?.alergiaMedicamento === 'Sim') || (p.saudeGeral?.alergiaLatex === 'Sim') || (p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias'));
       return `<tr style="cursor:pointer" onclick="abrirModalKids(${idx})">
         <td><div class="td-paciente"><div class="avatar-placeholder">👶</div><div class="td-name">${nome}</div></div></td>
@@ -730,7 +730,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const resp = p.responsavel?.nome || p.nomeResponsavel || '-';
     const tel  = p.responsavel?.whatsapp || p.whatsappResponsavel || '-';
     const plano= p.responsavel?.plano || '-';
-    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : (p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleString('pt-BR') : '-');
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : (p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-');
 
     function tag(v, cls='') {
       if (!v || v === '-') return `<span class="m-empty">Não informado</span>`;
@@ -863,7 +863,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const email= p.dadosPessoais?.email || '-';
     const cpf  = p.dadosPessoais?.cpf || '-';
     const resp = p.dadosPessoais?.responsavel || '-';
-    const data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const data = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
     const selfie = p.dadosPessoais?.selfie;
     const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias');
     function tags(arr, cls='') {
@@ -912,7 +912,7 @@ td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
     const email= p.dadosPessoais?.email||'-';
     const cpf  = p.dadosPessoais?.cpf||'-';
     const resp = p.dadosPessoais?.responsavel||'-';
-    const data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const data = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
     const selfie = p.dadosPessoais?.selfie;
     const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias');
     const doc = new jsPDF({ unit:'mm', format:'a4' });
