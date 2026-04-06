@@ -214,6 +214,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="field"><label>E-mail</label><input type="email" id="c-email" placeholder="paciente@email.com"></div>
         </div>
         <div class="field"><label>Observações</label><input type="text" id="c-obs" placeholder="Plano de saúde, preferências..."></div>
+        <div class="field">
+          <label>Código de indicação (opcional)</label>
+          <input type="text" id="c-indicacao" placeholder="Ex: NEO140" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">Se o paciente foi indicado por alguém, informe o código NEO do indicador</div>
+        </div>
         <button class="btn-primary" onclick="cadastrar()">Cadastrar Paciente</button>
         <div class="msg-ok" id="c-ok">✅ Paciente cadastrado com sucesso!</div>
         <div class="msg-err" id="c-err"></div>
@@ -362,23 +367,35 @@ window.selecionarPaciente = (id) => {
   renderAtendimento();
 };
 
+function gerarCodigo(cpf) {
+  if(!cpf) return 'NEO???';
+  const nums = cpf.replace(/\D/g,'');
+  return 'NEO' + nums.slice(-3);
+}
+
 function renderAtendimento() {
   const p = pacAtual;
   const n = nivel(p.pontos||0);
+  const cod = gerarCodigo(p.cpf);
   document.getElementById('atend-header').innerHTML=`
     <div class="patient-header">
       <div class="avatar ${n}" style="width:52px;height:52px;font-size:18px">${initials(p.nome)}</div>
       <div>
         <div style="font-size:17px;font-weight:600">${p.nome}</div>
         <div style="font-size:13px;color:var(--muted)">${p.telefone||''}</div>
-        <div style="margin-top:6px"><span class="badge ${n}">${nivelLabel(p.pontos||0)}</span></div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+          <span class="badge ${n}">${nivelLabel(p.pontos||0)}</span>
+          <span style="background:#1a2e2e;color:#c9a84c;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px">${cod}</span>
+        </div>
       </div>
       <div class="pts-big">${p.pontos||0}<div style="font-size:12px;color:var(--muted);font-weight:400">pontos</div></div>
     </div>`;
 
   const consultas = p.totalConsultas||0;
   const proxBonus = 5 - (consultas%5);
+  const pts = p.pontos||0;
   document.getElementById('atend-actions').innerHTML=`
+    <div style="grid-column:1/-1;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ganhar pontos</div>
     <button class="action-btn" onclick="registrarConsulta()">
       <div class="pts">+100</div><div class="lbl">Consulta</div>
       <div class="sub">${consultas} realiz. • bônus em ${proxBonus}</div>
@@ -391,11 +408,31 @@ function renderAtendimento() {
     </button>
     <button class="action-btn" onclick="addPts('Bônus de aniversário',100)">
       <div class="pts">+100</div><div class="lbl">Aniversário</div>
+    </button>
+    <div style="grid-column:1/-1;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin:8px 0 4px">Resgatar prêmios</div>
+    <button class="action-btn ${pts<300?'locked':''}" onclick="resgatar('🎁 Kit dental (escova + pasta)',300)" style="${pts<300?'opacity:.45;cursor:not-allowed':'border-color:#c9a84c'}">
+      <div class="pts" style="color:#c9a84c">300</div><div class="lbl">🎁 Kit dental</div>
+      <div class="sub">${pts>=300?'Disponível!':'Faltam '+(300-pts)+' pts'}</div>
+    </button>
+    <button class="action-btn ${pts<500?'locked':''}" onclick="resgatar('🦷 Raio-X',500)" style="${pts<500?'opacity:.45;cursor:not-allowed':'border-color:#c9a84c'}">
+      <div class="pts" style="color:#c9a84c">500</div><div class="lbl">🦷 Raio-X</div>
+      <div class="sub">${pts>=500?'Disponível!':'Faltam '+(500-pts)+' pts'}</div>
+    </button>
+    <button class="action-btn ${pts<1000?'locked':''}" onclick="resgatar('🪥 Limpeza',1000)" style="${pts<1000?'opacity:.45;cursor:not-allowed':'border-color:#c9a84c'}">
+      <div class="pts" style="color:#c9a84c">1000</div><div class="lbl">🪥 Limpeza</div>
+      <div class="sub">${pts>=1000?'Disponível!':'Faltam '+(1000-pts)+' pts'}</div>
+    </button>
+    <button class="action-btn ${pts<3000?'locked':''}" onclick="resgatar('✨ Clareamento',3000)" style="${pts<3000?'opacity:.45;cursor:not-allowed':'border-color:#c9a84c'}">
+      <div class="pts" style="color:#c9a84c">3000</div><div class="lbl">✨ Clareamento</div>
+      <div class="sub">${pts>=3000?'Disponível!':'Faltam '+(3000-pts)+' pts'}</div>
     </button>`;
 
-  const hist = (p.historico||[]).slice().reverse().slice(0,6);
+  const hist = (p.historico||[]).slice().reverse().slice(0,8);
   document.getElementById('atend-hist').innerHTML = hist.length
-    ? hist.map(h=>`<div class="hist-item"><div><div class="hist-desc">${h.desc}</div><div class="hist-date">${h.data}</div></div><div class="hist-pts">+${h.pts}</div></div>`).join('')
+    ? hist.map(h=>`<div class="hist-item">
+        <div><div class="hist-desc">${h.desc}</div><div class="hist-date">${h.data}</div></div>
+        <div class="hist-pts" style="color:${h.pts<0?'var(--danger)':'var(--tiffany)'}">${h.pts>0?'+':''}${h.pts}</div>
+      </div>`).join('')
     : '<div style="color:var(--muted);font-size:13px">Nenhuma movimentação ainda.</div>';
 }
 
@@ -430,7 +467,24 @@ window.registrarConsulta = async () => {
   renderAtendimento();
 };
 
-window.previewValor = () => {
+window.resgatar = async (premio, custo) => {
+  if(!pacAtual) return;
+  const pts = pacAtual.pontos||0;
+  if(pts < custo){ alert(`Pontos insuficientes. Necessário: ${custo} pts. Disponível: ${pts} pts.`); return; }
+  if(!confirm(`Confirmar resgate de "${premio}" por ${custo} pontos?`)) return;
+  const novoTotal = pts - custo;
+  const data = new Date().toLocaleDateString('pt-BR');
+  await updateDoc(doc(db,'fidelidade',pacAtual.id),{
+    pontos: novoTotal,
+    historico: arrayUnion({desc:`Resgate: ${premio}`, pts: -custo, data})
+  });
+  const idx=pacientes.findIndex(x=>x.id===pacAtual.id);
+  pacientes[idx].pontos=novoTotal;
+  pacientes[idx].historico=[...(pacientes[idx].historico||[]),{desc:`Resgate: ${premio}`,pts:-custo,data}];
+  pacAtual=pacientes[idx];
+  alert(`✅ Resgate de "${premio}" confirmado! ${custo} pontos descontados.`);
+  renderAtendimento();
+};
   const v=parseFloat(document.getElementById('valor-input').value||0);
   document.getElementById('preview-val').textContent=Math.floor(v/10)+' pts';
 };
@@ -448,22 +502,57 @@ window.addValorGasto = async () => {
 window.cadastrar = async () => {
   const nome=document.getElementById('c-nome').value.trim();
   const tel=document.getElementById('c-tel').value.trim();
+  const cpf=document.getElementById('c-cpf').value.trim();
+  const codIndicacao=document.getElementById('c-indicacao').value.trim().toUpperCase();
   const ok=document.getElementById('c-ok');
   const err=document.getElementById('c-err');
   ok.style.display='none';err.style.display='none';
   if(!nome||!tel){err.textContent='Nome e telefone são obrigatórios.';err.style.display='block';return;}
+
+  // Verificar código de indicação
+  let indicadorId = null;
+  if(codIndicacao) {
+    const indicador = pacientes.find(p => gerarCodigo(p.cpf) === codIndicacao);
+    if(!indicador) {
+      err.textContent='Código de indicação não encontrado. Verifique e tente novamente.';
+      err.style.display='block'; return;
+    }
+    indicadorId = indicador.id;
+  }
+
   try {
+    const data = new Date().toLocaleDateString('pt-BR');
+    const histInicial = [{desc:'🎉 Boas-vindas ao programa Sorriso em Dia!', pts:100, data}];
+    if(codIndicacao && indicadorId) histInicial.push({desc:`🤝 Bônus por indicação (${codIndicacao})`, pts:50, data});
+
     await addDoc(collection(db,'fidelidade'),{
-      nome,telefone:tel,
+      nome, telefone:tel,
       nascimento:document.getElementById('c-nasc').value||null,
-      cpf:document.getElementById('c-cpf').value||null,
+      cpf: cpf||null,
       email:document.getElementById('c-email').value||null,
       obs:document.getElementById('c-obs').value||null,
-      pontos:0,totalConsultas:0,historico:[],criadoEm:serverTimestamp()
+      codigoIndicacao: codIndicacao||null,
+      pontos: codIndicacao && indicadorId ? 150 : 100,
+      totalConsultas:0,
+      historico: histInicial,
+      criadoEm:serverTimestamp()
     });
+
+    // Dar +200 pts para quem indicou
+    if(indicadorId) {
+      const indicador = pacientes.find(p=>p.id===indicadorId);
+      const novoPts = (indicador.pontos||0) + 200;
+      await updateDoc(doc(db,'fidelidade',indicadorId),{
+        pontos: novoPts,
+        historico: arrayUnion({desc:`👥 Indicação de ${nome}`, pts:200, data})
+      });
+    }
+
     ok.style.display='block';
-    ['c-nome','c-tel','c-nasc','c-cpf','c-email','c-obs'].forEach(id=>document.getElementById(id).value='');
-    setTimeout(()=>{ok.style.display='none';showTab('atendimento');},1600);
+    ['c-nome','c-tel','c-nasc','c-cpf','c-email','c-obs','c-indicacao'].forEach(id=>document.getElementById(id).value='');
+    if(codIndicacao && indicadorId) ok.textContent=`✅ Paciente cadastrado! +150 pts para ${nome} e +200 pts para o indicador.`;
+    else ok.textContent='✅ Paciente cadastrado com sucesso! +100 pts de boas-vindas.';
+    setTimeout(()=>{ok.style.display='none';ok.textContent='✅ Paciente cadastrado com sucesso!';showTab('atendimento');},2500);
   } catch(e){err.textContent='Erro ao cadastrar.';err.style.display='block';}
 };
 

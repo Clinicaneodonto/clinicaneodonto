@@ -360,12 +360,27 @@
       </div>
     </div>
     <div class="progress-max" id="prog-max" style="display:none">🏆 Você atingiu o nível máximo!</div>
+
+    <!-- Código de indicação -->
+    <div style="display:none;align-items:center;justify-content:space-between;margin-top:14px;padding:12px 16px;background:#1a2e2e;border-radius:12px" id="cod-neo-wrap">
+      <div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Seu código de indicação</div>
+        <div style="font-size:22px;font-weight:700;color:#c9a84c;letter-spacing:2px" id="codigo-neo">NEO000</div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);text-align:right;max-width:120px;line-height:1.4">Compartilhe e ganhe +200 pts por indicação</div>
+    </div>
   </div>
 
   <!-- Benefícios do nível -->
   <div class="section fade-up-2">
     <div class="section-title">Seus benefícios</div>
     <div class="benefit-grid" id="benefits-grid"></div>
+  </div>
+
+  <!-- Resgates -->
+  <div class="section fade-up-3">
+    <div class="section-title">Seus resgates disponíveis</div>
+    <div class="earn-list" id="resgates-list"></div>
   </div>
 
   <!-- Como ganhar pontos -->
@@ -521,6 +536,19 @@ function renderApp() {
   document.getElementById('app-nome').textContent = nome;
   document.getElementById('app-pontos').textContent = pts.toLocaleString('pt-BR');
 
+  // Código NEO
+  const cpfNums = (p.cpf||'').replace(/\D/g,'');
+  const codNeo = cpfNums.length >= 3 ? 'NEO' + cpfNums.slice(-3) : null;
+  const codEl = document.getElementById('codigo-neo');
+  if(codEl) {
+    if(codNeo) {
+      codEl.textContent = codNeo;
+      document.getElementById('cod-neo-wrap').style.display = 'flex';
+    } else {
+      document.getElementById('cod-neo-wrap').style.display = 'none';
+    }
+  }
+
   // Badge nível
   const badge = document.getElementById('app-nivel-badge');
   badge.className = `nivel-badge ${nv}`;
@@ -582,6 +610,27 @@ function renderApp() {
       <div class="desc">${b.desc}</div>
     </div>
   `).join('');
+
+  // Resgates
+  const resgatesData = [
+    {icon:'🎁', nome:'Kit dental (escova + pasta)', custo:300},
+    {icon:'🦷', nome:'Raio-X', custo:500},
+    {icon:'🪥', nome:'Limpeza', custo:1000},
+    {icon:'✨', nome:'Clareamento', custo:3000},
+  ];
+  document.getElementById('resgates-list').innerHTML = resgatesData.map(r => {
+    const disponivel = pts >= r.custo;
+    return `<div class="earn-item" style="${disponivel?'border-color:#c9a84c;background:#fdf6e3':'opacity:.55'}">
+      <div class="earn-icon">${r.icon}</div>
+      <div class="earn-info">
+        <div class="earn-title">${r.nome}</div>
+        <div class="earn-desc" style="color:${disponivel?'#a07a20':'var(--muted)'}">
+          ${disponivel?'✅ Disponível! Fale na recepção':'Faltam '+(r.custo-pts)+' pontos'}
+        </div>
+      </div>
+      <div class="earn-pts" style="color:${disponivel?'#c9a84c':'var(--muted)'}">${r.custo}</div>
+    </div>`;
+  }).join('');
 
   // Exibe app
   document.getElementById('login-screen').style.display = 'none';
