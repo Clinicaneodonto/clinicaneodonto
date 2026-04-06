@@ -194,9 +194,11 @@
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;
   }
+  .nivel-badge.bronze { background: #f5ede0; color: #a0632a; }
   .nivel-badge.prata { background: var(--prata-light); color: var(--prata); }
   .nivel-badge.ouro { background: var(--gold-light); color: #a07a20; }
   .nivel-badge.diamante { background: var(--tiffany-light); color: var(--tiffany-dark); }
+  .nivel-badge.neodonto { background: #1a2e2e; color: #c9a84c; }
 
   .progress-section { margin-top: 4px; }
   .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
@@ -521,16 +523,28 @@ window.buscarPaciente = async () => {
   }
 };
 
-function nivel(pts) {
-  if(pts >= 1501) return 'diamante';
-  if(pts >= 501) return 'ouro';
-  return 'prata';
+const NIVEIS = ['bronze','prata','ouro','diamante','neodonto'];
+const NIVEL_PTS = {bronze:0, prata:500, ouro:1000, diamante:3000, neodonto:5000};
+const NIVEL_LABEL = {bronze:'🥉 Bronze', prata:'🥈 Prata', ouro:'🥇 Ouro', diamante:'◆ Diamante', neodonto:'👑 Neodonto'};
+const NIVEL_PROX = {bronze:'prata', prata:'ouro', ouro:'diamante', diamante:'neodonto', neodonto:null};
+
+function nivelPorPts(pts) {
+  if(pts>=5000) return 'neodonto';
+  if(pts>=3000) return 'diamante';
+  if(pts>=1000) return 'ouro';
+  if(pts>=500)  return 'prata';
+  return 'bronze';
+}
+function nivelEfetivo(p) {
+  const porPts = nivelPorPts(p.pontos||0);
+  const maximo = p.nivelMaximo || 'bronze';
+  return NIVEIS[Math.max(NIVEIS.indexOf(porPts), NIVEIS.indexOf(maximo))];
 }
 
 function renderApp() {
   const p = pacienteAtual;
   const pts = p.pontos || 0;
-  const nv = nivel(pts);
+  const nv = nivelEfetivo(p);
   const nome = p.nome?.split(' ')[0] || 'Paciente';
 
   document.getElementById('app-nome').textContent = nome;
@@ -552,7 +566,7 @@ function renderApp() {
   // Badge nível
   const badge = document.getElementById('app-nivel-badge');
   badge.className = `nivel-badge ${nv}`;
-  badge.textContent = nv === 'diamante' ? '◆ Diamante' : nv === 'ouro' ? '★ Ouro' : '⬜ Prata';
+  badge.textContent = NIVEL_LABEL[nv];
 
   // Progresso
   const progFill = document.getElementById('prog-fill');
@@ -560,45 +574,53 @@ function renderApp() {
   const progFaltam = document.getElementById('prog-faltam');
   const progMax = document.getElementById('prog-max');
   const progSection = document.getElementById('progress-section');
+  const prox = NIVEL_PROX[nv];
 
-  if(nv === 'diamante') {
+  if(!prox) {
     progSection.style.display = 'none';
     progMax.style.display = 'block';
   } else {
     progSection.style.display = 'block';
     progMax.style.display = 'none';
-    if(nv === 'prata') {
-      const pct = Math.min(Math.round(pts/501*100), 100);
-      progLabel.textContent = 'Progresso para Ouro ★';
-      progFaltam.textContent = `faltam ${501-pts} pts`;
-      setTimeout(() => { progFill.style.width = pct + '%'; }, 100);
-    } else {
-      const pct = Math.min(Math.round((pts-501)/1000*100), 100);
-      progLabel.textContent = 'Progresso para Diamante ◆';
-      progFaltam.textContent = `faltam ${1501-pts} pts`;
-      setTimeout(() => { progFill.style.width = pct + '%'; }, 100);
-    }
+    const ptsFim = NIVEL_PTS[prox];
+    const ptsIni = NIVEL_PTS[nv];
+    const pct = Math.min(Math.round((pts - ptsIni) / (ptsFim - ptsIni) * 100), 100);
+    progLabel.textContent = `Progresso para ${NIVEL_LABEL[prox]}`;
+    progFaltam.textContent = `faltam ${ptsFim - pts} pts`;
+    setTimeout(() => { progFill.style.width = pct + '%'; }, 100);
   }
 
   // Benefícios
   const allBenefits = {
+    bronze: [
+      { icon: '🎉', title: 'Boas-vindas', desc: '+100 pts ao se cadastrar', locked: false },
+      { icon: '🎂', title: 'Aniversário', desc: '+100 pts no seu mês', locked: false },
+      { icon: '🥈', title: 'Próximo: Prata', desc: 'Acumule 500 pts', locked: true },
+      { icon: '🥇', title: 'Próximo: Ouro', desc: 'Acumule 1.000 pts', locked: true },
+    ],
     prata: [
       { icon: '💰', title: '5% de desconto', desc: 'Em limpezas e profilaxia', locked: false },
       { icon: '🔄', title: 'Retorno gratuito', desc: 'Consulta de retorno sem custo', locked: false },
-      { icon: '⭐', title: '10% de desconto', desc: 'Disponível no nível Ouro', locked: nv === 'prata' },
-      { icon: '◆', title: 'Clareamento VIP', desc: 'Disponível no nível Diamante', locked: nv !== 'diamante' },
+      { icon: '🥇', title: 'Próximo: Ouro', desc: 'Acumule 1.000 pts', locked: true },
+      { icon: '◆', title: 'Próximo: Diamante', desc: 'Acumule 3.000 pts', locked: true },
     ],
     ouro: [
       { icon: '💰', title: '10% de desconto', desc: 'Em todos os procedimentos', locked: false },
       { icon: '📅', title: 'Agendamento prioritário', desc: 'Fila preferencial na clínica', locked: false },
       { icon: '✨', title: 'Clareamento', desc: 'Com desconto especial Ouro', locked: false },
-      { icon: '◆', title: 'Benefícios Diamante', desc: 'Disponível no nível Diamante', locked: true },
+      { icon: '◆', title: 'Próximo: Diamante', desc: 'Acumule 3.000 pts', locked: true },
     ],
     diamante: [
       { icon: '💰', title: '15% de desconto', desc: 'Em todos os procedimentos', locked: false },
       { icon: '◆', title: 'Acesso VIP', desc: 'Atendimento e brindes exclusivos', locked: false },
       { icon: '🦷', title: 'Check-up anual', desc: 'Consulta de revisão gratuita', locked: false },
-      { icon: '🎁', title: 'Surpresas especiais', desc: 'Mimos e benefícios exclusivos', locked: false },
+      { icon: '👑', title: 'Próximo: Neodonto', desc: 'Acumule 5.000 pts', locked: true },
+    ],
+    neodonto: [
+      { icon: '💰', title: '20% de desconto', desc: 'Em todos os procedimentos', locked: false },
+      { icon: '👑', title: 'Membro VIP Neodonto', desc: 'Status máximo exclusivo', locked: false },
+      { icon: '🎁', title: 'Brindes exclusivos', desc: 'Surpresas especiais todo mês', locked: false },
+      { icon: '🦷', title: 'Check-up semestral', desc: 'Duas consultas gratuitas por ano', locked: false },
     ],
   };
 
