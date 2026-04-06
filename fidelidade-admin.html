@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neodonto — Painel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --tiffany:#0abfbc;--tiffany-dark:#089a97;--tiffany-light:#e6fafa;
+  --gold:#c9a84c;--gold-light:#fdf6e3;--prata:#8a9bb0;--prata-light:#f0f4f8;
+  --bg:#f4fafa;--text:#1a2e2e;--muted:#6b8282;--border:#d6ebeb;
+  --danger:#e05c5c;--danger-light:#fee8e8;--success:#2ecc71;--success-light:#e8f8ef;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* AUTH */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a2e2e,#0a1f1f);}
+.auth-card{background:white;border-radius:20px;padding:40px 36px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.auth-logo{text-align:center;margin-bottom:24px;}
+.auth-logo svg{width:180px;height:58px;}
+.auth-role{text-align:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:20px;font-weight:600;}
+.field{margin-bottom:14px;}
+.field label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
+.field input,.field select{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:border .2s;background:white;}
+.field input:focus{border-color:var(--tiffany);}
+.btn-primary{width:100%;background:#1a2e2e;color:white;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;}
+.btn-primary:hover{background:#0a1f1f;}
+.err{color:var(--danger);font-size:13px;margin-top:10px;display:none;}
+
+/* LAYOUT */
+#app{display:none;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:#1a2e2e;min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;}
+.sidebar-logo{padding:24px 20px 20px;}
+.sidebar-logo svg{width:160px;height:52px;}
+.sidebar-role{font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;padding:0 20px 20px;font-weight:600;}
+.sidebar-nav{flex:1;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:13px 20px;color:rgba(255,255,255,.65);font-size:14px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:white;}
+.nav-item.active{background:rgba(10,191,188,.12);color:#0abfbc;border-left-color:#0abfbc;}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+.sidebar-footer{padding:20px;}
+.btn-logout-side{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-logout-side:hover{background:rgba(224,92,92,.15);color:#e05c5c;border-color:rgba(224,92,92,.3);}
+
+/* MAIN */
+.main-content{margin-left:220px;flex:1;padding:28px 32px;min-height:100vh;}
+.page-title{font-size:22px;font-weight:600;margin-bottom:24px;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:white;border-radius:14px;border:1px solid var(--border);padding:20px 22px;}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600;}
+.stat-value{font-size:30px;font-weight:700;color:var(--tiffany);}
+.stat-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* TABELA */
+.table-wrap{background:white;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-header h3{font-size:15px;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:12px 16px;text-align:left;background:var(--bg);border-bottom:1px solid var(--border);}
+td{padding:14px 16px;font-size:14px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--tiffany-light);}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+.badge.prata{background:var(--prata-light);color:var(--prata);}
+.badge.ouro{background:var(--gold-light);color:#a07a20;}
+.badge.diamante{background:var(--tiffany-light);color:var(--tiffany-dark);}
+
+/* BOTÕES */
+.btn-icon{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn-icon.edit:hover{border-color:var(--tiffany);color:var(--tiffany);}
+.btn-icon.del:hover{border-color:var(--danger);color:var(--danger);background:var(--danger-light);}
+.btn-add{background:var(--tiffany);color:white;border:none;border-radius:10px;padding:9px 18px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;}
+
+/* SEARCH */
+.search-bar{display:flex;gap:10px;margin-bottom:16px;}
+.search-bar input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:inherit;outline:none;}
+.search-bar input:focus{border-color:var(--tiffany);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;width:480px;max-height:90vh;overflow-y:auto;padding:28px;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-header h3{font-size:17px;font-weight:600;}
+.btn-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.msg-ok{color:var(--success);font-size:13px;margin-top:10px;display:none;}
+.msg-err{color:var(--danger);font-size:13px;margin-top:10px;display:none;}
+
+/* FILTROS */
+.filter-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.filter-btn{background:white;border:1.5px solid var(--border);border-radius:20px;padding:6px 16px;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.filter-btn.active{background:var(--tiffany);color:white;border-color:var(--tiffany);}
+
+/* RELATÓRIO */
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.rel-card{background:white;border-radius:14px;border:1px solid var(--border);padding:20px;}
+.rel-card h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;font-weight:600;}
+.rel-value{font-size:28px;font-weight:700;color:var(--text);}
+.rel-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* HIST GLOBAL */
+.hist-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hist-pts{font-weight:700;color:var(--tiffany);}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg viewBox="40 20 600 180" xmlns="http://www.w3.org/2000/svg">
+        <text x="228" y="152" text-anchor="end" font-family="Georgia,'Times New Roman',serif" font-size="82" font-weight="400" letter-spacing="-2" fill="#0abfbc">NEO</text>
+        <text x="234" y="152" text-anchor="start" font-family="Georgia,'Times New Roman',serif" font-size="58" font-weight="700" textLength="240" lengthAdjust="spacingAndGlyphs" fill="#0abfbc">DONTO</text>
+        <text x="234" y="108" text-anchor="start" font-family="Georgia,serif" font-size="15" textLength="192" lengthAdjust="spacingAndGlyphs" fill="#0abfbc">Odontologia</text>
+        <circle cx="434" cy="103" r="2.5" fill="#0abfbc"/><circle cx="445" cy="103" r="3.5" fill="#0abfbc"/>
+        <circle cx="457" cy="103" r="4.5" fill="#0abfbc"/><circle cx="471" cy="103" r="5.8" fill="#0abfbc"/>
+      </svg>
+    </div>
+    <div class="auth-role">⚙️ Painel Administrativo</div>
+    <div class="field"><label>E-mail</label><input type="email" id="email" placeholder="admin@neodonto.com.br"></div>
+    <div class="field"><label>Senha</label><input type="password" id="senha" onkeydown="if(event.key==='Enter')login()"></div>
+    <button class="btn-primary" onclick="login()">Acessar painel</button>
+    <div class="err" id="auth-err">E-mail ou senha incorretos.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <svg viewBox="40 20 600 180" xmlns="http://www.w3.org/2000/svg">
+        <text x="228" y="152" text-anchor="end" font-family="Georgia,'Times New Roman',serif" font-size="82" font-weight="400" letter-spacing="-2" fill="#0abfbc">NEO</text>
+        <text x="234" y="152" text-anchor="start" font-family="Georgia,'Times New Roman',serif" font-size="58" font-weight="700" textLength="240" lengthAdjust="spacingAndGlyphs" fill="#0abfbc">DONTO</text>
+        <text x="234" y="108" text-anchor="start" font-family="Georgia,serif" font-size="15" textLength="192" lengthAdjust="spacingAndGlyphs" fill="#0abfbc">Odontologia</text>
+        <circle cx="434" cy="103" r="2.5" fill="#0abfbc"/><circle cx="445" cy="103" r="3.5" fill="#0abfbc"/>
+        <circle cx="457" cy="103" r="4.5" fill="#0abfbc"/><circle cx="471" cy="103" r="5.8" fill="#0abfbc"/>
+      </svg>
+    </div>
+    <div class="sidebar-role">Admin</div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" onclick="showTab('dashboard')"><span class="icon">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showTab('pacientes')"><span class="icon">👥</span> Pacientes</div>
+      <div class="nav-item" onclick="showTab('historico')"><span class="icon">📋</span> Histórico</div>
+      <div class="nav-item" onclick="showTab('agenda')"><span class="icon">📅</span> Agenda</div>
+      <div class="nav-item" onclick="showTab('relatorio')"><span class="icon">💰</span> Relatório</div>
+    </div>
+    <div class="sidebar-footer">
+      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:8px;text-align:center" id="user-email"></div>
+      <button class="btn-logout-side" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div id="panel-dashboard" class="panel active">
+      <div class="page-title">Dashboard</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total pacientes</div><div class="stat-value" id="d-total">—</div></div>
+        <div class="stat-card"><div class="stat-label">Pontos distribuídos</div><div class="stat-value" id="d-pontos">—</div></div>
+        <div class="stat-card"><div class="stat-label">Consultas registradas</div><div class="stat-value" id="d-consultas">—</div></div>
+        <div class="stat-card"><div class="stat-label">Nível Diamante</div><div class="stat-value" id="d-diamante" style="color:var(--tiffany)">—</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="table-wrap">
+          <div class="table-header"><h3>🏆 Top 10 pacientes</h3></div>
+          <table><thead><tr><th>#</th><th>Paciente</th><th>Nível</th><th>Pontos</th></tr></thead>
+          <tbody id="top-table"></tbody></table>
+        </div>
+        <div class="table-wrap">
+          <div class="table-header"><h3>🕐 Últimas movimentações</h3></div>
+          <div id="ultimas-mov"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PACIENTES -->
+    <div id="panel-pacientes" class="panel">
+      <div class="page-title">Pacientes</div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filtrar('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="filtrar('diamante',this)">◆ Diamante</button>
+        <button class="filter-btn" onclick="filtrar('ouro',this)">★ Ouro</button>
+        <button class="filter-btn" onclick="filtrar('prata',this)">⬜ Prata</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="busca-pac" placeholder="🔍  Buscar por nome, telefone ou CPF..." oninput="renderTabelaPacientes()">
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Lista de pacientes</h3>
+          <button class="btn-add" onclick="abrirModalCadastro()">+ Novo paciente</button>
+        </div>
+        <table>
+          <thead><tr><th>Nome</th><th>Telefone</th><th>CPF</th><th>Consultas</th><th>Nível</th><th>Pontos</th><th>Ações</th></tr></thead>
+          <tbody id="pac-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div id="panel-historico" class="panel">
+      <div class="page-title">Histórico de movimentações</div>
+      <div class="search-bar">
+        <input type="text" id="busca-hist" placeholder="🔍  Buscar por paciente..." oninput="renderHistorico()">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Paciente</th><th>Ação</th><th>Pontos</th><th>Data</th></tr></thead>
+          <tbody id="hist-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <div id="panel-agenda" class="panel">
+      <div class="page-title">Agenda</div>
+      <div class="filter-row" id="agenda-filtro"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Horário</th><th>Paciente</th><th>Procedimento</th><th>Obs</th><th>Status</th><th>Ação</th></tr></thead>
+          <tbody id="agenda-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RELATÓRIO -->
+    <div id="panel-relatorio" class="panel">
+      <div class="page-title">Relatório financeiro</div>
+      <div class="rel-grid">
+        <div class="rel-card"><h4>Total faturado (registrado)</h4><div class="rel-value" id="r-faturado">R$ 0</div><div class="rel-sub">soma de todos os valores informados</div></div>
+        <div class="rel-card"><h4>Pontos por valor gasto</h4><div class="rel-value" id="r-pts-valor">0</div><div class="rel-sub">pontos gerados por R$ gasto</div></div>
+        <div class="rel-card"><h4>Ticket médio</h4><div class="rel-value" id="r-ticket">R$ 0</div><div class="rel-sub">por consulta registrada</div></div>
+        <div class="rel-card"><h4>Indicações registradas</h4><div class="rel-value" id="r-indicacoes">0</div><div class="rel-sub">pacientes indicados</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Detalhamento por paciente</h3></div>
+        <table>
+          <thead><tr><th>Paciente</th><th>Consultas</th><th>Valor gasto</th><th>Pts por valor</th><th>Pts total</th></tr></thead>
+          <tbody id="rel-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL EDITAR/CADASTRAR -->
+<div class="modal-overlay" id="modal-pac">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Editar paciente</h3>
+      <button class="btn-close" onclick="fecharModal()">×</button>
+    </div>
+    <input type="hidden" id="m-id">
+    <div class="field"><label>Nome completo *</label><input type="text" id="m-nome"></div>
+    <div class="form-grid">
+      <div class="field"><label>Telefone *</label><input type="text" id="m-tel"></div>
+      <div class="field"><label>Data de nascimento</label><input type="date" id="m-nasc"></div>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>CPF</label><input type="text" id="m-cpf"></div>
+      <div class="field"><label>E-mail</label><input type="email" id="m-email"></div>
+    </div>
+    <div class="field"><label>Pontos atuais</label><input type="number" id="m-pontos" min="0"></div>
+    <div class="field"><label>Observações</label><input type="text" id="m-obs"></div>
+    <button class="btn-primary" onclick="salvarPaciente()">Salvar alterações</button>
+    <div class="msg-ok" id="m-ok">✅ Salvo com sucesso!</div>
+    <div class="msg-err" id="m-err"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDTwwJXBCONa29G_6E8hDHefBYLHRWVfzk",authDomain:"neodonto-808ea.firebaseapp.com",
+  projectId:"neodonto-808ea",storageBucket:"neodonto-808ea.appspot.com",
+  messagingSenderId:"784061951445",appId:"1:784061951445:web:5e97b0f1b3da9e9c76c7e2"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+let pacientes = [], agendamentos = [], filtroAtivo = 'todos';
+
+// AUTH
+window.login = async () => {
+  const e=document.getElementById('email').value.trim();
+  const s=document.getElementById('senha').value;
+  const err=document.getElementById('auth-err');
+  err.style.display='none';
+  try { await signInWithEmailAndPassword(auth,e,s); }
+  catch(ex){ err.style.display='block'; }
+};
+window.logout = () => signOut(auth);
+
+onAuthStateChanged(auth, u => {
+  if(u) {
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('user-email').textContent=u.email;
+    loadData();
+  } else {
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('app').style.display='none';
+  }
+});
+
+function loadData() {
+  onSnapshot(query(collection(db,'fidelidade'),orderBy('pontos','desc')), snap => {
+    pacientes = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderDashboard(); renderTabelaPacientes(); renderHistorico(); renderRelatorio();
+  });
+  onSnapshot(query(collection(db,'agendamentos'),orderBy('dataHora')), snap => {
+    agendamentos = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderAgenda(); renderFiltrosDias();
+  });
+}
+
+// TABS
+window.showTab = (tab) => {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  const tabs=['dashboard','pacientes','historico','agenda','relatorio'];
+  document.querySelectorAll('.nav-item')[tabs.indexOf(tab)].classList.add('active');
+};
+
+// HELPERS
+function nivel(pts){ return pts>=1501?'diamante':pts>=501?'ouro':'prata'; }
+function nivelLabel(pts){ const n=nivel(pts); return n==='diamante'?'◆ Diamante':n==='ouro'?'★ Ouro':'⬜ Prata'; }
+
+// DASHBOARD
+function renderDashboard() {
+  const totalPts=pacientes.reduce((s,p)=>s+(p.pontos||0),0);
+  const totalConsultas=pacientes.reduce((s,p)=>s+(p.totalConsultas||0),0);
+  document.getElementById('d-total').textContent=pacientes.length;
+  document.getElementById('d-pontos').textContent=totalPts.toLocaleString('pt-BR');
+  document.getElementById('d-consultas').textContent=totalConsultas;
+  document.getElementById('d-diamante').textContent=pacientes.filter(p=>nivel(p.pontos||0)==='diamante').length;
+
+  const top10=pacientes.slice(0,10);
+  document.getElementById('top-table').innerHTML=top10.map((p,i)=>`
+    <tr>
+      <td style="color:var(--muted);font-weight:600">${i+1}</td>
+      <td style="font-weight:500">${p.nome}</td>
+      <td><span class="badge ${nivel(p.pontos||0)}">${nivelLabel(p.pontos||0)}</span></td>
+      <td style="font-weight:700;color:var(--tiffany)">${p.pontos||0}</td>
+    </tr>`).join('');
+
+  // Últimas movimentações
+  const movs=[];
+  pacientes.forEach(p=>{
+    (p.historico||[]).forEach(h=>movs.push({nome:p.nome,...h}));
+  });
+  movs.sort((a,b)=>b.data?.localeCompare(a.data));
+  document.getElementById('ultimas-mov').innerHTML=movs.slice(0,10).map(m=>`
+    <div class="hist-item">
+      <div><div style="font-size:13px;font-weight:500">${m.nome}</div><div style="font-size:12px;color:var(--muted)">${m.desc} · ${m.data}</div></div>
+      <div class="hist-pts">+${m.pts}</div>
+    </div>`).join('') || '<div style="padding:20px;color:var(--muted);text-align:center;font-size:13px">Nenhuma movimentação.</div>';
+}
+
+// PACIENTES
+window.filtrar = (f, btn) => {
+  filtroAtivo=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTabelaPacientes();
+};
+
+window.renderTabelaPacientes = () => {
+  const q=(document.getElementById('busca-pac')?.value||'').toLowerCase();
+  let lista=pacientes.filter(p=>
+    p.nome?.toLowerCase().includes(q)||p.telefone?.includes(q)||(p.cpf||'').includes(q)
+  );
+  if(filtroAtivo!=='todos') lista=lista.filter(p=>nivel(p.pontos||0)===filtroAtivo);
+  document.getElementById('pac-table').innerHTML=lista.map(p=>`
+    <tr>
+      <td style="font-weight:500">${p.nome}</td>
+      <td>${p.telefone||'—'}</td>
+      <td>${p.cpf||'—'}</td>
+      <td>${p.totalConsultas||0}</td>
+      <td><span class="badge ${nivel(p.pontos||0)}">${nivelLabel(p.pontos||0)}</span></td>
+      <td style="font-weight:700;color:var(--tiffany)">${p.pontos||0}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn-icon edit" onclick="abrirModalEditar('${p.id}')">✏️ Editar</button>
+        <button class="btn-icon del" onclick="excluirPaciente('${p.id}','${p.nome.replace(/'/g,"\\'")}')">🗑️ Excluir</button>
+      </td>
+    </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Nenhum paciente encontrado.</td></tr>';
+};
+
+// HISTÓRICO
+window.renderHistorico = () => {
+  const q=(document.getElementById('busca-hist')?.value||'').toLowerCase();
+  const movs=[];
+  pacientes.filter(p=>!q||p.nome?.toLowerCase().includes(q)).forEach(p=>{
+    (p.historico||[]).forEach(h=>movs.push({nome:p.nome,...h}));
+  });
+  movs.sort((a,b)=>b.data?.localeCompare(a.data));
+  document.getElementById('hist-table').innerHTML=movs.map(m=>`
+    <tr>
+      <td style="font-weight:500">${m.nome}</td>
+      <td>${m.desc}</td>
+      <td style="font-weight:700;color:var(--tiffany)">+${m.pts}</td>
+      <td style="color:var(--muted)">${m.data}</td>
+    </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma movimentação.</td></tr>';
+};
+
+// AGENDA
+let diaFiltro = new Date().toISOString().slice(0,10);
+
+function renderFiltrosDias() {
+  const dias=[...new Set(agendamentos.map(a=>a.data))].sort().slice(0,7);
+  if(!dias.includes(diaFiltro)) dias.unshift(diaFiltro);
+  document.getElementById('agenda-filtro').innerHTML=dias.map(d=>`
+    <button class="filter-btn ${d===diaFiltro?'active':''}" onclick="filtrarDia('${d}',this)">
+      ${new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}
+    </button>`).join('');
+  renderAgenda();
+}
+
+window.filtrarDia = (d,btn) => {
+  diaFiltro=d;
+  document.querySelectorAll('#agenda-filtro .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAgenda();
+};
+
+function renderAgenda() {
+  const lista=agendamentos.filter(a=>a.data===diaFiltro).sort((a,b)=>a.hora?.localeCompare(b.hora));
+  const el=document.getElementById('agenda-table');
+  if(!el) return;
+  el.innerHTML=lista.map(a=>`
+    <tr>
+      <td style="font-weight:600;color:var(--tiffany)">${a.hora}</td>
+      <td style="font-weight:500">${a.pacienteNome}</td>
+      <td>${a.procedimento}</td>
+      <td style="color:var(--muted);font-size:13px">${a.obs||'—'}</td>
+      <td><span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:${a.status==='confirmado'?'var(--success-light)':a.status==='cancelado'?'var(--danger-light)':'var(--gold-light)'};color:${a.status==='confirmado'?'#1a8a4a':a.status==='cancelado'?'var(--danger)':'#a07a20'}">${a.status}</span></td>
+      <td><button class="btn-icon del" onclick="excluirAg('${a.id}')">🗑️</button></td>
+    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Nenhum agendamento para este dia.</td></tr>';
+}
+
+window.excluirAg = async (id) => {
+  if(!confirm('Excluir este agendamento?')) return;
+  await deleteDoc(doc(db,'agendamentos',id));
+};
+
+// RELATÓRIO
+function renderRelatorio() {
+  let totalFaturado=0, totalPtsValor=0, totalIndicacoes=0;
+  const rows=pacientes.map(p=>{
+    let valorGasto=0, ptsValor=0;
+    (p.historico||[]).forEach(h=>{
+      if(h.desc?.startsWith('Valor gasto')) {
+        const match=h.desc.match(/R\$\s*([\d,]+)/);
+        if(match) valorGasto+=parseFloat(match[1].replace(',','.'));
+        ptsValor+=h.pts;
+      }
+      if(h.desc?.includes('Indicação')) totalIndicacoes++;
+    });
+    totalFaturado+=valorGasto;
+    totalPtsValor+=ptsValor;
+    return {nome:p.nome,consultas:p.totalConsultas||0,valorGasto,ptsValor,ptsTotal:p.pontos||0};
+  }).filter(r=>r.consultas>0||r.valorGasto>0);
+
+  const ticket=totalFaturado>0&&pacientes.reduce((s,p)=>s+(p.totalConsultas||0),0)>0
+    ? totalFaturado/pacientes.reduce((s,p)=>s+(p.totalConsultas||0),0) : 0;
+
+  document.getElementById('r-faturado').textContent=`R$ ${totalFaturado.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  document.getElementById('r-pts-valor').textContent=totalPtsValor.toLocaleString('pt-BR');
+  document.getElementById('r-ticket').textContent=`R$ ${ticket.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+  document.getElementById('r-indicacoes').textContent=totalIndicacoes;
+
+  document.getElementById('rel-table').innerHTML=rows.map(r=>`
+    <tr>
+      <td style="font-weight:500">${r.nome}</td>
+      <td>${r.consultas}</td>
+      <td>R$ ${r.valorGasto.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+      <td>${r.ptsValor}</td>
+      <td style="font-weight:700;color:var(--tiffany)">${r.ptsTotal}</td>
+    </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Nenhum dado financeiro ainda.</td></tr>';
+}
+
+// MODAL EDITAR
+window.abrirModalEditar = (id) => {
+  const p=pacientes.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modal-title').textContent='Editar paciente';
+  document.getElementById('m-id').value=id;
+  document.getElementById('m-nome').value=p.nome||'';
+  document.getElementById('m-tel').value=p.telefone||'';
+  document.getElementById('m-nasc').value=p.nascimento||'';
+  document.getElementById('m-cpf').value=p.cpf||'';
+  document.getElementById('m-email').value=p.email||'';
+  document.getElementById('m-pontos').value=p.pontos||0;
+  document.getElementById('m-obs').value=p.obs||'';
+  document.getElementById('m-ok').style.display='none';
+  document.getElementById('m-err').style.display='none';
+  document.getElementById('modal-pac').classList.add('open');
+};
+
+window.abrirModalCadastro = () => {
+  document.getElementById('modal-title').textContent='Novo paciente';
+  document.getElementById('m-id').value='';
+  ['m-nome','m-tel','m-nasc','m-cpf','m-email','m-obs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-pontos').value=0;
+  document.getElementById('m-ok').style.display='none';
+  document.getElementById('m-err').style.display='none';
+  document.getElementById('modal-pac').classList.add('open');
+};
+
+window.fecharModal = () => document.getElementById('modal-pac').classList.remove('open');
+document.getElementById('modal-pac').addEventListener('click', e=>{if(e.target===e.currentTarget)fecharModal();});
+
+window.salvarPaciente = async () => {
+  const id=document.getElementById('m-id').value;
+  const nome=document.getElementById('m-nome').value.trim();
+  const tel=document.getElementById('m-tel').value.trim();
+  const ok=document.getElementById('m-ok');
+  const err=document.getElementById('m-err');
+  ok.style.display='none';err.style.display='none';
+  if(!nome||!tel){err.textContent='Nome e telefone são obrigatórios.';err.style.display='block';return;}
+  const data={
+    nome,telefone:tel,
+    nascimento:document.getElementById('m-nasc').value||null,
+    cpf:document.getElementById('m-cpf').value||null,
+    email:document.getElementById('m-email').value||null,
+    pontos:parseInt(document.getElementById('m-pontos').value)||0,
+    obs:document.getElementById('m-obs').value||null,
+  };
+  try {
+    if(id) { await updateDoc(doc(db,'fidelidade',id),data); }
+    else { await addDoc(collection(db,'fidelidade'),{...data,totalConsultas:0,historico:[],criadoEm:serverTimestamp()}); }
+    ok.style.display='block';
+    setTimeout(()=>{fecharModal();},1500);
+  } catch(e){err.textContent='Erro ao salvar.';err.style.display='block';}
+};
+
+window.excluirPaciente = async (id,nome) => {
+  if(!confirm(`Excluir o paciente "${nome}"? Esta ação não pode ser desfeita.`)) return;
+  await deleteDoc(doc(db,'fidelidade',id));
+};
+</script>
+</body>
+</html>

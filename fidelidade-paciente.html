@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0abfbc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sorriso em Dia">
+<title>Sorriso em Dia — Neodonto</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --tiffany: #0abfbc;
+    --tiffany-dark: #089a97;
+    --tiffany-light: #e6fafa;
+    --gold: #c9a84c;
+    --gold-light: #fdf6e3;
+    --prata: #8a9bb0;
+    --prata-light: #f0f4f8;
+    --bg: #f4fafa;
+    --card: #ffffff;
+    --text: #1a2e2e;
+    --muted: #6b8282;
+    --border: #d6ebeb;
+    --danger: #e05c5c;
+    --success: #2ecc71;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  /* ── TELA LOGIN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .login-hero {
+    background: linear-gradient(160deg, #0abfbc 0%, #067e7c 100%);
+    padding: 56px 32px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-hero::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -80px; right: -80px;
+  }
+  .login-hero::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    bottom: -60px; left: -40px;
+  }
+  .hero-icon {
+    width: 72px; height: 72px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+  }
+  .login-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: white;
+    margin-bottom: 8px;
+  }
+  .login-hero p {
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .login-form {
+    background: white;
+    border-radius: 28px 28px 0 0;
+    margin-top: -20px;
+    padding: 32px 28px 40px;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .login-form h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .login-form p { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+
+  .tabs-toggle {
+    display: flex;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+    gap: 4px;
+  }
+  .tab-toggle {
+    flex: 1; border: none; background: none;
+    padding: 9px; border-radius: 10px;
+    font-family: inherit; font-size: 13px; font-weight: 500;
+    color: var(--muted); cursor: pointer; transition: all .2s;
+  }
+  .tab-toggle.active {
+    background: white;
+    color: var(--tiffany);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 7px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; }
+  .field input {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; font-size: 16px; font-family: inherit; color: var(--text);
+    outline: none; transition: border .2s; background: white;
+    -webkit-appearance: none;
+  }
+  .field input:focus { border-color: var(--tiffany); }
+
+  .btn-login {
+    width: 100%; background: var(--tiffany); color: white; border: none;
+    border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all .2s;
+    box-shadow: 0 4px 16px rgba(10,191,188,0.3);
+  }
+  .btn-login:active { transform: scale(0.98); }
+  .btn-login:hover { background: var(--tiffany-dark); }
+
+  #login-error {
+    color: var(--danger); font-size: 13px; margin-top: 12px;
+    text-align: center; display: none;
+  }
+  #login-loading {
+    text-align: center; font-size: 13px; color: var(--muted);
+    margin-top: 12px; display: none;
+  }
+
+  /* ── APP ── */
+  #app-screen { display: none; min-height: 100vh; padding-bottom: 32px; }
+
+  .app-header {
+    background: linear-gradient(160deg, #0abfbc 0%, #067e7c 100%);
+    padding: 52px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-header::before {
+    content: '';
+    position: absolute;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    top: -60px; right: -60px;
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .header-brand { font-family: 'Playfair Display', serif; font-size: 18px; color: white; }
+  .btn-sair {
+    background: rgba(255,255,255,0.15); border: none; border-radius: 20px;
+    padding: 6px 14px; color: white; font-size: 12px; cursor: pointer;
+    font-family: inherit; transition: background .2s;
+  }
+  .btn-sair:active { background: rgba(255,255,255,0.25); }
+
+  .greeting { color: rgba(255,255,255,0.8); font-size: 13px; margin-bottom: 4px; }
+  .patient-name-h { color: white; font-size: 22px; font-weight: 600; }
+
+  /* Card de pontos flutuante */
+  .points-card {
+    background: white;
+    border-radius: 24px;
+    margin: -48px 20px 0;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(10,191,188,0.15);
+    position: relative;
+    z-index: 10;
+  }
+  .points-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .points-big { font-size: 48px; font-weight: 700; color: var(--tiffany); line-height: 1; }
+  .points-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .nivel-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;
+  }
+  .nivel-badge.prata { background: var(--prata-light); color: var(--prata); }
+  .nivel-badge.ouro { background: var(--gold-light); color: #a07a20; }
+  .nivel-badge.diamante { background: var(--tiffany-light); color: var(--tiffany-dark); }
+
+  .progress-section { margin-top: 4px; }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .progress-track { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--tiffany), #08d4d0); border-radius: 4px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+  .progress-max { font-size: 12px; color: var(--tiffany); font-weight: 600; text-align: center; margin-top: 10px; }
+
+  /* Seção benefícios */
+  .section { padding: 24px 20px 0; }
+  .section-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+  .benefit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .benefit-card {
+    background: white; border-radius: 16px; padding: 16px 14px;
+    border: 1px solid var(--border);
+  }
+  .benefit-card .icon { font-size: 24px; margin-bottom: 10px; }
+  .benefit-card .title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .benefit-card .desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .benefit-card.locked { opacity: 0.45; }
+
+  /* Como ganhar */
+  .earn-list { display: flex; flex-direction: column; gap: 10px; }
+  .earn-item {
+    background: white; border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px; border: 1px solid var(--border);
+  }
+  .earn-icon { font-size: 22px; flex-shrink: 0; }
+  .earn-info { flex: 1; }
+  .earn-title { font-size: 13px; font-weight: 600; }
+  .earn-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .earn-pts { font-size: 16px; font-weight: 700; color: var(--tiffany); white-space: nowrap; }
+
+  /* Rodapé */
+  .footer {
+    text-align: center; padding: 32px 20px 16px;
+    font-size: 12px; color: var(--muted); line-height: 1.8;
+  }
+  .footer a { color: var(--tiffany); text-decoration: none; }
+
+  /* Botão WhatsApp fixo */
+  .wpp-fab {
+    position: fixed; bottom: 24px; right: 20px;
+    background: #25D366; color: white; border: none;
+    border-radius: 50px; padding: 14px 20px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit; box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    display: flex; align-items: center; gap: 8px;
+    transition: transform .2s;
+    z-index: 100;
+  }
+  .wpp-fab:active { transform: scale(0.95); }
+
+  /* Animação entrada */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp .4s ease both; }
+  .fade-up-2 { animation: fadeUp .4s .1s ease both; }
+  .fade-up-3 { animation: fadeUp .4s .2s ease both; }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-hero">
+    <div style="display:flex;justify-content:center;margin-bottom:22px">
+      <svg width="270" height="88" viewBox="40 20 600 180" xmlns="http://www.w3.org/2000/svg">
+        <text x="228" y="152" text-anchor="end"
+              font-family="Georgia,'Times New Roman',serif"
+              font-size="82" font-weight="400" letter-spacing="-2"
+              fill="white">NEO</text>
+        <text x="234" y="152" text-anchor="start"
+              font-family="Georgia,'Times New Roman',serif"
+              font-size="58" font-weight="700"
+              textLength="240" lengthAdjust="spacingAndGlyphs"
+              fill="white">DONTO</text>
+        <text x="234" y="108" text-anchor="start"
+              font-family="Georgia,serif" font-size="15"
+              textLength="192" lengthAdjust="spacingAndGlyphs"
+              fill="rgba(255,255,255,0.80)">Odontologia</text>
+        <circle cx="434" cy="103" r="2.5" fill="rgba(255,255,255,0.80)"/>
+        <circle cx="445" cy="103" r="3.5" fill="rgba(255,255,255,0.80)"/>
+        <circle cx="457" cy="103" r="4.5" fill="rgba(255,255,255,0.80)"/>
+        <circle cx="471" cy="103" r="5.8" fill="rgba(255,255,255,0.80)"/>
+      </svg>
+    </div>
+    <p style="color:rgba(255,255,255,0.82);font-size:14px;line-height:1.6;margin-top:4px">Consulte seus pontos e benefícios<br>no programa de fidelidade</p>
+  </div>
+
+  <div class="login-form">
+    <h2>Acessar minha conta</h2>
+    <p>Digite seu CPF ou telefone para ver seus pontos</p>
+
+    <div class="tabs-toggle">
+      <button class="tab-toggle active" onclick="setLoginTipo('telefone')">📱 Telefone</button>
+      <button class="tab-toggle" onclick="setLoginTipo('cpf')">🪪 CPF</button>
+    </div>
+
+    <div class="field">
+      <label id="input-label">Telefone com DDD</label>
+      <input type="tel" id="login-input" placeholder="(62) 9 9999-9999"
+        oninput="mascararInput(this)" onkeydown="if(event.key==='Enter')buscarPaciente()">
+    </div>
+
+    <button class="btn-login" onclick="buscarPaciente()">Ver meus pontos →</button>
+    <div id="login-error">Nenhum cadastro encontrado. Fale com a recepção. 😊</div>
+    <div id="login-loading">🔍 Buscando seus dados...</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app-screen">
+  <div class="app-header">
+    <div class="header-top">
+      <div>
+        <svg width="150" height="49" viewBox="40 20 600 180" xmlns="http://www.w3.org/2000/svg">
+          <text x="228" y="152" text-anchor="end"
+                font-family="Georgia,'Times New Roman',serif"
+                font-size="82" font-weight="400" letter-spacing="-2"
+                fill="white">NEO</text>
+          <text x="234" y="152" text-anchor="start"
+                font-family="Georgia,'Times New Roman',serif"
+                font-size="58" font-weight="700"
+                textLength="240" lengthAdjust="spacingAndGlyphs"
+                fill="white">DONTO</text>
+          <text x="234" y="108" text-anchor="start"
+                font-family="Georgia,serif" font-size="15"
+                textLength="192" lengthAdjust="spacingAndGlyphs"
+                fill="rgba(255,255,255,0.80)">Odontologia</text>
+          <circle cx="434" cy="103" r="2.5" fill="rgba(255,255,255,0.80)"/>
+          <circle cx="445" cy="103" r="3.5" fill="rgba(255,255,255,0.80)"/>
+          <circle cx="457" cy="103" r="4.5" fill="rgba(255,255,255,0.80)"/>
+          <circle cx="471" cy="103" r="5.8" fill="rgba(255,255,255,0.80)"/>
+        </svg>
+      </div>
+      <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+    <div class="greeting">Olá,</div>
+    <div class="patient-name-h" id="app-nome">—</div>
+  </div>
+
+  <!-- Card pontos -->
+  <div class="points-card fade-up">
+    <div class="points-row">
+      <div>
+        <div class="points-big" id="app-pontos">0</div>
+        <div class="points-label">pontos acumulados</div>
+      </div>
+      <div class="nivel-badge prata" id="app-nivel-badge">⬜ Prata</div>
+    </div>
+    <div class="progress-section" id="progress-section">
+      <div class="progress-labels">
+        <span id="prog-label">Progresso para Ouro</span>
+        <span id="prog-faltam"></span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="progress-max" id="prog-max" style="display:none">🏆 Você atingiu o nível máximo!</div>
+  </div>
+
+  <!-- Benefícios do nível -->
+  <div class="section fade-up-2">
+    <div class="section-title">Seus benefícios</div>
+    <div class="benefit-grid" id="benefits-grid"></div>
+  </div>
+
+  <!-- Como ganhar pontos -->
+  <div class="section fade-up-3">
+    <div class="section-title">Como ganhar pontos</div>
+    <div class="earn-list">
+      <div class="earn-item">
+        <div class="earn-icon">🦷</div>
+        <div class="earn-info">
+          <div class="earn-title">Consulta realizada</div>
+          <div class="earn-desc">A cada visita à clínica</div>
+        </div>
+        <div class="earn-pts">+100</div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-icon">👥</div>
+        <div class="earn-info">
+          <div class="earn-title">Indicação de amigo</div>
+          <div class="earn-desc">Por cada novo paciente indicado</div>
+        </div>
+        <div class="earn-pts">+200</div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-icon">⭐</div>
+        <div class="earn-info">
+          <div class="earn-title">Avaliação no Google</div>
+          <div class="earn-desc">Ou no Instagram @clinicaneodontogoiania</div>
+        </div>
+        <div class="earn-pts">+50</div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-icon">🎂</div>
+        <div class="earn-info">
+          <div class="earn-title">Bônus de aniversário</div>
+          <div class="earn-desc">No mês do seu aniversário</div>
+        </div>
+        <div class="earn-pts">+100</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>📍 Clínica Neodonto — Goiânia/GO</div>
+    <div>📞 (62) 4106-1198</div>
+    <div><a href="https://www.clinicaneodonto.com.br">www.clinicaneodonto.com.br</a></div>
+  </div>
+
+  <button class="wpp-fab" onclick="abrirWpp()">
+    💬 Agendar consulta
+  </button>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDTwwJXBCONa29G_6E8hDHefBYLHRWVfzk",
+  authDomain: "neodonto-808ea.firebaseapp.com",
+  projectId: "neodonto-808ea",
+  storageBucket: "neodonto-808ea.appspot.com",
+  messagingSenderId: "784061951445",
+  appId: "1:784061951445:web:5e97b0f1b3da9e9c76c7e2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let loginTipo = 'telefone';
+let pacienteAtual = null;
+
+window.setLoginTipo = (tipo) => {
+  loginTipo = tipo;
+  const label = document.getElementById('input-label');
+  const input = document.getElementById('login-input');
+  document.querySelectorAll('.tab-toggle').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  if(tipo === 'telefone') {
+    label.textContent = 'Telefone com DDD';
+    input.placeholder = '(62) 9 9999-9999';
+    input.type = 'tel';
+  } else {
+    label.textContent = 'CPF';
+    input.placeholder = '000.000.000-00';
+    input.type = 'text';
+  }
+  input.value = '';
+  input.focus();
+};
+
+window.mascararInput = (el) => {
+  let v = el.value.replace(/\D/g,'');
+  if(loginTipo === 'telefone') {
+    if(v.length <= 10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');
+    else v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  } else {
+    v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+  }
+  el.value = v;
+};
+
+function normalizar(str) {
+  return str.replace(/\D/g,'');
+}
+
+window.buscarPaciente = async () => {
+  const val = document.getElementById('login-input').value.trim();
+  const err = document.getElementById('login-error');
+  const loading = document.getElementById('login-loading');
+  err.style.display = 'none';
+  if(!val || normalizar(val).length < 8) {
+    err.textContent = 'Digite um número válido.';
+    err.style.display = 'block'; return;
+  }
+  loading.style.display = 'block';
+  try {
+    const campo = loginTipo === 'telefone' ? 'telefone' : 'cpf';
+    const snap = await getDocs(query(collection(db,'fidelidade'), where(campo,'==',val)));
+    // tenta também sem formatação
+    let docs = snap.docs;
+    if(!docs.length) {
+      const snap2 = await getDocs(collection(db,'fidelidade'));
+      docs = snap2.docs.filter(d => {
+        const v = d.data()[campo] || '';
+        return normalizar(v) === normalizar(val);
+      });
+    }
+    loading.style.display = 'none';
+    if(!docs.length) { err.style.display = 'block'; return; }
+    pacienteAtual = { id: docs[0].id, ...docs[0].data() };
+    renderApp();
+  } catch(e) {
+    loading.style.display = 'none';
+    err.textContent = 'Erro ao buscar. Tente novamente.';
+    err.style.display = 'block';
+  }
+};
+
+function nivel(pts) {
+  if(pts >= 1501) return 'diamante';
+  if(pts >= 501) return 'ouro';
+  return 'prata';
+}
+
+function renderApp() {
+  const p = pacienteAtual;
+  const pts = p.pontos || 0;
+  const nv = nivel(pts);
+  const nome = p.nome?.split(' ')[0] || 'Paciente';
+
+  document.getElementById('app-nome').textContent = nome;
+  document.getElementById('app-pontos').textContent = pts.toLocaleString('pt-BR');
+
+  // Badge nível
+  const badge = document.getElementById('app-nivel-badge');
+  badge.className = `nivel-badge ${nv}`;
+  badge.textContent = nv === 'diamante' ? '◆ Diamante' : nv === 'ouro' ? '★ Ouro' : '⬜ Prata';
+
+  // Progresso
+  const progFill = document.getElementById('prog-fill');
+  const progLabel = document.getElementById('prog-label');
+  const progFaltam = document.getElementById('prog-faltam');
+  const progMax = document.getElementById('prog-max');
+  const progSection = document.getElementById('progress-section');
+
+  if(nv === 'diamante') {
+    progSection.style.display = 'none';
+    progMax.style.display = 'block';
+  } else {
+    progSection.style.display = 'block';
+    progMax.style.display = 'none';
+    if(nv === 'prata') {
+      const pct = Math.min(Math.round(pts/501*100), 100);
+      progLabel.textContent = 'Progresso para Ouro ★';
+      progFaltam.textContent = `faltam ${501-pts} pts`;
+      setTimeout(() => { progFill.style.width = pct + '%'; }, 100);
+    } else {
+      const pct = Math.min(Math.round((pts-501)/1000*100), 100);
+      progLabel.textContent = 'Progresso para Diamante ◆';
+      progFaltam.textContent = `faltam ${1501-pts} pts`;
+      setTimeout(() => { progFill.style.width = pct + '%'; }, 100);
+    }
+  }
+
+  // Benefícios
+  const allBenefits = {
+    prata: [
+      { icon: '💰', title: '5% de desconto', desc: 'Em limpezas e profilaxia', locked: false },
+      { icon: '🔄', title: 'Retorno gratuito', desc: 'Consulta de retorno sem custo', locked: false },
+      { icon: '⭐', title: '10% de desconto', desc: 'Disponível no nível Ouro', locked: nv === 'prata' },
+      { icon: '◆', title: 'Clareamento VIP', desc: 'Disponível no nível Diamante', locked: nv !== 'diamante' },
+    ],
+    ouro: [
+      { icon: '💰', title: '10% de desconto', desc: 'Em todos os procedimentos', locked: false },
+      { icon: '📅', title: 'Agendamento prioritário', desc: 'Fila preferencial na clínica', locked: false },
+      { icon: '✨', title: 'Clareamento', desc: 'Com desconto especial Ouro', locked: false },
+      { icon: '◆', title: 'Benefícios Diamante', desc: 'Disponível no nível Diamante', locked: true },
+    ],
+    diamante: [
+      { icon: '💰', title: '15% de desconto', desc: 'Em todos os procedimentos', locked: false },
+      { icon: '◆', title: 'Acesso VIP', desc: 'Atendimento e brindes exclusivos', locked: false },
+      { icon: '🦷', title: 'Check-up anual', desc: 'Consulta de revisão gratuita', locked: false },
+      { icon: '🎁', title: 'Surpresas especiais', desc: 'Mimos e benefícios exclusivos', locked: false },
+    ],
+  };
+
+  const benefits = allBenefits[nv];
+  document.getElementById('benefits-grid').innerHTML = benefits.map(b => `
+    <div class="benefit-card ${b.locked ? 'locked' : ''}">
+      <div class="icon">${b.icon}</div>
+      <div class="title">${b.title}</div>
+      <div class="desc">${b.desc}</div>
+    </div>
+  `).join('');
+
+  // Exibe app
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+window.sair = () => {
+  pacienteAtual = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-input').value = '';
+  document.getElementById('login-error').style.display = 'none';
+};
+
+window.abrirWpp = () => {
+  const nome = pacienteAtual?.nome?.split(' ')[0] || '';
+  const msg = `Olá! Sou ${nome}, paciente da Neodonto, e gostaria de agendar uma consulta. 😊`;
+  window.open(`https://wa.me/556241061198?text=${encodeURIComponent(msg)}`, '_blank');
+};
+</script>
+</body>
+</html>
