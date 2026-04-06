@@ -485,6 +485,8 @@ window.resgatar = async (premio, custo) => {
   alert(`✅ Resgate de "${premio}" confirmado! ${custo} pontos descontados.`);
   renderAtendimento();
 };
+
+window.previewValor = () => {
   const v=parseFloat(document.getElementById('valor-input').value||0);
   document.getElementById('preview-val').textContent=Math.floor(v/10)+' pts';
 };
