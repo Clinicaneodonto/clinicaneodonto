@@ -1,1134 +1,309 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NEODONTO Kids – Ficha da Criança</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --tiffany: #0abfbc;
-      --tiffany-light: #e0fafa;
-      --tiffany-mid: #5dd5d3;
-      --gold: #c9a84c;
-      --gold-light: #fdf4e0;
-      --azul: #1a3a5c;
-      --branco: #ffffff;
-      --bg: #f7fdfd;
-      --cinza: #6b7280;
-      --borda: #c8ecec;
-      --erro: #ef4444;
-      --sucesso: #10b981;
-      --laranja: #f97316;
-      --rosa: #f472b6;
-      --roxo: #a78bfa;
-      --verde: #34d399;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 80px;
-    }
-
-    /* HEADER */
-    header {
-      width: 100%;
-      background: var(--azul);
-      padding: 32px 24px 28px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    header::before {
-      content: '🦷 ⭐ 🦷 ⭐ 🦷 ⭐ 🦷 ⭐ 🦷 ⭐ 🦷';
-      display: block;
-      font-size: 1rem;
-      opacity: 0.15;
-      letter-spacing: 6px;
-      margin-bottom: 12px;
-    }
-
-    .logo-header {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 2px;
-      margin-bottom: 6px;
-    }
-
-    .logo-neo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.9rem;
-      color: var(--tiffany-mid);
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    .logo-donto {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.9rem;
-      color: var(--branco);
-      font-weight: 700;
-    }
-
-    .logo-kids {
-      background: var(--gold);
-      color: var(--azul);
-      font-family: 'Nunito', sans-serif;
-      font-weight: 900;
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-left: 8px;
-      vertical-align: middle;
-      text-transform: uppercase;
-    }
-
-    header p {
-      color: rgba(255,255,255,0.6);
-      font-size: 0.8rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-top: 4px;
-    }
-
-    /* PROGRESS */
-    .progress-wrap {
-      width: 100%;
-      max-width: 680px;
-      padding: 20px 16px 0;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--cinza);
-      margin-bottom: 6px;
-    }
-
-    .progress-bar {
-      height: 10px;
-      background: var(--borda);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--tiffany), var(--gold));
-      border-radius: 10px;
-      transition: width 0.5s ease;
-    }
-
-    /* CONTAINER */
-    .container {
-      width: 100%;
-      max-width: 680px;
-      padding: 0 16px;
-      margin-top: 24px;
-    }
-
-    /* SECTION */
-    .section {
-      background: var(--branco);
-      border-radius: 20px;
-      padding: 28px 24px;
-      margin-bottom: 20px;
-      border: 2px solid transparent;
-      box-shadow: 0 4px 20px rgba(10,191,188,0.07);
-      transition: border-color 0.3s;
-    }
-
-    .section:focus-within {
-      border-color: var(--tiffany);
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 22px;
-      padding-bottom: 14px;
-      border-bottom: 2px dashed var(--borda);
-    }
-
-    .section-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 900;
-      color: var(--azul);
-    }
-
-    .section-subtitle {
-      font-size: 0.78rem;
-      color: var(--cinza);
-      font-weight: 600;
-      margin-top: 2px;
-    }
-
-    /* FIELDS */
-    .field-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .field-group.single {
-      grid-template-columns: 1fr;
-    }
-
-    .field-group.triple {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .field.span-2 {
-      grid-column: span 2;
-    }
-
-    label {
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: var(--azul);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="tel"],
-    input[type="number"],
-    select,
-    textarea {
-      border: 2px solid var(--borda);
-      border-radius: 12px;
-      padding: 11px 14px;
-      font-size: 0.92rem;
-      font-family: 'Nunito', sans-serif;
-      color: var(--azul);
-      background: var(--branco);
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-      width: 100%;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--tiffany);
-      box-shadow: 0 0 0 3px rgba(10,191,188,0.12);
-    }
-
-    textarea { resize: vertical; min-height: 80px; }
-
-    /* CHECKBOX GRID */
-    .check-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 8px;
-    }
-
-    .check-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 12px;
-      border: 2px solid var(--borda);
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--branco);
-    }
-
-    .check-item:hover {
-      border-color: var(--tiffany-mid);
-      background: var(--tiffany-light);
-    }
-
-    .check-item input[type="checkbox"] {
-      accent-color: var(--tiffany);
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .check-item span {
-      font-size: 0.83rem;
-      font-weight: 700;
-      color: var(--azul);
-    }
-
-    .check-item.checked {
-      border-color: var(--tiffany);
-      background: var(--tiffany-light);
-    }
-
-    /* RADIO GROUP */
-    .radio-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .radio-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 30px;
-      border: 2px solid var(--borda);
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--branco);
-    }
-
-    .radio-pill input[type="radio"] {
-      accent-color: var(--tiffany);
-      width: 15px;
-      height: 15px;
-    }
-
-    .radio-pill span {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--azul);
-    }
-
-    .radio-pill:has(input:checked) {
-      border-color: var(--tiffany);
-      background: var(--tiffany-light);
-    }
-
-    /* EMOJI CARDS (for feelings/characters) */
-    .emoji-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
-    }
-
-    .emoji-card {
-      border: 2px solid var(--borda);
-      border-radius: 14px;
-      padding: 14px 8px;
-      text-align: center;
-      cursor: pointer;
-      background: var(--branco);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .emoji-card:has(input:checked),
-
-    .emoji-card:has(input:checked) .emoji-label,
-    .emoji-card.selected .emoji-label {
-      color: #0abfbc;
-      font-weight: 900;
-    }
-
-    .emoji-card .emoji-big {
-      font-size: 2rem;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .emoji-card .emoji-label {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--azul);
-    }
-
-    .emoji-card input { position: absolute; opacity: 0; width: 0; height: 0; }
-
-    /* STAR RATING */
-    .star-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .star-btn {
-      font-size: 1.8rem;
-      cursor: pointer;
-      transition: transform 0.15s;
-      line-height: 1;
-      border: none;
-      background: none;
-      padding: 2px;
-    }
-
-    .star-btn:hover { transform: scale(1.2); }
-
-    /* SELFIE */
-    .selfie-area {
-      border: 2px dashed var(--tiffany-mid);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      background: var(--tiffany-light);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .selfie-area:hover {
-      background: #cdf4f4;
-      border-color: var(--tiffany);
-    }
-
-    .selfie-area .selfie-icon { font-size: 2.5rem; margin-bottom: 8px; }
-    .selfie-area p { font-size: 0.85rem; color: var(--cinza); font-weight: 700; }
-
-    #selfiePreview {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid var(--tiffany);
-      display: none;
-      margin: 12px auto 0;
-    }
-
-    /* SUBMIT */
-    .btn-submit {
-      width: 100%;
-      padding: 18px;
-      background: linear-gradient(135deg, var(--tiffany) 0%, var(--tiffany-mid) 100%);
-      border: none;
-      border-radius: 16px;
-      color: var(--branco);
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 900;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 6px 20px rgba(10,191,188,0.3);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(10,191,188,0.4);
-    }
-
-    .btn-submit:disabled {
-      background: #b0d8d7;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--azul);
-      color: var(--branco);
-      padding: 14px 28px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      z-index: 999;
-      transition: transform 0.4s ease;
-      white-space: nowrap;
-      border: 2px solid var(--tiffany);
-    }
-
-    .toast.show { transform: translateX(-50%) translateY(0); }
-
-    /* SUCCESS SCREEN */
-    #successScreen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 60px 24px;
-      gap: 16px;
-    }
-
-    #successScreen .success-emoji { font-size: 4rem; animation: bounce 1s infinite alternate; }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
-    #successScreen h2 { font-size: 1.6rem; font-weight: 900; color: var(--azul); }
-    #successScreen p { color: var(--cinza); font-weight: 600; font-size: 0.95rem; max-width: 300px; }
-
-    /* COLORS for section icons */
-    .icon-blue { background: #e0edfa; }
-    .icon-teal { background: var(--tiffany-light); }
-    .icon-gold { background: var(--gold-light); }
-    .icon-orange { background: #fff3e0; }
-    .icon-pink { background: #fce7f3; }
-    .icon-purple { background: #f3e8ff; }
-    .icon-green { background: #d1fae5; }
-    .icon-red { background: #fee2e2; }
-
-    /* REQUIRED ASTERISK */
-    .req { color: var(--erro); margin-left: 2px; }
-
-    /* HELPER TEXT */
-    .helper { font-size: 0.76rem; color: var(--cinza); font-weight: 600; margin-top: 2px; }
-
-    /* DIVIDER */
-    .divider { height: 1px; background: var(--borda); margin: 18px 0; }
-
-    /* INPUT FILE hidden */
-    #selfieInput { display: none; }
-
-    /* Responsive */
-    @media (max-width: 500px) {
-      .field-group { grid-template-columns: 1fr; }
-      .field.span-2 { grid-column: span 1; }
-      .field-group.triple { grid-template-columns: 1fr 1fr; }
-      .check-grid { grid-template-columns: 1fr 1fr; }
-      .emoji-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-
-    .section-note {
-      background: var(--tiffany-light);
-      border-left: 3px solid var(--tiffany);
-      border-radius: 0 10px 10px 0;
-      padding: 10px 14px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--azul);
-      margin-bottom: 18px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin - NEODONTO</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0ABFBC; --teal2: #0891B2;
+  --navy: #0A1628; --card: #111E30; --card2: #162236;
+  --border: rgba(10,191,188,0.15);
+  --text: #E8F4F8; --muted: #6A8FA8;
+  --danger: #FF5C7A; --warn: #F5A623; --green: #2ECC71; --gold: #c9a84c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--navy); font-family: 'DM Sans', sans-serif; color: var(--text); min-height: 100vh; }
+
+/* LOGIN */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(ellipse at 30% 20%, rgba(10,191,188,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(8,145,178,0.06) 0%, transparent 50%), var(--navy); }
+.login-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 380px; text-align: center; }
+.login-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; letter-spacing: 3px; color: var(--teal); margin-bottom: 4px; }
+.login-sub { font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 32px; }
+.login-card input { width: 100%; background: rgba(10,191,188,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
+.login-card input:focus { border-color: var(--teal); }
+.login-card input::placeholder { color: var(--muted); }
+.login-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--teal), var(--teal2)); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s; }
+.login-btn:hover { opacity: 0.88; }
+.login-err { color: var(--danger); font-size: 0.82rem; margin-top: 10px; }
+
+/* DASHBOARD */
+.dash { display: none; min-height: 100vh; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh; background: var(--card); border-right: 1px solid var(--border); padding: 28px 16px; z-index: 100; display: flex; flex-direction: column; }
+.s-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; color: var(--teal); margin-bottom: 2px; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-sub { font-size: 0.7rem; color: var(--muted); padding: 0 8px; margin-bottom: 28px; letter-spacing: 1px; }
+.s-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 0 8px; margin-bottom: 8px; }
+.s-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.88rem; color: var(--muted); cursor: pointer; transition: all 0.2s; margin-bottom: 4px; border: none; background: none; width: 100%; text-align: left; }
+.s-btn:hover, .s-btn.active { background: rgba(10,191,188,0.1); color: var(--text); }
+.s-btn.active { color: var(--teal); }
+.s-icon { font-size: 1rem; width: 20px; text-align: center; }
+.s-spacer { flex: 1; }
+.s-logout { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: var(--danger); cursor: pointer; border: none; background: none; width: 100%; }
+.s-logout:hover { background: rgba(255,92,122,0.08); }
+
+.main { margin-left: 220px; padding: 28px 24px; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.topbar-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.search-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; width: 220px; transition: border-color 0.2s; }
+.search-box:focus { border-color: var(--teal); }
+.search-box::placeholder { color: var(--muted); }
+.refresh-btn { background: rgba(10,191,188,0.1); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; color: var(--teal); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.refresh-btn:hover { background: rgba(10,191,188,0.2); }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(10,191,188,0.06); }
+.stat-icon { font-size: 1.4rem; margin-bottom: 12px; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--teal); line-height: 1; }
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+.table-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.table-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.table-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+.badge { background: rgba(10,191,188,0.12); color: var(--teal); border-radius: 99px; padding: 3px 10px; font-size: 0.75rem; font-weight: 600; }
+
+table { width: 100%; border-collapse: collapse; }
+thead th { padding: 12px 16px; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 500; }
+tbody tr { border-bottom: 1px solid rgba(10,191,188,0.06); transition: background 0.15s; cursor: pointer; }
+tbody tr:hover { background: rgba(10,191,188,0.04); }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
+.td-name { font-weight: 500; color: var(--text); }
+.td-muted { color: var(--muted); font-size: 0.82rem; }
+.td-tag { display: inline-block; background: rgba(10,191,188,0.1); color: var(--teal); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; margin: 2px; }
+.td-tag.warn { background: rgba(245,166,35,0.12); color: var(--warn); }
+.td-tag.danger { background: rgba(255,92,122,0.1); color: var(--danger); }
+.td-tag.gold { background: rgba(201,168,76,0.12); color: var(--gold); }
+.view-btn { background: rgba(10,191,188,0.1); border: none; border-radius: 8px; padding: 6px 12px; color: var(--teal); font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+.view-btn:hover { background: rgba(10,191,188,0.2); }
+
+.loading { text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MODAL */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; padding: 20px; overflow-y: auto; backdrop-filter: blur(4px); }
+.modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding-top: 40px; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 600px; overflow: hidden; animation: modalIn 0.3s ease; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(-20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal-head { background: linear-gradient(135deg, var(--teal), var(--teal2)); padding: 24px; position: relative; }
+.modal-name { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+.modal-date { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.15); border: none; border-radius: 8px; width: 32px; height: 32px; color: #fff; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 24px; }
+.m-section { margin-bottom: 20px; }
+.m-section-title { font-size: 0.72rem; color: var(--teal); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.m-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.m-tag { background: rgba(10,191,188,0.08); border: 1px solid rgba(10,191,188,0.15); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.82rem; }
+.m-tag.red { background: rgba(255,92,122,0.08); border-color: rgba(255,92,122,0.2); color: var(--danger); }
+.m-tag.yellow { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.2); color: var(--warn); }
+.m-tag.green { background: rgba(46,204,113,0.08); border-color: rgba(46,204,113,0.2); color: var(--green); }
+.m-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty h3 { font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.empty p { font-size: 0.85rem; }
+
+.filtros-wrap { margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filtros-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; white-space: nowrap; }
+.filtro-btn { padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--card2); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.filtro-btn:hover { border-color: var(--teal); color: var(--text); }
+.filtro-btn.ativo { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 500; }
+.filtro-count { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 99px; padding: 1px 7px; font-size: 0.72rem; margin-left: 4px; }
+
+.avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); background: var(--card2); flex-shrink: 0; }
+.avatar-placeholder { width: 38px; height: 38px; border-radius: 50%; background: var(--card2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.td-paciente { display: flex; align-items: center; gap: 10px; }
+.modal-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); position: absolute; top: 20px; right: 20px; }
+.modal-avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2rem; position: absolute; top: 20px; right: 20px; }
+
+/* STARS */
+.star-display { display: inline-flex; gap: 2px; }
+.star-display span { color: var(--gold); font-size: 0.9rem; }
+.star-display span.empty { color: var(--card2); }
+
+/* NPS BADGE */
+.nps-badge { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; }
+.nps-badge.promoter { background: rgba(46,204,113,0.15); color: var(--green); }
+.nps-badge.neutral { background: rgba(245,166,35,0.15); color: var(--warn); }
+.nps-badge.detractor { background: rgba(255,92,122,0.15); color: var(--danger); }
+
+/* FEEDBACK STATS */
+.fb-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.fb-stat { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; }
+.fb-stat-val { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--teal); }
+.fb-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+/* DENTISTA RANKING */
+.dentista-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 24px; }
+.dentista-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+.dentista-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(10,191,188,0.1); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.dentista-info { flex: 1; min-width: 0; }
+.dentista-nome { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dentista-count { font-size: 0.75rem; color: var(--muted); }
+.dentista-nota { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--gold); }
+
+/* MODAL FEEDBACK */
+.fb-modal-stars { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+.fb-modal-star-item { text-align: center; }
+.fb-modal-star-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+.print-btn { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); border-radius: 10px; padding: 8px 16px; color: #2ECC71; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.print-btn:hover { background: rgba(46,204,113,0.22); }
+.pdf-btn { background: rgba(220,38,38,0.12); border: 1px solid rgba(220,38,38,0.3); border-radius: 10px; padding: 8px 16px; color: #FF5C7A; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.pdf-btn:hover { background: rgba(220,38,38,0.22); }
+.modal-actions { display: flex; gap: 10px; padding: 0 24px 24px; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 16px; }
+  .stats, .fb-stats { grid-template-columns: 1fr 1fr; }
+  .dentista-grid { grid-template-columns: 1fr; }
+  .search-box { width: 150px; }
+}
+
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area { position: fixed !important; inset: 0 !important; background: #fff !important; color: #111 !important; padding: 32px !important; font-family: Arial, sans-serif !important; font-size: 13px !important; }
+  .print-area h1 { color: #0ABFBC; font-size: 1.4rem; margin-bottom: 4px; }
+  .print-area h2 { font-size: 1rem; color: #333; margin: 16px 0 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  .print-area .p-row { display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .print-area .p-label { font-weight: bold; color: #555; min-width: 140px; }
+  .print-area .p-tag { background: #f0f0f0; border-radius: 4px; padding: 2px 8px; font-size: 12px; margin: 2px; display: inline-block; }
+  .print-area .p-tag.red { background: #fee2e2; color: #dc2626; }
+  .print-area .p-tag.yellow { background: #fef3c7; color: #d97706; }
+  .print-area .p-tag.green { background: #dcfce7; color: #16a34a; }
+  .print-area .p-foto { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; float: right; margin: 0 0 12px 16px; border: 2px solid #0ABFBC; }
+  .print-area .p-header { overflow: hidden; margin-bottom: 16px; border-bottom: 2px solid #0ABFBC; padding-bottom: 12px; }
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo-header">
-    <span class="logo-neo">NEO</span><span class="logo-donto">DONTO</span>
-    <span class="logo-kids">KIDS</span>
-  </div>
-  <p>Ficha de Anamnese Infantil</p>
-</header>
-
-<!-- PROGRESS -->
-<div class="progress-wrap">
-  <div class="progress-label">
-    <span>Seu progresso</span>
-    <span id="progressPct">0%</span>
-  </div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="progressFill"></div>
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">NEODONTO</div>
+    <div class="login-sub">PAINEL ADMINISTRATIVO</div>
+    <input type="email" id="loginEmail" placeholder="E-mail" autocomplete="email">
+    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
+    <button class="login-btn" onclick="fazerLogin()">ENTRAR -></button>
+    <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
-<!-- MAIN FORM -->
-<div class="container" id="formContainer">
-
-  <!-- 1. DADOS DA CRIANÇA -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-blue">🧒</div>
-      <div>
-        <div class="section-title">Dados da Criança</div>
-        <div class="section-subtitle">Informações básicas do paciente</div>
-      </div>
-    </div>
-    <div class="field-group">
-      <div class="field span-2">
-        <label>Nome completo da criança <span class="req">*</span></label>
-        <input type="text" id="nomeCrianca" placeholder="Nome da criança" required />
-      </div>
-      <div class="field">
-        <label>Data de nascimento <span class="req">*</span></label>
-        <input type="date" id="dataNascimento" required />
-      </div>
-      <div class="field">
-        <label>Idade</label>
-        <input type="text" id="idadeCrianca" placeholder="Ex: 7 anos" readonly />
-      </div>
-      <div class="field">
-        <label>Sexo</label>
-        <select id="sexo">
-          <option value="">Selecione</option>
-          <option>Masculino</option>
-          <option>Feminino</option>
-          <option>Prefiro não informar</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Escola / Série</label>
-        <input type="text" id="escola" placeholder="Ex: 2º ano" />
-      </div>
-    </div>
+<!-- DASHBOARD -->
+<div class="dash" id="dashWrap">
+  <div class="sidebar">
+    <div class="s-logo">NEODONTO</div>
+    <div class="s-sub">ADMIN PANEL</div>
+    <div class="s-label">Menu</div>
+    <button class="s-btn active" id="btnMenuPacientes" onclick="mudarAba('pacientes')"><span class="s-icon">🦷</span> Pacientes</button>
+    <button class="s-btn" id="btnMenuKids" onclick="mudarAba('kids')"><span class="s-icon">👶</span> Kids</button>
+    <button class="s-btn" id="btnMenuFeedbacks" onclick="mudarAba('feedbacks')"><span class="s-icon">⭐</span> Feedbacks</button>
+    <div class="s-spacer"></div>
+    <button class="s-logout" onclick="fazerLogout()"><span>[S]</span> Sair</button>
   </div>
 
-  <!-- 2. DADOS DO RESPONSÁVEL -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-teal">👨‍👩‍👧</div>
-      <div>
-        <div class="section-title">Responsável</div>
-        <div class="section-subtitle">Quem cuida do pequeno(a)</div>
+  <div class="main">
+
+    <!-- ABA PACIENTES -->
+    <div id="abaPacientes">
+      <div class="topbar">
+        <div class="topbar-title">Fichas de Anamnese</div>
+        <div class="topbar-right">
+          <input type="text" class="search-box" id="searchBox" placeholder=" Buscar paciente..." oninput="filtrarPacientes()">
+          <button class="refresh-btn" onclick="carregarDados()">R Atualizar</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="totalPacientes">-</div><div class="stat-label">Total de pacientes</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="totalHoje">-</div><div class="stat-label">Fichas hoje</div></div>
+        <div class="stat-card"><div class="stat-icon">!</div><div class="stat-val" id="totalAlergias">-</div><div class="stat-label">Com alergias</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="totalMedo">-</div><div class="stat-label">Com medo/ansiedade</div></div>
+      </div>
+      <div class="filtros-wrap" id="filtrosWrap"><span class="filtros-label">> Filtrar por motivo:</span></div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Todos os Pacientes</div>
+          <div class="badge" id="countBadge">0 fichas</div>
+        </div>
+        <div id="tableArea"><div class="loading"><div class="spinner"></div>Carregando fichas...</div></div>
       </div>
     </div>
-    <div class="field-group">
-      <div class="field span-2">
-        <label>Nome do responsável <span class="req">*</span></label>
-        <input type="text" id="nomeResponsavel" placeholder="Nome completo" required />
+
+
+    <!-- ABA KIDS -->
+    <div id="abaKids" style="display:none;">
+      <div class="topbar">
+        <div class="topbar-title">Fichas Kids *</div>
+        <div class="topbar-right">
+          <input type="text" class="search-box" id="searchKids" placeholder=" Buscar crianca..." oninput="filtrarKids()">
+          <button class="refresh-btn" onclick="carregarKids()">R Atualizar</button>
+        </div>
       </div>
-      <div class="field">
-        <label>Parentesco</label>
-        <select id="parentesco">
-          <option value="">Selecione</option>
-          <option>Mãe</option>
-          <option>Pai</option>
-          <option>Avó / Avô</option>
-          <option>Tia / Tio</option>
-          <option>Outro</option>
-        </select>
+      <div class="stats">
+        <div class="stat-card"><div class="stat-icon">*</div><div class="stat-val" id="totalKids">-</div><div class="stat-label">Total kids</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="kidsHoje">-</div><div class="stat-label">Fichas hoje</div></div>
+        <div class="stat-card"><div class="stat-icon">!</div><div class="stat-val" id="kidsAlergias">-</div><div class="stat-label">Com alergias</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="kidsMedo">-</div><div class="stat-label">Com ansiedade</div></div>
       </div>
-      <div class="field">
-        <label>WhatsApp <span class="req">*</span></label>
-        <input type="tel" id="whatsapp" placeholder="(62) 9 0000-0000" required />
-      </div>
-      <div class="field">
-        <label>CPF da criança</label>
-        <input type="text" id="cpf" placeholder="000.000.000-00" />
-      </div>
-      <div class="field">
-        <label>Plano odontológico</label>
-        <input type="text" id="plano" placeholder="Nome do plano ou particular" />
+      <div class="table-card">
+        <div class="table-header"><div class="table-title">Pacientes Kids</div><div class="badge" id="kidsCountBadge">0 fichas</div></div>
+        <div id="kidsTableArea"><div class="loading"><div class="spinner"></div>Carregando fichas kids...</div></div>
       </div>
     </div>
+
+    <!-- ABA FEEDBACKS -->
+    <div id="abaFeedbacks" style="display:none;">
+      <div class="topbar">
+        <div class="topbar-title">Feedbacks dos Pacientes</div>
+        <div class="topbar-right">
+          <input type="text" class="search-box" id="searchFeedback" placeholder=" Buscar dentista..." oninput="filtrarFeedbacks()">
+          <button class="refresh-btn" onclick="carregarFeedbacks()">R Atualizar</button>
+        </div>
+      </div>
+
+      <!-- STATS FEEDBACKS -->
+      <div class="fb-stats">
+        <div class="fb-stat"><div class="stat-icon">*</div><div class="fb-stat-val" id="fbTotal">-</div><div class="fb-stat-label">Total de feedbacks</div></div>
+        <div class="fb-stat"><div class="stat-icon"></div><div class="fb-stat-val" id="fbNps">-</div><div class="fb-stat-label">NPS medio</div></div>
+        <div class="fb-stat"><div class="stat-icon">*</div><div class="fb-stat-val" id="fbNota">-</div><div class="fb-stat-label">Nota geral media</div></div>
+        <div class="fb-stat"><div class="stat-icon">v</div><div class="fb-stat-val" id="fbGoogle">-</div><div class="fb-stat-label">Autorizam Google</div></div>
+      </div>
+
+      <!-- RANKING DENTISTAS -->
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:14px;"> Media por dentista</div>
+      <div class="dentista-grid" id="dentistaGrid"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+
+      <!-- LISTA FEEDBACKS -->
+      <div class="table-card" style="margin-top:8px;">
+        <div class="table-header">
+          <div class="table-title">Todos os Feedbacks</div>
+          <div class="badge" id="fbCountBadge">0 feedbacks</div>
+        </div>
+        <div id="fbTableArea"><div class="loading"><div class="spinner"></div>Carregando feedbacks...</div></div>
+      </div>
+    </div>
+
   </div>
-
-  <!-- 3. SAÚDE GERAL -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-red">❤️‍🩹</div>
-      <div>
-        <div class="section-title">Saúde Geral</div>
-        <div class="section-subtitle">Histórico médico da criança</div>
-      </div>
-    </div>
-    <div class="section-note">📋 Responda com base no histórico do seu filho(a)</div>
-
-    <div class="field-group single">
-      <div class="field">
-        <label>A criança tem ou já teve alguma dessas condições?</label>
-        <div class="check-grid" style="margin-top:8px;" id="condicoes">
-          <label class="check-item"><input type="checkbox" value="Asma/Bronquite" /><span>🫁 Asma/Bronquite</span></label>
-          <label class="check-item"><input type="checkbox" value="Diabetes" /><span>💉 Diabetes</span></label>
-          <label class="check-item"><input type="checkbox" value="Cardiopatia" /><span>❤️ Cardiopatia</span></label>
-          <label class="check-item"><input type="checkbox" value="Epilepsia" /><span>⚡ Epilepsia</span></label>
-          <label class="check-item"><input type="checkbox" value="Hemofilia" /><span>🩸 Hemofilia</span></label>
-          <label class="check-item"><input type="checkbox" value="Hipertensão" /><span>📈 Hipertensão</span></label>
-          <label class="check-item"><input type="checkbox" value="Distúrbios de coagulação" /><span>🩹 Coagulação</span></label>
-          <label class="check-item"><input type="checkbox" value="Autismo/TEA" /><span>🧩 TEA/Autismo</span></label>
-          <label class="check-item"><input type="checkbox" value="TDAH" /><span>⚡ TDAH</span></label>
-          <label class="check-item"><input type="checkbox" value="Síndrome de Down" /><span>💛 Down</span></label>
-          <label class="check-item"><input type="checkbox" value="Problemas renais" /><span>🫘 Rins</span></label>
-          <label class="check-item"><input type="checkbox" value="Nenhuma" /><span>✅ Nenhuma</span></label>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="field-group">
-      <div class="field">
-        <label>Está tomando algum medicamento?</label>
-        <div class="radio-group" id="tomaMedicamento">
-          <label class="radio-pill"><input type="radio" name="tomaMed" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="tomaMed" value="Sim" /><span>Sim</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Faz acompanhamento médico?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="acompMedico" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="acompMedico" value="Sim" /><span>Sim</span></label>
-        </div>
-      </div>
-      <div class="field span-2">
-        <label>Quais medicamentos? (se sim)</label>
-        <input type="text" id="medicamentos" placeholder="Nome dos medicamentos e dosagem" />
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="field-group">
-      <div class="field">
-        <label>Tem alergia a algum medicamento?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="alergiaMed" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="alergiaMed" value="Sim" /><span>Sim</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Tem alergia a látex (luvas)?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="alergiaLatex" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="alergiaLatex" value="Sim" /><span>Sim</span></label>
-        </div>
-      </div>
-      <div class="field span-2">
-        <label>Qual alergia a medicamento? (se sim)</label>
-        <input type="text" id="alergiaMedDesc" placeholder="Ex: Penicilina, AAS, Dipirona..." />
-      </div>
-      <div class="field span-2">
-        <label>Outras alergias (alimentos, pólen, animais...)</label>
-        <input type="text" id="outrasAlergias" placeholder="Descreva as alergias" />
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="field-group">
-      <div class="field">
-        <label>Nasceu prematuro?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="prematuro" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="prematuro" value="Sim" /><span>Sim</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Amamentou? Até que idade?</label>
-        <input type="text" id="amamentacao" placeholder="Ex: Sim, até 2 anos" />
-      </div>
-      <div class="field span-2">
-        <label>Observações de saúde importantes</label>
-        <textarea id="obsGeral" placeholder="Cirurgias, hospitalizações, condições especiais..."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. SAÚDE BUCAL -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-teal">🦷</div>
-      <div>
-        <div class="section-title">Saúde Bucal</div>
-        <div class="section-subtitle">Como estão os dentinhos?</div>
-      </div>
-    </div>
-    <div class="field-group">
-      <div class="field">
-        <label>Já foi ao dentista antes?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="jaDentista" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="jaDentista" value="Sim" /><span>Sim</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Como foi a experiência anterior?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="expAnterior" value="Não se aplica" /><span>N/A</span></label>
-          <label class="radio-pill"><input type="radio" name="expAnterior" value="Ótima" /><span>😊 Ótima</span></label>
-          <label class="radio-pill"><input type="radio" name="expAnterior" value="Regular" /><span>😐 Regular</span></label>
-          <label class="radio-pill"><input type="radio" name="expAnterior" value="Ruim/trauma" /><span>😨 Ruim</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Motivo da consulta hoje</label>
-        <div class="radio-group" style="flex-direction:column;gap:6px;">
-          <label class="radio-pill"><input type="radio" name="motivoConsulta" value="Revisão/prevenção" /><span>🔍 Revisão / prevenção</span></label>
-          <label class="radio-pill"><input type="radio" name="motivoConsulta" value="Dor ou cárie" /><span>🤕 Dor ou cárie</span></label>
-          <label class="radio-pill"><input type="radio" name="motivoConsulta" value="Aparelho ortodôntico" /><span>😁 Aparelho ortodôntico</span></label>
-          <label class="radio-pill"><input type="radio" name="motivoConsulta" value="Extração / dente mole" /><span>🦷 Extração / dente mole</span></label>
-          <label class="radio-pill"><input type="radio" name="motivoConsulta" value="Outro" /><span>📋 Outro</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Hábitos bucais da criança</label>
-        <div class="check-grid" id="habitosBucais">
-          <label class="check-item"><input type="checkbox" value="Chupa dedo" /><span>👍 Chupa dedo</span></label>
-          <label class="check-item"><input type="checkbox" value="Usa chupeta" /><span>🟣 Chupeta</span></label>
-          <label class="check-item"><input type="checkbox" value="Range dentes" /><span>😬 Range dentes</span></label>
-          <label class="check-item"><input type="checkbox" value="Respira pela boca" /><span>💨 Boca aberta</span></label>
-          <label class="check-item"><input type="checkbox" value="Rói unhas" /><span>💅 Rói unhas</span></label>
-          <label class="check-item"><input type="checkbox" value="Morde objetos" /><span>🖊️ Morde objetos</span></label>
-          <label class="check-item"><input type="checkbox" value="Nenhum" /><span>✅ Nenhum</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Com que frequência escova os dentes?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="frequEscova" value="1x ao dia" /><span>1x/dia</span></label>
-          <label class="radio-pill"><input type="radio" name="frequEscova" value="2x ao dia" /><span>2x/dia</span></label>
-          <label class="radio-pill"><input type="radio" name="frequEscova" value="3x ao dia" /><span>3x/dia</span></label>
-          <label class="radio-pill"><input type="radio" name="frequEscova" value="Irregular" /><span>😅 Irregular</span></label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Quem ajuda a escovar?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="ajudaEscova" value="A criança mesma" /><span>👦 Sozinha</span></label>
-          <label class="radio-pill"><input type="radio" name="ajudaEscova" value="Com ajuda dos pais" /><span>👨‍👩 Com pais</span></label>
-          <label class="radio-pill"><input type="radio" name="ajudaEscova" value="Sempre os pais" /><span>👪 Sempre pais</span></label>
-        </div>
-      </div>
-      <div class="field span-2">
-        <label>Queixa principal / o que incomoda</label>
-        <textarea id="queixaPrincipal" placeholder="Descreva a queixa principal da criança ou dos pais..."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- 5. ALIMENTAÇÃO -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-orange">🍎</div>
-      <div>
-        <div class="section-title">Alimentação</div>
-        <div class="section-subtitle">Hábitos que afetam os dentes</div>
-      </div>
-    </div>
-    <div class="field-group">
-      <div class="field span-2">
-        <label>Qual a comida FAVORITA da criança? 😋</label>
-        <div class="check-grid" id="comidaFavorita">
-          <label class="check-item"><input type="checkbox" value="Pizza" /><span>🍕 Pizza</span></label>
-          <label class="check-item"><input type="checkbox" value="Macarrão" /><span>🍝 Macarrão</span></label>
-          <label class="check-item"><input type="checkbox" value="Frango" /><span>🍗 Frango</span></label>
-          <label class="check-item"><input type="checkbox" value="Hambúrguer" /><span>🍔 Hambúrguer</span></label>
-          <label class="check-item"><input type="checkbox" value="Frutas" /><span>🍓 Frutas</span></label>
-          <label class="check-item"><input type="checkbox" value="Arroz e feijão" /><span>🍚 Arroz e feijão</span></label>
-          <label class="check-item"><input type="checkbox" value="Sopa" /><span>🍲 Sopa</span></label>
-          <label class="check-item"><input type="checkbox" value="Salada" /><span>🥗 Salada</span></label>
-        </div>
-      </div>
-      <div class="field span-2">
-        <label>E os DOCES e guloseimas? Consome com que frequência?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="frequDoces" value="Raramente" /><span>😇 Raramente</span></label>
-          <label class="radio-pill"><input type="radio" name="frequDoces" value="Às vezes" /><span>😊 Às vezes</span></label>
-          <label class="radio-pill"><input type="radio" name="frequDoces" value="Todo dia" /><span>😅 Todo dia</span></label>
-          <label class="radio-pill"><input type="radio" name="frequDoces" value="Várias vezes ao dia" /><span>😬 Várias vezes/dia</span></label>
-        </div>
-      </div>
-      <div class="field span-2">
-        <label>Bebe refrigerante ou sucos artificiais?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="refri" value="Não" /><span>❌ Não</span></label>
-          <label class="radio-pill"><input type="radio" name="refri" value="Raramente" /><span>😊 Raramente</span></label>
-          <label class="radio-pill"><input type="radio" name="refri" value="Às vezes" /><span>😐 Às vezes</span></label>
-          <label class="radio-pill"><input type="radio" name="refri" value="Todo dia" /><span>😬 Todo dia</span></label>
-        </div>
-      </div>
-      <div class="field span-2">
-        <label>Costuma comer na cama ou antes de dormir sem escovar?</label>
-        <div class="radio-group">
-          <label class="radio-pill"><input type="radio" name="comeNaCama" value="Não" checked /><span>Não</span></label>
-          <label class="radio-pill"><input type="radio" name="comeNaCama" value="Às vezes" /><span>Às vezes</span></label>
-          <label class="radio-pill"><input type="radio" name="comeNaCama" value="Sempre" /><span>Sempre</span></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. MUNDO DA CRIANÇA -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-purple">🌈</div>
-      <div>
-        <div class="section-title">O Mundinho da Criança</div>
-        <div class="section-subtitle">Para conhecer melhor o nosso pequeno paciente</div>
-      </div>
-    </div>
-
-    <!-- Brincadeiras favoritas -->
-    <div class="field" style="margin-bottom:18px;">
-      <label>Brincadeira favorita 🎮</label>
-      <div class="emoji-grid" style="margin-top:8px;" id="brincadeiras">
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Videogame" />
-          <span class="emoji-big">🎮</span>
-          <span class="emoji-label">Videogame</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Bonecas" />
-          <span class="emoji-big">🪆</span>
-          <span class="emoji-label">Bonecas</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Futebol" />
-          <span class="emoji-big">⚽</span>
-          <span class="emoji-label">Futebol</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Pular corda" />
-          <span class="emoji-big">🪢</span>
-          <span class="emoji-label">Pular corda</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Desenhar" />
-          <span class="emoji-big">🖍️</span>
-          <span class="emoji-label">Desenhar</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Lego" />
-          <span class="emoji-big">🧱</span>
-          <span class="emoji-label">Lego</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Dançar" />
-          <span class="emoji-big">💃</span>
-          <span class="emoji-label">Dançar</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="brinca" value="Ler / histórias" />
-          <span class="emoji-big">📚</span>
-          <span class="emoji-label">Ler</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Personagem favorito -->
-    <div class="field" style="margin-bottom:18px;">
-      <label>Personagem / desenho favorito 🦸</label>
-      <div class="emoji-grid" style="margin-top:8px;" id="personagens">
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Super-heróis" />
-          <span class="emoji-big">🦸</span>
-          <span class="emoji-label">Super-heróis</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Princesas" />
-          <span class="emoji-big">👸</span>
-          <span class="emoji-label">Princesas</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Dinossauros" />
-          <span class="emoji-big">🦕</span>
-          <span class="emoji-label">Dinossauros</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Unicórnios" />
-          <span class="emoji-big">🦄</span>
-          <span class="emoji-label">Unicórnios</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Carros/corrida" />
-          <span class="emoji-big">🏎️</span>
-          <span class="emoji-label">Carrinho</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Animais" />
-          <span class="emoji-big">🐶</span>
-          <span class="emoji-label">Animais</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Astronautas" />
-          <span class="emoji-big">🚀</span>
-          <span class="emoji-label">Astronautas</span>
-        </label>
-        <label class="emoji-card">
-          <input type="checkbox" name="personagem" value="Outro" />
-          <span class="emoji-big">⭐</span>
-          <span class="emoji-label">Outro</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Cor favorita -->
-    <div class="field" style="margin-bottom:18px;">
-      <label>Cor favorita 🎨</label>
-      <div class="radio-group" style="margin-top:8px; flex-wrap:wrap;">
-        <label class="radio-pill"><input type="radio" name="corFav" value="Azul" /><span>💙 Azul</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Rosa" /><span>🩷 Rosa</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Verde" /><span>💚 Verde</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Amarelo" /><span>💛 Amarelo</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Roxo" /><span>💜 Roxo</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Vermelho" /><span>❤️ Vermelho</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Laranja" /><span>🧡 Laranja</span></label>
-        <label class="radio-pill"><input type="radio" name="corFav" value="Arco-íris" /><span>🌈 Arco-íris</span></label>
-      </div>
-    </div>
-
-    <!-- Animal favorito -->
-    <div class="field">
-      <label>Animal favorito 🐾</label>
-      <input type="text" id="animalFav" placeholder="Ex: Cachorro, gato, leão..." style="margin-top:8px;" />
-    </div>
-  </div>
-
-  <!-- 7. COMO A CRIANÇA SE SENTE -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-pink">😊</div>
-      <div>
-        <div class="section-title">Como a Criança Se Sente</div>
-        <div class="section-subtitle">Ajuda a equipe a cuidar melhor</div>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:20px;">
-      <label>Como a criança está se sentindo HOJE?</label>
-      <div class="emoji-grid" style="grid-template-columns: repeat(5, 1fr); margin-top:10px;">
-        <label class="emoji-card">
-          <input type="radio" name="sentimentoHoje" value="Muito animada" />
-          <span class="emoji-big">🤩</span>
-          <span class="emoji-label">Animada!</span>
-        </label>
-        <label class="emoji-card">
-          <input type="radio" name="sentimentoHoje" value="Normal" />
-          <span class="emoji-big">😊</span>
-          <span class="emoji-label">Normal</span>
-        </label>
-        <label class="emoji-card">
-          <input type="radio" name="sentimentoHoje" value="Um pouco nervosa" />
-          <span class="emoji-big">😬</span>
-          <span class="emoji-label">Nervosa</span>
-        </label>
-        <label class="emoji-card">
-          <input type="radio" name="sentimentoHoje" value="Com medo" />
-          <span class="emoji-big">😨</span>
-          <span class="emoji-label">Com medo</span>
-        </label>
-        <label class="emoji-card">
-          <input type="radio" name="sentimentoHoje" value="Não quer estar aqui" />
-          <span class="emoji-big">😤</span>
-          <span class="emoji-label">Resistente</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:20px;">
-      <label>Como a criança costuma reagir em situações novas?</label>
-      <div class="radio-group" style="margin-top:8px;">
-        <label class="radio-pill"><input type="radio" name="reacaoNova" value="Se adapta fácil" /><span>😎 Se adapta fácil</span></label>
-        <label class="radio-pill"><input type="radio" name="reacaoNova" value="Demora um pouco" /><span>🙂 Demora um pouco</span></label>
-        <label class="radio-pill"><input type="radio" name="reacaoNova" value="Fica muito agitada" /><span>😅 Fica agitada</span></label>
-        <label class="radio-pill"><input type="radio" name="reacaoNova" value="Fica muito quieta" /><span>🤫 Fica quieta</span></label>
-        <label class="radio-pill"><input type="radio" name="reacaoNova" value="Chora muito" /><span>😢 Chora</span></label>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:18px;">
-      <label>O que a equipe pode fazer para deixar a criança mais confortável?</label>
-      <div class="check-grid" style="margin-top:8px;" id="confortoOptions">
-        <label class="check-item"><input type="checkbox" value="Conversar bastante" /><span>💬 Conversar bastante</span></label>
-        <label class="check-item"><input type="checkbox" value="Mostrar os instrumentos antes" /><span>🔍 Mostrar instrumentos</span></label>
-        <label class="check-item"><input type="checkbox" value="Deixar com brinquedo" /><span>🧸 Brinquedo</span></label>
-        <label class="check-item"><input type="checkbox" value="Música / vídeo" /><span>🎵 Música/vídeo</span></label>
-        <label class="check-item"><input type="checkbox" value="Trabalhar devagar" /><span>🐢 Devagar</span></label>
-        <label class="check-item"><input type="checkbox" value="Elogiar bastante" /><span>⭐ Elogiar</span></label>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Alguma observação sobre o comportamento ou necessidades especiais?</label>
-      <textarea id="obsComportamento" placeholder="Ex: A criança tem dificuldade de ficar parada, tem sensibilidade sensorial..." style="margin-top:8px;"></textarea>
-    </div>
-  </div>
-
-  <!-- 8. FOTO DA CRIANÇA -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-green">📸</div>
-      <div>
-        <div class="section-title">Foto da Criança</div>
-        <div class="section-subtitle">Para identificação no prontuário</div>
-      </div>
-    </div>
-    <div class="selfie-area" onclick="document.getElementById('selfieInput').click()">
-      <div class="selfie-icon">📷</div>
-      <p>Toque aqui para tirar ou enviar uma foto</p>
-      <input type="file" id="selfieInput" accept="image/*" capture="user" />
-      <img id="selfiePreview" alt="Foto da criança" />
-    </div>
-    <p class="helper" style="margin-top:8px;">Opcional — ajuda a reconhecer a criança no painel da clínica</p>
-  </div>
-
-  <!-- 9. AVALIAÇÃO FINAL -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-icon icon-gold">⭐</div>
-      <div>
-        <div class="section-title">Avaliação do Responsável</div>
-        <div class="section-subtitle">Sua opinião é muito importante</div>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:20px;">
-      <label>Como ficou sabendo da NEODONTO?</label>
-      <div class="radio-group" style="margin-top:8px; flex-wrap:wrap;">
-        <label class="radio-pill"><input type="radio" name="comoSoube" value="Indicação de amigo" /><span>👥 Indicação</span></label>
-        <label class="radio-pill"><input type="radio" name="comoSoube" value="Instagram" /><span>📸 Instagram</span></label>
-        <label class="radio-pill"><input type="radio" name="comoSoube" value="Google" /><span>🔍 Google</span></label>
-        <label class="radio-pill"><input type="radio" name="comoSoube" value="WhatsApp" /><span>💬 WhatsApp</span></label>
-        <label class="radio-pill"><input type="radio" name="comoSoube" value="Já era paciente" /><span>🏥 Já paciente</span></label>
-        <label class="radio-pill"><input type="radio" name="comoSoube" value="Outro" /><span>📋 Outro</span></label>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:20px;">
-      <label>Avalie sua expectativa em relação à NEODONTO Kids</label>
-      <div class="star-row" style="margin-top:10px;" id="starRating">
-        <button type="button" class="star-btn" data-val="1">⭐</button>
-        <button type="button" class="star-btn" data-val="2">⭐</button>
-        <button type="button" class="star-btn" data-val="3">⭐</button>
-        <button type="button" class="star-btn" data-val="4">⭐</button>
-        <button type="button" class="star-btn" data-val="5">⭐</button>
-        <span id="starLabel" style="font-size:0.85rem; color:var(--cinza); font-weight:700; margin-left:4px;"></span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Mensagem para a equipe (opcional)</label>
-      <textarea id="mensagemEquipe" placeholder="Algo que gostaria que a equipe soubesse antes da consulta..."></textarea>
-    </div>
-  </div>
-
-  <!-- SUBMIT -->
-  <button class="btn-submit" id="btnEnviar" type="button" onclick="enviarFicha()">
-    🦷 Enviar Ficha da Criança
-  </button>
-
 </div>
 
-<!-- SUCCESS SCREEN -->
-<div class="container" id="successScreen">
-  <div class="success-emoji">🎉</div>
-  <h2>Ficha enviada com sucesso!</h2>
-  <p>Obrigado! A equipe NEODONTO Kids já recebeu os dados e está ansiosa para receber o(a) pequeno(a)!</p>
-  <div style="font-size:2.5rem; margin-top:8px;">🦷 ⭐ 😊</div>
+<div class="print-area" id="printArea" style="display:none"></div>
+
+<div class="modal-bg" id="modalBg" onclick="fecharModal(event)">
+  <div class="modal" id="modalContent"></div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- FIREBASE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",
@@ -1136,236 +311,754 @@
     projectId: "neodonto-808ea",
     storageBucket: "neodonto-808ea.firebasestorage.app",
     messagingSenderId: "602833895297",
-    appId: "1:602833895297:web:6744ea4b28739aced43280",
-    measurementId: "G-JNP1JFP6G7"
+    appId: "1:602833895297:web:6744ea4b28739aced43280"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
 
-  // ---- PROGRESS ----
-  function updateProgress() {
-    const total = 9;
-    let filled = 0;
-    if (document.getElementById('nomeCrianca').value.trim()) filled++;
-    if (document.getElementById('nomeResponsavel').value.trim()) filled++;
-    if (document.getElementById('whatsapp').value.trim()) filled++;
-    if (document.querySelector('input[name="jaDentista"]:checked')) filled++;
-    if (document.querySelector('input[name="sentimentoHoje"]:checked')) filled++;
-    if (document.querySelector('input[name="frequEscova"]:checked')) filled++;
-    if (document.querySelectorAll('#condicoes input:checked').length > 0) filled++;
-    if (document.querySelectorAll('#brincadeiras input:checked').length > 0) filled++;
-    if (document.querySelector('input[name="frequDoces"]:checked')) filled++;
-    const pct = Math.round((filled / total) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressPct').textContent = pct + '%';
-  }
+  let todosPacientes = [];
+  let todosFeedbacks = [];
 
-  document.addEventListener('input', updateProgress);
-  document.addEventListener('change', updateProgress);
-
-  // ---- IDADE AUTO ----
-  document.getElementById('dataNascimento').addEventListener('change', function () {
-    const birth = new Date(this.value);
-    if (!isNaN(birth)) {
-      const hoje = new Date();
-      let anos = hoje.getFullYear() - birth.getFullYear();
-      const m = hoje.getMonth() - birth.getMonth();
-      if (m < 0 || (m === 0 && hoje.getDate() < birth.getDate())) anos--;
-      const meses = ((hoje.getFullYear() - birth.getFullYear()) * 12 + (hoje.getMonth() - birth.getMonth()));
-      document.getElementById('idadeCrianca').value = anos >= 1 ? `${anos} ano${anos !== 1 ? 's' : ''}` : `${meses} meses`;
+  // -- AUTH --
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('dashWrap').style.display = 'block';
+      carregarDados();
+    } else {
+      document.getElementById('loginWrap').style.display = 'flex';
+      document.getElementById('dashWrap').style.display = 'none';
     }
   });
 
-  // ---- SELFIE ----
-  document.getElementById('selfieInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = document.getElementById('selfiePreview');
-      img.src = e.target.result;
-      img.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  });
+  window.fazerLogin = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const err   = document.getElementById('loginErr');
+    err.textContent = '';
+    try { await signInWithEmailAndPassword(auth, email, pass); }
+    catch(e) { err.textContent = 'E-mail ou senha incorretos.'; }
+  };
 
-  // ---- EMOJI CARDS click toggle ----
-  document.querySelectorAll('.emoji-card input').forEach(inp => {
-    inp.addEventListener('change', () => {
-      if (inp.type === 'radio') {
-        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => {
-          r.closest('.emoji-card').classList.remove('selected');
-        });
-        inp.closest('.emoji-card').classList.add('selected');
-      } else {
-        inp.closest('.emoji-card').classList.toggle('selected', inp.checked);
-      }
-    });
-  });
+  window.fazerLogout = async function() { await signOut(auth); };
 
-  // Inicializa estado selecionado
-  document.querySelectorAll('.emoji-card input:checked').forEach(inp => {
-    inp.closest('.emoji-card').classList.add('selected');
-  });
+  // -- ABAS --
 
-  // ---- EMOJI CARDS toggle ----
-  document.querySelectorAll('.emoji-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      var inp = card.querySelector('input');
-      if (!inp) return;
-      if (inp.type === 'radio') {
-        document.querySelectorAll('input[name="' + inp.name + '"]').forEach(function(r) {
-          r.closest('.emoji-card').classList.remove('selected');
-        });
-        inp.checked = true;
-        card.classList.add('selected');
-      } else {
-        inp.checked = !inp.checked;
-        card.classList.toggle('selected', inp.checked);
-      }
-    });
-  });
 
-  // ---- CHECK ITEMS highlight ----
-  document.querySelectorAll('.check-item input').forEach(inp => {
-    inp.addEventListener('change', () => {
-      inp.closest('.check-item').classList.toggle('checked', inp.checked);
-    });
-  });
+  // -- PACIENTES --
+  window.carregarDados = async function() {
+    document.getElementById('tableArea').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando fichas...</div>`;
+    try {
+      const q    = collection(db, 'anamneses');
+      const snap = await getDocs(q);
+      todosPacientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderizarPacientes(todosPacientes);
+      atualizarStats(todosPacientes);
+      gerarFiltrosMotivo();
+    } catch(e) {
+      document.getElementById('tableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3><p>Verifique as regras do Firestore.</p></div>`;
+    }
+  };
 
-  // ---- STAR RATING ----
-  let starValue = 0;
-  const starLabels = ['', 'Ruim 😟', 'Regular 😐', 'Bom 😊', 'Ótimo 😁', 'Excelente 🤩'];
-  document.querySelectorAll('.star-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      starValue = parseInt(btn.dataset.val);
-      document.querySelectorAll('.star-btn').forEach((b, i) => {
-        b.textContent = i < starValue ? '⭐' : '☆';
-      });
-      document.getElementById('starLabel').textContent = starLabels[starValue] || '';
-    });
-  });
-
-  // ---- HELPERS ----
-  function getChecked(containerId) {
-    return Array.from(document.querySelectorAll(`#${containerId} input:checked`)).map(i => i.value);
+  function atualizarStats(lista) {
+    document.getElementById('totalPacientes').textContent = lista.length;
+    const hoje = new Date().toDateString();
+    document.getElementById('totalHoje').textContent      = lista.filter(p => p.enviadoEm && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString() === hoje).length;
+    document.getElementById('totalAlergias').textContent  = lista.filter(p => p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias')).length;
+    document.getElementById('totalMedo').textContent      = lista.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso') || p.ansiedade.includes('medo') || p.ansiedade.includes('Fobia'))).length;
   }
 
-  function getCheckedName(name) {
-    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(i => i.value);
+  function renderizarPacientes(lista) {
+    document.getElementById('countBadge').textContent = `${lista.length} fichas`;
+    if (lista.length === 0) {
+      document.getElementById('tableArea').innerHTML = `<div class="empty"><div class="empty-icon"></div><h3>Nenhuma ficha encontrada</h3><p>As fichas preenchidas pelos pacientes aparecerao aqui.</p></div>`;
+      return;
+    }
+    const rows = lista.map((p, i) => {
+      const nome  = p.dadosPessoais?.nome || '-';
+      const tel   = p.dadosPessoais?.telefone || '-';
+      const motivo = p.motivoConsulta || '-';
+      const data  = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleDateString('pt-BR') : '-';
+      const temAlergia = p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias');
+      const temMedo    = p.ansiedade && (p.ansiedade.includes('ansioso') || p.ansiedade.includes('medo') || p.ansiedade.includes('Fobia'));
+      const selfie     = p.dadosPessoais?.selfie;
+      const avatarHtml = selfie ? `<img class="avatar" src="${selfie}" alt="Foto" />` : `<div class="avatar-placeholder">*</div>`;
+      return `<tr onclick="abrirModalPaciente(${i})">
+        <td><div class="td-paciente">${avatarHtml}<div class="td-name">${nome}</div></div></td>
+        <td><div class="td-muted">${tel}</div></td>
+        <td><span class="td-tag">${motivo}</span></td>
+        <td>
+          ${temAlergia ? '<span class="td-tag danger">! Alergia</span>' : ''}
+          ${temMedo    ? '<span class="td-tag warn"> Ansioso</span>'   : ''}
+          ${!temAlergia && !temMedo ? '<span class="td-tag">v Ok</span>' : ''}
+        </td>
+        <td><div class="td-muted">${p.timeFutebol || '-'}</div></td>
+        <td><div class="td-muted">${data}</div></td>
+        <td><button class="view-btn">Ver ficha</button></td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('tableArea').innerHTML = `
+      <table>
+        <thead><tr>
+          <th>Paciente</th><th>Telefone</th><th>Motivo</th>
+          <th>Alertas</th><th>Time </th><th>Data</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
   }
 
-  function getRadio(name) {
-    const el = document.querySelector(`input[name="${name}"]:checked`);
-    return el ? el.value : '';
+  let filtroMotivoAtivo = null;
+
+  function gerarFiltrosMotivo() {
+    const motivos = {};
+    todosPacientes.forEach(p => { const m = p.motivoConsulta || 'Outros'; motivos[m] = (motivos[m]||0)+1; });
+    const wrap = document.getElementById('filtrosWrap');
+    const btns = Object.entries(motivos).sort((a,b)=>b[1]-a[1]).map(([m,count]) =>
+      `<button class="filtro-btn" onclick="filtrarMotivo('${m}')">${m}<span class="filtro-count">${count}</span></button>`
+    ).join('');
+    wrap.innerHTML = `<span class="filtros-label">> Filtrar por motivo:</span>
+      <button class="filtro-btn ativo" onclick="filtrarMotivo(null)">Todos <span class="filtro-count">${todosPacientes.length}</span></button>${btns}`;
   }
 
-  function showToast(msg, duration = 3000) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), duration);
+  window.filtrarMotivo = function(motivo) {
+    filtroMotivoAtivo = motivo;
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+      btn.classList.remove('ativo');
+      const labelBase = btn.textContent.replace(/\d+/g,'').trim();
+      if ((!motivo && labelBase==='Todos') || labelBase===motivo) btn.classList.add('ativo');
+    });
+    aplicarFiltros();
+  };
+
+  window.filtrarPacientes = function() { aplicarFiltros(); };
+
+  function aplicarFiltros() {
+    const q = document.getElementById('searchBox').value.toLowerCase();
+    let resultado = todosPacientes.filter(p =>
+      (p.dadosPessoais?.nome||'').toLowerCase().includes(q) ||
+      (p.dadosPessoais?.telefone||'').includes(q)
+    );
+    if (filtroMotivoAtivo) resultado = resultado.filter(p => (p.motivoConsulta||'Outros')===filtroMotivoAtivo);
+    renderizarPacientes(resultado);
   }
 
-  // ---- SUBMIT ----
-  window.enviarFicha = async function () {
-    const nome = document.getElementById('nomeCrianca').value.trim();
-    const responsavel = document.getElementById('nomeResponsavel').value.trim();
-    const wpp = document.getElementById('whatsapp').value.trim();
+  // -- FEEDBACKS --
+  window.carregarFeedbacks = async function() {
+    document.getElementById('fbTableArea').innerHTML  = `<div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>`;
+    document.getElementById('dentistaGrid').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
+    try {
+      const q    = collection(db, 'feedbacks');
+      const snap = await getDocs(q);
+      todosFeedbacks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderizarFeedbacks(todosFeedbacks);
+      renderizarStatsFeedbacks(todosFeedbacks);
+      renderizarDentistas(todosFeedbacks);
+    } catch(e) {
+      document.getElementById('fbTableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar feedbacks</h3><p>${e.message}</p></div>`;
+    }
+  };
 
-    if (!nome || !responsavel || !wpp) {
-      showToast('⚠️ Preencha os campos obrigatórios!');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  function renderizarStatsFeedbacks(lista) {
+    document.getElementById('fbTotal').textContent  = lista.length;
+    const comNps    = lista.filter(f => f.nps !== null && f.nps !== undefined);
+    const npsMedia  = comNps.length ? (comNps.reduce((s,f)=>s+f.nps,0)/comNps.length).toFixed(1) : '-';
+    document.getElementById('fbNps').textContent    = npsMedia;
+    const comNota   = lista.filter(f => (f.avaliacao_geral || 0));
+    const notaMedia = comNota.length ? (comNota.reduce((s,f)=>s+f.avaliacao_geral,0)/comNota.length).toFixed(1) : '-';
+    document.getElementById('fbNota').textContent   = notaMedia ? `${notaMedia}` : '-';
+    const google    = lista.filter(f => f.autorizaGoogle).length;
+    document.getElementById('fbGoogle').textContent = google;
+  }
+
+  function renderizarDentistas(lista) {
+    const mapa = {};
+    lista.forEach(f => {
+      if (!f.dentista) return;
+      if (!mapa[f.dentista]) mapa[f.dentista] = { notas: [], count: 0 };
+      if (f.avaliacao_dentista) mapa[f.dentista].notas.push(f.avaliacao_dentista);
+      mapa[f.dentista].count++;
+    });
+
+    const dentistas = Object.entries(mapa).map(([nome, dados]) => ({
+      nome,
+      count: dados.count,
+      media: dados.notas.length ? (dados.notas.reduce((s,n)=>s+n,0)/dados.notas.length).toFixed(1) : '-'
+    })).sort((a,b) => parseFloat(b.media)||0 - parseFloat(a.media)||0);
+
+    if (dentistas.length === 0) {
+      document.getElementById('dentistaGrid').innerHTML = `<div class="empty"><p>Nenhum feedback com dentista informado.</p></div>`;
       return;
     }
 
-    const btn = document.getElementById('btnEnviar');
-    btn.disabled = true;
-    btn.textContent = '⏳ Enviando...';
+    document.getElementById('dentistaGrid').innerHTML = dentistas.map(d => `
+      <div class="dentista-card">
+        <div class="dentista-avatar">*</div>
+        <div class="dentista-info">
+          <div class="dentista-nome">${d.nome}</div>
+          <div class="dentista-count">${d.count} avaliacao${d.count !== 1 ? 'oes' : ''}</div>
+          <div>${renderStars(parseFloat(d.media)||0)}</div>
+        </div>
+        <div class="dentista-nota">${d.media}</div>
+      </div>`).join('');
+  }
 
-    let fotoBase64 = '';
-    const imgEl = document.getElementById('selfiePreview');
-    if (imgEl.src && imgEl.src.startsWith('data:')) fotoBase64 = imgEl.src;
+  window.renderStars = function renderStars(nota) {
+    let html = '<div class="star-display">';
+    for (let i = 1; i <= 5; i++) {
+      html += `<span ${i <= Math.round(nota) ? '' : 'class="empty"'}>&#9733;</span>`;
+    }
+    return html + '</div>';
+  }
 
-    const dados = {
-      tipo: 'infantil',
-      crianca: {
-        nome,
-        dataNascimento: document.getElementById('dataNascimento').value,
-        idade: document.getElementById('idadeCrianca').value,
-        sexo: document.getElementById('sexo').value,
-        escola: document.getElementById('escola').value,
-      },
-      responsavel: {
-        nome: responsavel,
-        parentesco: document.getElementById('parentesco').value,
-        whatsapp: wpp,
-        cpf: document.getElementById('cpf').value,
-        plano: document.getElementById('plano').value,
-      },
-      saudeGeral: {
-        condicoes: getChecked('condicoes'),
-        tomaMedicamento: getRadio('tomaMed'),
-        medicamentos: document.getElementById('medicamentos').value,
-        alergiaMedicamento: getRadio('alergiaMed'),
-        alergiaMedDesc: document.getElementById('alergiaMedDesc').value,
-        alergiaLatex: getRadio('alergiaLatex'),
-        outrasAlergias: document.getElementById('outrasAlergias').value,
-        acompanhamentoMedico: getRadio('acompMedico'),
-        prematuro: getRadio('prematuro'),
-        amamentacao: document.getElementById('amamentacao').value,
-        observacoes: document.getElementById('obsGeral').value,
-      },
-      saudeBucal: {
-        jaDentista: getRadio('jaDentista'),
-        experienciaAnterior: getRadio('expAnterior'),
-        motivoConsulta: getRadio('motivoConsulta'),
-        habitosBucais: getChecked('habitosBucais'),
-        frequenciaEscovacao: getRadio('frequEscova'),
-        ajudaEscovacao: getRadio('ajudaEscova'),
-        queixaPrincipal: document.getElementById('queixaPrincipal').value,
-      },
-      alimentacao: {
-        comidaFavorita: getChecked('comidaFavorita'),
-        frequenciaDoces: getRadio('frequDoces'),
-        refrigerante: getRadio('refri'),
-        comeNaCama: getRadio('comeNaCama'),
-      },
-      mundoCrianca: {
-        brincadeiras: getCheckedName('brinca'),
-        personagens: getCheckedName('personagem'),
-        corFavorita: getRadio('corFav'),
-        animalFavorito: document.getElementById('animalFav').value,
-      },
-      comportamento: {
-        sentimentoHoje: getRadio('sentimentoHoje'),
-        reacaoNova: getRadio('reacaoNova'),
-        confortoOptions: getChecked('confortoOptions'),
-        observacoes: document.getElementById('obsComportamento').value,
-      },
-      avaliacao: {
-        comoSoube: getRadio('comoSoube'),
-        estrelas: starValue,
-        mensagemEquipe: document.getElementById('mensagemEquipe').value,
-      },
-      foto: fotoBase64,
-      criadoEm: serverTimestamp(),
-    };
+  function npsClass(n) {
+    if (n === null || n === undefined) return '';
+    if (n >= 9) return 'promoter';
+    if (n >= 7) return 'neutral';
+    return 'detractor';
+  }
 
+  function renderizarFeedbacks(lista) {
+    document.getElementById('fbCountBadge').textContent = `${lista.length} feedbacks`;
+    if (lista.length === 0) {
+      document.getElementById('fbTableArea').innerHTML = `<div class="empty"><div class="empty-icon">*</div><h3>Nenhum feedback ainda</h3><p>Os feedbacks enviados pelos pacientes aparecerao aqui.</p></div>`;
+      return;
+    }
+    const rows = lista.map((f, i) => {
+      const nome     = f.anonimo ? 'Anonimo' : (f.nome || '-');
+      const dentista = f.dentista || '-';
+      const data     = ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) ? new Date(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp).seconds*1000).toLocaleDateString('pt-BR') : '-';
+      const nps      = f.nps !== null && f.nps !== undefined ? f.nps : '-';
+      const nClass   = npsClass(f.nps);
+      const nota     = f.avaliacao_geral || 0;
+      return `<tr onclick="abrirModalFeedback(${i})">
+        <td><div class="td-name">${f.anonimo ? ' '+nome : nome}</div></td>
+        <td><div class="td-muted">${dentista}</div></td>
+        <td>${renderStars(nota)}</td>
+        <td><span class="nps-badge ${nClass}">${nps}</span></td>
+        <td><div class="td-muted">${f.tratamento || '-'}</div></td>
+        <td><div class="td-muted">${data}</div></td>
+        <td><button class="view-btn">Ver</button></td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('fbTableArea').innerHTML = `
+      <table>
+        <thead><tr>
+          <th>Paciente</th><th>Dentista</th><th>Nota geral</th>
+          <th>NPS</th><th>Tratamento</th><th>Data</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  window.filtrarFeedbacks = function() {
+    const q = document.getElementById('searchFeedback').value.toLowerCase();
+    const resultado = todosFeedbacks.filter(f =>
+      (f.nome||'').toLowerCase().includes(q) ||
+      (f.dentista||'').toLowerCase().includes(q) ||
+      (f.tratamento||'').toLowerCase().includes(q)
+    );
+    renderizarFeedbacks(resultado);
+  };
+
+  // -- MODAL FEEDBACK --
+  window.abrirModalFeedback = function(i) {
+    const f = todosFeedbacks[i];
+    const nome     = f.anonimo ? ' Anonimo' : (f.nome || '-');
+    const data     = ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) ? new Date(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp).seconds*1000).toLocaleString('pt-BR') : '-';
+    const nClass   = npsClass(f.nps);
+    const destaques = (f.destaques_positivos||[]).map(d=>`<span class="m-tag">${d}</span>`).join('') || '<span class="m-empty">Nenhum selecionado</span>';
+
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-head">
+        <div class="modal-name">* ${nome}</div>
+        <div class="modal-date">* ${f.dentista||'-'} &nbsp;|&nbsp;  ${data}</div>
+        <div class="modal-date" style="margin-top:4px"> ${f.tratamento||'-'}</div>
+        <button class="modal-close" onclick="fecharModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="fb-modal-stars">
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Geral</div>${renderStars(f.avaliacao_geral||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Dentista</div>${renderStars(f.avaliacao_dentista||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Recepcao</div>${renderStars(f.avaliacao_recepcao||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">NPS</div><span class="nps-badge ${nClass}" style="width:auto;padding:4px 12px;">${f.nps!==null&&f.nps!==undefined?f.nps:'-'}</span></div>
+        </div>
+        <div class="m-section"><div class="m-section-title"> Como se sentiu</div><div class="m-tags"><span class="m-tag">${(f.emocao || f.sentimento)||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Destaques positivos</div><div class="m-tags">${destaques}</div></div>
+        ${f.comentarioPositivo ? `<div class="m-section"><div class="m-section-title"> O que mais gostou</div><div style="font-size:0.88rem;color:var(--text);line-height:1.6;padding:12px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${f.comentarioPositivo}</div></div>` : ''}
+        ${f.comentarioMelhoria ? `<div class="m-section"><div class="m-section-title"> Sugestao de melhoria</div><div style="font-size:0.88rem;color:var(--text);line-height:1.6;padding:12px;background:rgba(245,166,35,0.05);border-radius:10px;border:1px solid rgba(245,166,35,0.2)">${f.comentarioMelhoria}</div></div>` : ''}
+        <div class="m-section" style="margin-bottom:0"><div class="m-section-title"> Autoriza Google</div><div class="m-tags"><span class="m-tag ${f.autorizaGoogle?'green':''}">${f.autorizaGoogle?'v Sim':'x Nao'}</span></div></div>
+      </div>`;
+
+    document.getElementById('modalBg').classList.add('open');
+  };
+
+  // -- MODAL PACIENTE --
+  window.abrirModalPaciente = function(index) {
+    const p = todosPacientes[index];
+    const nome   = p.dadosPessoais?.nome || '-';
+    const nascRaw= p.dadosPessoais?.nascimento || '';
+    const nasc   = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
+    const tel    = p.dadosPessoais?.telefone || '-';
+    const data   = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
+
+    function tagList(arr, cls='') {
+      if (!arr||arr.length===0) return `<span class="m-empty">Nenhum informado</span>`;
+      if (!Array.isArray(arr)) return `<span class="m-tag ${cls}">${arr}</span>`;
+      return arr.map(t=>`<span class="m-tag ${cls}">${t}</span>`).join('');
+    }
+
+    const temAlergia = p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias');
+    const fotoModal  = p.dadosPessoais?.selfie
+      ? `<img class="modal-avatar" src="${p.dadosPessoais.selfie}" alt="Foto" />`
+      : `<div class="modal-avatar-placeholder">*</div>`;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-head">
+        <div class="modal-name">* ${nome}</div>
+        <div class="modal-date"> Nascimento: ${nasc} &nbsp;|&nbsp;  ${tel}</div>
+        <div class="modal-date" style="margin-top:4px"> Enviado em: ${data}</div>
+        ${fotoModal}
+        <button class="modal-close" onclick="fecharModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="m-section"><div class="m-section-title">> Motivo</div><div class="m-tags"><span class="m-tag green">${p.motivoConsulta||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Saude Geral</div><div class="m-tags">${tagList(p.saudeGeral)}</div></div>
+        <div class="m-section"><div class="m-section-title">! Alergias</div><div class="m-tags">${tagList(p.alergias, temAlergia?'red':'')}</div></div>
+        <div class="m-section"><div class="m-section-title"> Medicamentos</div><div class="m-tags">${tagList(p.medicamentos,'yellow')}</div></div>
+        <div class="m-section"><div class="m-section-title">* Saude Bucal</div><div class="m-tags">${tagList(p.saudeBucal)}</div></div>
+        <div class="m-section"><div class="m-section-title"> Ansiedade</div><div class="m-tags"><span class="m-tag yellow">${p.ansiedade||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Habitos</div><div class="m-tags">${tagList(p.habitos)}</div></div>
+        <div style="border-top:1px solid var(--border);margin:16px 0"></div>
+        <div class="m-section"><div class="m-section-title"> Time</div><div class="m-tags"><span class="m-tag">${p.timeFutebol||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Musica</div><div class="m-tags">${tagList(p.musica)}</div></div>
+        <div class="m-section"><div class="m-section-title"> Filmes</div><div class="m-tags">${tagList(p.filmes)}</div></div>
+        <div class="m-section"><div class="m-section-title"> Lazer</div><div class="m-tags">${tagList(p.lazer)}</div></div>
+      </div>
+      <div class="modal-actions">
+        <button class="print-btn" onclick="imprimirFicha(${index})"> Imprimir ficha</button>
+        <button class="pdf-btn" onclick="salvarPDF(${index})"> Salvar PDF</button>
+      </div>`;
+
+    document.getElementById('modalBg').classList.add('open');
+  };
+
+
+  // -- KIDS --
+  let todosKids = [];
+  window.carregarKids = async function() {
+    document.getElementById('kidsTableArea').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
     try {
-      await addDoc(collection(db, 'anamneses'), dados);
-      document.getElementById('formContainer').style.display = 'none';
-      const success = document.getElementById('successScreen');
-      success.style.display = 'flex';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-      console.error(err);
-      showToast('❌ Erro ao enviar. Tente novamente.');
-      btn.disabled = false;
-      btn.textContent = '🦷 Enviar Ficha da Criança';
+      const q = collection(db, 'anamneses');
+      const snap = await getDocs(q);
+      const todas = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      todosKids = todas.filter(p => p.crianca?.nome || p.tipo === 'infantil');
+      renderizarKids(todosKids);
+      const hoje = new Date().toDateString();
+      document.getElementById('totalKids').textContent = todosKids.length;
+      document.getElementById('kidsHoje').textContent = todosKids.filter(p => (p.criadoEm||p.enviadoEm) && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString()===hoje).length;
+      document.getElementById('kidsAlergias').textContent = todosKids.filter(p => p.saudeGeral?.alergiaMedicamento==='Sim' || p.saudeGeral?.alergiaLatex==='Sim' || p.saudeGeral?.outrasAlergias || (p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias'))).length;
+      document.getElementById('kidsMedo').textContent = todosKids.filter(p => { const s = p.comportamento?.sentimentoHoje || p.ansiedade || ''; return s.toLowerCase().includes('ansios') || s.toLowerCase().includes('medo') || s.toLowerCase().includes('nervos'); }).length;
+    } catch(e) {
+      document.getElementById('kidsTableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>`;
     }
   };
+
+  function renderizarKids(lista) {
+    document.getElementById('kidsCountBadge').textContent = lista.length + ' fichas';
+    if(lista.length===0){
+      document.getElementById('kidsTableArea').innerHTML = `<div class="empty"><div class="empty-icon">*</div><h3>Nenhuma ficha kids</h3><p>As fichas infantis aparecerao aqui.</p></div>`;
+      return;
+    }
+    const rows = lista.map((p,i) => {
+      const idx  = todosKids.indexOf(p);
+      const nome = p.crianca?.nome || p.dadosPessoais?.nome || p.nomeCrianca || '-';
+      const resp = p.responsavel?.nome || p.dadosPessoais?.responsavel || p.nomeResponsavel || '-';
+      const tel  = p.responsavel?.whatsapp || p.dadosPessoais?.telefone || p.whatsappResponsavel || '-';
+      const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleDateString('pt-BR') : (p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleDateString('pt-BR') : '-');
+      const temAlergia = (p.saudeGeral?.alergiaMedicamento === 'Sim') || (p.saudeGeral?.alergiaLatex === 'Sim') || (p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias'));
+      return `<tr style="cursor:pointer" onclick="abrirModalKids(${idx})">
+        <td><div class="td-paciente"><div class="avatar-placeholder">👶</div><div class="td-name">${nome}</div></div></td>
+        <td><div class="td-muted">${resp}</div></td>
+        <td><div class="td-muted">${tel}</div></td>
+        <td>${temAlergia?'<span class="td-tag danger">⚠️ Alergia</span>':'<span class="td-tag">✅ Ok</span>'}</td>
+        <td><div class="td-muted">${data}</div></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('kidsTableArea').innerHTML = `<table><thead><tr><th>Crianca</th><th>Responsavel</th><th>Telefone</th><th>Alertas</th><th>Data</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  window.filtrarKids = function() {
+    const q = document.getElementById('searchKids').value.toLowerCase();
+    const r = todosKids.filter(p => {
+      const nome = (p.crianca?.nome || p.dadosPessoais?.nome || p.nomeCrianca || '').toLowerCase();
+      const resp = (p.responsavel?.nome || p.dadosPessoais?.responsavel || p.nomeResponsavel || '').toLowerCase();
+      return nome.includes(q) || resp.includes(q);
+    });
+    renderizarKids(r);
+  };
+
+  // mudarAba - atualizar para incluir kids
+  window.mudarAba = function(aba) {
+    ['abaPacientes','abaKids','abaFeedbacks'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+    ['btnMenuPacientes','btnMenuKids','btnMenuFeedbacks'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.remove('active');
+    });
+    const abaId = 'aba' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    const btnId = 'btnMenu' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    const abaEl = document.getElementById(abaId);
+    const btnEl = document.getElementById(btnId);
+    if(abaEl) abaEl.style.display = 'block';
+    if(btnEl) btnEl.classList.add('active');
+    if(aba==='kids' && todosKids.length===0) carregarKids();
+    if(aba==='feedbacks' && todosFeedbacks.length===0) carregarFeedbacks();
+  };
+
+  // -- MODAL KIDS --
+  window.abrirModalKids = function(index) {
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || p.nomeCrianca || '-';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const idade= p.crianca?.idade || '-';
+    const sexo = p.crianca?.sexo || '-';
+    const resp = p.responsavel?.nome || p.nomeResponsavel || '-';
+    const tel  = p.responsavel?.whatsapp || p.whatsappResponsavel || '-';
+    const plano= p.responsavel?.plano || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : (p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-');
+
+    function tag(v, cls='') {
+      if (!v || v === '-') return `<span class="m-empty">Não informado</span>`;
+      return `<span class="m-tag ${cls}">${v}</span>`;
+    }
+    function tagArr(arr, cls='') {
+      if (!arr || arr.length === 0) return `<span class="m-empty">Nenhum informado</span>`;
+      return arr.map(t => `<span class="m-tag ${cls}">${t}</span>`).join('');
+    }
+
+    const s  = p.saudeGeral || {};
+    const sb = p.saudeBucal || {};
+    const al = p.alimentacao || {};
+    const mc = p.mundoCrianca || {};
+    const co = p.comportamento || {};
+    const av = p.avaliacao || {};
+
+    const temAlergia = s.alergiaMedicamento === 'Sim' || s.alergiaLatex === 'Sim';
+
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-head">
+        ${p.foto ? `<img class="modal-avatar" src="${p.foto}" alt="Foto" />` : `<div class="modal-avatar-placeholder">👶</div>`}         <div class="modal-name">👶 ${nome}</div>
+        <div class="modal-date">📅 ${nasc} &nbsp;|&nbsp; ${idade} &nbsp;|&nbsp; ${sexo}</div>
+        <div class="modal-date" style="margin-top:4px">👨‍👩‍👧 Responsável: ${resp} &nbsp;|&nbsp; 📱 ${tel}</div>
+        <div class="modal-date" style="margin-top:4px">📋 Enviado em: ${data}</div>
+        <button class="modal-close" onclick="fecharModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="m-section"><div class="m-section-title">🏥 Plano</div><div class="m-tags">${tag(plano)}</div></div>
+        <div class="m-section"><div class="m-section-title">❤️ Condições de Saúde</div><div class="m-tags">${tagArr(s.condicoes)}</div></div>
+        <div class="m-section"><div class="m-section-title">${temAlergia?'⚠️':'✅'} Alergias</div><div class="m-tags">
+          ${s.alergiaMedicamento==='Sim' ? `<span class="m-tag red">💊 Medicamento: ${s.alergiaMedDesc||'sim'}</span>` : ''}
+          ${s.alergiaLatex==='Sim' ? '<span class="m-tag red">🧤 Látex</span>' : ''}
+          ${s.outrasAlergias ? `<span class="m-tag red">${s.outrasAlergias}</span>` : ''}
+          ${!temAlergia && !s.outrasAlergias ? '<span class="m-tag">Sem alergias</span>' : ''}
+        </div></div>
+        <div class="m-section"><div class="m-section-title">💊 Medicamentos</div><div class="m-tags">${s.tomaMedicamento==='Sim' ? tag(s.medicamentos,'yellow') : '<span class="m-tag">Não toma</span>'}</div></div>
+        <div class="m-section"><div class="m-section-title">🦷 Saúde Bucal</div><div class="m-tags">
+          ${tag('Dentista: '+sb.jaDentista)}
+          ${tag('Escovação: '+sb.frequenciaEscovacao)}
+          ${tag('Ajuda: '+sb.ajudaEscovacao)}
+          ${tagArr(sb.habitosBucais)}
+        </div></div>
+        ${sb.queixaPrincipal ? `<div class="m-section"><div class="m-section-title">💬 Queixa</div><div style="font-size:0.88rem;color:var(--text);padding:10px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${sb.queixaPrincipal}</div></div>` : ''}
+        <div style="border-top:1px solid var(--border);margin:14px 0"></div>
+        <div class="m-section"><div class="m-section-title">🍎 Alimentação</div><div class="m-tags">
+          ${tagArr(al.comidaFavorita)}
+          ${tag('Doces: '+al.frequenciaDoces)}
+          ${tag('Refri: '+al.refrigerante)}
+        </div></div>
+        <div class="m-section"><div class="m-section-title">🎮 Brincadeiras</div><div class="m-tags">${tagArr(mc.brincadeiras)}</div></div>
+        <div class="m-section"><div class="m-section-title">⭐ Personagens</div><div class="m-tags">${tagArr(mc.personagens)}</div></div>
+        <div class="m-section"><div class="m-section-title">😊 Comportamento</div><div class="m-tags">
+          ${tag('Hoje: '+co.sentimentoHoje)}
+          ${tag('Novidades: '+co.reacaoNova)}
+          ${tagArr(co.confortoOptions)}
+        </div></div>
+        ${co.observacoes ? `<div class="m-section"><div class="m-section-title">📝 Obs. Comportamento</div><div style="font-size:0.88rem;color:var(--text);padding:10px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${co.observacoes}</div></div>` : ''}
+        <div class="m-section"><div class="m-section-title">📢 Como soube</div><div class="m-tags">${tag(av.comoSoube)}</div></div>
+        ${av.mensagemEquipe ? `<div class="m-section"><div class="m-section-title">💌 Mensagem à equipe</div><div style="font-size:0.88rem;color:var(--text);padding:10px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${av.mensagemEquipe}</div></div>` : ''}
+      </div>
+      <div class="modal-actions">
+        <button class="print-btn" onclick="imprimirKids(${index})">🖨️ Imprimir ficha</button>
+        <button class="pdf-btn" onclick="salvarPDFKids(${index})">📄 Salvar PDF</button>
+      </div>`;
+
+    document.getElementById('modalBg').classList.add('open');
+  };
+
+  window.imprimirKids = function(index) {
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || '-';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const resp = p.responsavel?.nome || '-';
+    const tel  = p.responsavel?.whatsapp || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const s    = p.saudeGeral || {};
+    const sb   = p.saudeBucal || {};
+    const al   = p.alimentacao || {};
+    const mc   = p.mundoCrianca || {};
+    const co   = p.comportamento || {};
+    const av   = p.avaliacao || {};
+    const fmt  = v => v || '—';
+    const fmtArr = arr => Array.isArray(arr) && arr.length ? arr.join(', ') : '—';
+
+    document.getElementById('printArea').style.display = 'block';
+    document.getElementById('printArea').innerHTML = `
+      <div style="font-family:Arial,sans-serif;font-size:12px;color:#000;max-width:700px;margin:auto">
+        <div style="border-bottom:2px solid #0abfbc;padding-bottom:8px;margin-bottom:16px">
+          <strong style="font-size:18px;color:#1a3a5c">NEODONTO Kids — Ficha de Anamnese</strong><br>
+          <span style="color:#666">Emitida em: ${new Date().toLocaleString('pt-BR')}</span>
+        </div>
+        <div style="margin-bottom:12px"><strong>👶 Criança:</strong> ${fmt(nome)} &nbsp;|&nbsp; <strong>Nasc.:</strong> ${nasc} &nbsp;|&nbsp; <strong>Idade:</strong> ${fmt(p.crianca?.idade)}</div>
+        <div style="margin-bottom:12px"><strong>👨‍👩‍👧 Responsável:</strong> ${fmt(resp)} &nbsp;|&nbsp; <strong>WhatsApp:</strong> ${fmt(tel)} &nbsp;|&nbsp; <strong>Plano:</strong> ${fmt(p.responsavel?.plano)}</div>
+        <hr style="margin:12px 0;border-color:#ccc"/>
+        <div style="margin-bottom:8px"><strong>❤️ Condições:</strong> ${fmtArr(s.condicoes)}</div>
+        <div style="margin-bottom:8px"><strong>⚠️ Alergia med.:</strong> ${fmt(s.alergiaMedicamento)} ${s.alergiaMedDesc?'— '+s.alergiaMedDesc:''} &nbsp;|&nbsp; <strong>Látex:</strong> ${fmt(s.alergiaLatex)}</div>
+        <div style="margin-bottom:8px"><strong>💊 Medicamentos:</strong> ${s.tomaMedicamento==='Sim' ? fmt(s.medicamentos) : 'Não toma'}</div>
+        <div style="margin-bottom:8px"><strong>🦷 Dentista antes:</strong> ${fmt(sb.jaDentista)} &nbsp;|&nbsp; <strong>Escovação:</strong> ${fmt(sb.frequenciaEscovacao)} &nbsp;|&nbsp; <strong>Ajuda:</strong> ${fmt(sb.ajudaEscovacao)}</div>
+        <div style="margin-bottom:8px"><strong>🦷 Hábitos bucais:</strong> ${fmtArr(sb.habitosBucais)}</div>
+        ${sb.queixaPrincipal?`<div style="margin-bottom:8px"><strong>💬 Queixa:</strong> ${sb.queixaPrincipal}</div>`:''}
+        <hr style="margin:12px 0;border-color:#ccc"/>
+        <div style="margin-bottom:8px"><strong>🍎 Comidas favoritas:</strong> ${fmtArr(al.comidaFavorita)} &nbsp;|&nbsp; <strong>Doces:</strong> ${fmt(al.frequenciaDoces)}</div>
+        <div style="margin-bottom:8px"><strong>🎮 Brincadeiras:</strong> ${fmtArr(mc.brincadeiras)}</div>
+        <div style="margin-bottom:8px"><strong>⭐ Personagens:</strong> ${fmtArr(mc.personagens)} &nbsp;|&nbsp; <strong>Cor fav.:</strong> ${fmt(mc.corFavorita)}</div>
+        <div style="margin-bottom:8px"><strong>😊 Sentimento hoje:</strong> ${fmt(co.sentimentoHoje)} &nbsp;|&nbsp; <strong>Reação novidades:</strong> ${fmt(co.reacaoNova)}</div>
+        <div style="margin-bottom:8px"><strong>🤗 Conforto:</strong> ${fmtArr(co.confortoOptions)}</div>
+        ${co.observacoes?`<div style="margin-bottom:8px"><strong>📝 Obs.:</strong> ${co.observacoes}</div>`:''}
+        <hr style="margin:12px 0;border-color:#ccc"/>
+        <div style="margin-bottom:8px"><strong>📢 Como soube:</strong> ${fmt(av.comoSoube)} &nbsp;|&nbsp; <strong>⭐ Avaliação:</strong> ${av.estrelas||'—'}/5</div>
+        ${av.mensagemEquipe?`<div style="margin-bottom:8px"><strong>💌 Mensagem:</strong> ${av.mensagemEquipe}</div>`:''}
+        <div style="margin-top:24px;border-top:1px solid #ccc;padding-top:8px;color:#999;text-align:center;font-size:10px">
+          NEODONTO Odontologia — Goiânia, GO | (62) 4106-1198
+        </div>
+      </div>`;
+    setTimeout(() => { window.print(); document.getElementById('printArea').style.display='none'; }, 300);
+  };
+
+  window.salvarPDFKids = function(index) {
+    const { jsPDF } = window.jspdf;
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || 'Crianca';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const idade= p.crianca?.idade || '-';
+    const resp = p.responsavel?.nome || '-';
+    const tel  = p.responsavel?.whatsapp || '-';
+    const plano= p.responsavel?.plano || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const s    = p.saudeGeral    || {};
+    const sb   = p.saudeBucal   || {};
+    const al   = p.alimentacao  || {};
+    const mc   = p.mundoCrianca || {};
+    const co   = p.comportamento|| {};
+    const av   = p.avaliacao    || {};
+    const fmt  = v => v || '-';
+    const fmtArr = arr => Array.isArray(arr) && arr.length ? arr.join(', ') : '-';
+
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const W = 210; let y = 0;
+
+    // Header
+    doc.setFillColor(10,191,188); doc.rect(0,0,W,32,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(22); doc.setFont('helvetica','bold');
+    doc.text('NEODONTO Kids',14,14);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text('Ficha de Anamnese Infantil',14,21);
+    doc.text('Emitida em: '+new Date().toLocaleString('pt-BR'),14,27); y=42;
+
+    function secao(titulo, linhas) {
+      if(y>260){doc.addPage();y=20;}
+      doc.setTextColor(10,191,188); doc.setFontSize(10); doc.setFont('helvetica','bold');
+      doc.text(titulo,14,y);
+      doc.setDrawColor(10,191,188); doc.setLineWidth(0.3); doc.line(14,y+2,W-14,y+2); y+=8;
+      doc.setTextColor(50,50,50); doc.setFontSize(9); doc.setFont('helvetica','normal');
+      linhas.forEach(([label, val]) => {
+        if(!val || val==='-') return;
+        if(y>270){doc.addPage();y=20;}
+        doc.setFont('helvetica','bold'); doc.text(label+':',14,y);
+        doc.setFont('helvetica','normal');
+        const lines = doc.splitTextToSize(String(val), W-65);
+        doc.text(lines,60,y); y+=6*lines.length;
+      });
+      y+=4;
+    }
+
+    secao('CRIANÇA', [
+      ['Nome', nome], ['Nascimento', nasc], ['Idade', idade],
+      ['Sexo', p.crianca?.sexo], ['Escola', p.crianca?.escola]
+    ]);
+    secao('RESPONSÁVEL', [
+      ['Nome', resp], ['Parentesco', p.responsavel?.parentesco],
+      ['WhatsApp', tel], ['Plano', plano]
+    ]);
+    secao('SAÚDE GERAL', [
+      ['Condições', fmtArr(s.condicoes)],
+      ['Alergia med.', s.alergiaMedicamento==='Sim' ? 'Sim — '+fmt(s.alergiaMedDesc) : 'Não'],
+      ['Alergia látex', fmt(s.alergiaLatex)],
+      ['Outras alergias', s.outrasAlergias],
+      ['Medicamentos', s.tomaMedicamento==='Sim' ? fmt(s.medicamentos) : 'Não toma'],
+      ['Acomp. médico', s.acompanhamentoMedico]
+    ]);
+    secao('SAÚDE BUCAL', [
+      ['Já foi ao dentista', sb.jaDentista],
+      ['Frequência escovação', sb.frequenciaEscovacao],
+      ['Ajuda na escovação', sb.ajudaEscovacao],
+      ['Hábitos bucais', fmtArr(sb.habitosBucais)],
+      ['Queixa principal', sb.queixaPrincipal]
+    ]);
+    secao('ALIMENTAÇÃO', [
+      ['Comidas favoritas', fmtArr(al.comidaFavorita)],
+      ['Frequência doces', al.frequenciaDoces],
+      ['Refrigerante', al.refrigerante],
+      ['Come na cama', al.comeNaCama]
+    ]);
+    secao('MUNDO DA CRIANÇA', [
+      ['Brincadeiras', fmtArr(mc.brincadeiras)],
+      ['Personagens', fmtArr(mc.personagens)],
+      ['Cor favorita', mc.corFavorita],
+      ['Animal favorito', mc.animalFavorito]
+    ]);
+    secao('COMPORTAMENTO', [
+      ['Sentimento hoje', co.sentimentoHoje],
+      ['Reação a novidades', co.reacaoNova],
+      ['Conforto', fmtArr(co.confortoOptions)],
+      ['Observações', co.observacoes]
+    ]);
+    secao('AVALIAÇÃO', [
+      ['Como soube', av.comoSoube],
+      ['Estrelas', av.estrelas ? av.estrelas+'/5' : '-'],
+      ['Mensagem à equipe', av.mensagemEquipe]
+    ]);
+
+    // Footer
+    const pages = doc.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      doc.setFontSize(8); doc.setTextColor(180,180,180);
+      doc.text('NEODONTO Odontologia — Goiânia, GO | (62) 4106-1198',14,290);
+      doc.text('Página '+i+' de '+pages, W-30,290);
+    }
+    doc.save('anamnese-kids-'+nome.split(' ')[0].toLowerCase()+'.pdf');
+  };
+
+  window.fecharModal = function(e) {
+    if (!e || e.target === document.getElementById('modalBg'))
+      document.getElementById('modalBg').classList.remove('open');
+  };
+
+  // -- IMPRIMIR / PDF --
+  window.imprimirFicha = function(index) {
+    const p    = todosPacientes[index];
+    const nome = p.dadosPessoais?.nome || '-';
+    const nascRaw = p.dadosPessoais?.nascimento || '';
+    const nasc = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
+    const tel  = p.dadosPessoais?.telefone || '-';
+    const email= p.dadosPessoais?.email || '-';
+    const cpf  = p.dadosPessoais?.cpf || '-';
+    const resp = p.dadosPessoais?.responsavel || '-';
+    const data = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
+    const selfie = p.dadosPessoais?.selfie;
+    const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias');
+    function tags(arr, cls='') {
+      if (!arr||arr.length===0) return '<span style="color:#999;font-style:italic">Nenhum</span>';
+      return arr.map(t=>`<span class="p-tag ${cls}">${t}</span>`).join('');
+    }
+    document.getElementById('printArea').style.display = 'block';
+    document.getElementById('printArea').innerHTML = `
+      <div class="p-header">
+        ${selfie?`<img class="p-foto" src="${selfie}" />`:''}
+        <h1>NEODONTO</h1>
+        <div style="color:#555;font-size:12px">Ficha de Anamnese - Enviado em: ${data}</div>
+        <h2 style="margin-top:10px">${nome}</h2>
+        <div class="p-row"><span class="p-label">Nascimento:</span> ${nasc}</div>
+        <div class="p-row"><span class="p-label">CPF:</span> ${cpf}</div>
+        <div class="p-row"><span class="p-label">Telefone:</span> ${tel}</div>
+        <div class="p-row"><span class="p-label">E-mail:</span> ${email}</div>
+        <div class="p-row"><span class="p-label">Responsavel:</span> ${resp}</div>
+      </div>
+      <h2>> Motivo da Consulta</h2><div>${tags([p.motivoConsulta],'green')}</div>
+      <h2> Saude Geral</h2><div>${tags(p.saudeGeral)}</div>
+      <h2>${temAlergia?'! ':''} Alergias</h2><div>${tags(p.alergias,temAlergia?'red':'')}</div>
+      <h2> Medicamentos</h2><div>${tags(p.medicamentos,'yellow')}</div>
+      <h2>* Saude Bucal</h2><div>${tags(p.saudeBucal)}</div>
+      <h2> Ansiedade</h2><div>${tags([p.ansiedade])}</div>
+      <h2> Habitos</h2><div>${tags(p.habitos)}</div>
+      <hr style="margin:16px 0;border-color:#eee"/>
+      <h2> Time / Preferencias</h2>
+      <div class="p-row"><span class="p-label">Time:</span> ${p.timeFutebol||'-'}</div>
+      <div class="p-row"><span class="p-label">Musica:</span> ${tags(p.musica)}</div>
+      <div class="p-row"><span class="p-label">Filmes:</span> ${tags(p.filmes)}</div>
+      <div class="p-row"><span class="p-label">Lazer:</span> ${tags(p.lazer)}</div>
+      <div style="margin-top:40px;border-top:1px solid #ddd;padding-top:12px;color:#999;font-size:11px;text-align:center">
+        NEODONTO - Ficha gerada em ${new Date().toLocaleString('pt-BR')}
+      </div>`;
+    setTimeout(() => { window.print(); document.getElementById('printArea').style.display='none'; }, 300);
+  };
+
+  window.salvarPDF = function(index) {
+    const { jsPDF } = window.jspdf;
+    const p    = todosPacientes[index];
+    const nome = p.dadosPessoais?.nome || 'Paciente';
+    const nascRaw = p.dadosPessoais?.nascimento||'';
+    const nasc = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
+    const tel  = p.dadosPessoais?.telefone||'-';
+    const email= p.dadosPessoais?.email||'-';
+    const cpf  = p.dadosPessoais?.cpf||'-';
+    const resp = p.dadosPessoais?.responsavel||'-';
+    const data = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
+    const selfie = p.dadosPessoais?.selfie;
+    const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias');
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const W=210; let y=0;
+    doc.setFillColor(10,191,188); doc.rect(0,0,W,32,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(22); doc.setFont('helvetica','bold'); doc.text('NEODONTO',14,14);
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.text('Ficha de Anamnese',14,21); doc.text('Enviado em: '+data,14,27); y=42;
+    if(selfie){try{doc.addImage(selfie,'JPEG',W-44,36,30,30,'','FAST'); doc.setDrawColor(10,191,188); doc.setLineWidth(0.5); doc.circle(W-29,51,15);}catch(e){}}
+    doc.setTextColor(10,191,188); doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.text('DADOS PESSOAIS',14,y);
+    doc.setDrawColor(10,191,188); doc.setLineWidth(0.3); doc.line(14,y+2,W-14,y+2); y+=8;
+    doc.setTextColor(50,50,50); doc.setFontSize(10);
+    [[`Nome:`,nome],[`Nascimento:`,nasc],[`Telefone:`,tel],[`E-mail:`,email],[`CPF:`,cpf]].forEach(([l,v])=>{
+      doc.setFont('helvetica','bold'); doc.text(l,14,y); doc.setFont('helvetica','normal'); doc.text(v,50,y); y+=6;
+    });
+    y+=4;
+    function secao(titulo,itens,corFundo){
+      if(y>260){doc.addPage();y=20;}
+      doc.setTextColor(10,191,188); doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.text(titulo,14,y);
+      doc.line(14,y+2,W-14,y+2); y+=7;
+      doc.setTextColor(50,50,50); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      if(!itens||itens.length===0||(itens.length===1&&!itens[0])){doc.setTextColor(150,150,150);doc.text('Nenhum informado',14,y);y+=6;}
+      else{let x=14;itens.forEach(item=>{if(!item)return;const w=doc.getTextWidth(item)+8;if(x+w>W-14){x=14;y+=7;}if(y>270){doc.addPage();y=20;x=14;}if(corFundo){doc.setFillColor(...corFundo);doc.roundedRect(x,y-4,w,6,1,1,'F');}doc.setTextColor(50,50,50);doc.text(item,x+4,y);x+=w+4;});y+=8;}y+=2;
+    }
+    secao('MOTIVO DA CONSULTA',[p.motivoConsulta],[220,252,231]);
+    secao('SAUDE GERAL',p.saudeGeral,[240,240,240]);
+    secao(temAlergia?' ALERGIAS':'ALERGIAS',p.alergias,temAlergia?[254,226,226]:[240,240,240]);
+    secao('MEDICAMENTOS',p.medicamentos,[254,243,199]);
+    secao('SAUDE BUCAL',p.saudeBucal,[240,240,240]);
+    secao('ANSIEDADE',[p.ansiedade],[240,240,240]);
+    secao('HABITOS',p.habitos,[240,240,240]);
+    if(y>240){doc.addPage();y=20;}
+    secao('PREFERENCIAS',[p.timeFutebol?' '+p.timeFutebol:null,...(p.musica||[]),...(p.filmes||[]),...(p.lazer||[])].filter(Boolean),[240,240,240]);
+    const pages=doc.getNumberOfPages();
+    for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('NEODONTO - Gerado em '+new Date().toLocaleString('pt-BR'),14,290);doc.text('Pagina '+i+' de '+pages,W-30,290);}
+    doc.save('anamnese-'+nome.split(' ')[0].toLowerCase()+'.pdf');
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key==='Enter' && document.getElementById('loginWrap').style.display!=='none') window.fazerLogin();
+  });
 </script>
 </body>
 </html>
