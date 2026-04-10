@@ -1,748 +1,228 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NEODONTO – Painel Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    :root {
-      --tiffany: #0abfbc;
-      --tiffany-mid: #5dd5d3;
-      --tiffany-light: #e0fafa;
-      --gold: #c9a84c;
-      --gold-light: #fdf4e0;
-      --azul: #1a3a5c;
-      --azul2: #162e4a;
-      --branco: #ffffff;
-      --bg: #0f1e2e;
-      --card: #162e4a;
-      --card2: #1c3650;
-      --borda: #1e3d5a;
-      --cinza: #8fa3b5;
-      --texto: #dce8f0;
-      --erro: #ef4444;
-      --sucesso: #10b981;
-      --laranja: #f97316;
-      --rosa: #f472b6;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--bg);
-      color: var(--texto);
-      min-height: 100vh;
-      display: flex;
-    }
-
-    /* ===== LOGIN ===== */
-    #loginWrap {
-      min-height: 100vh;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg);
-    }
-
-    .login-card {
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 24px;
-      padding: 48px 40px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    }
-
-    .login-logo {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .login-logo h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      color: var(--tiffany);
-      letter-spacing: 2px;
-    }
-
-    .login-logo p {
-      font-size: 0.72rem;
-      color: var(--cinza);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-
-    .login-field { margin-bottom: 16px; }
-
-    .login-field label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--tiffany-mid);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-
-    .login-field input {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--azul);
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      color: var(--texto);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .login-field input:focus { border-color: var(--tiffany); }
-
-    .login-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--tiffany);
-      color: var(--azul);
-      border: none;
-      border-radius: 12px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: opacity 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .login-btn:hover { opacity: 0.88; }
-    .login-err { color: var(--erro); font-size: 0.82rem; margin-top: 10px; text-align: center; display: none; }
-
-    /* ===== SIDEBAR ===== */
-    #appWrap { display: none; width: 100%; }
-
-    .sidebar {
-      width: 220px;
-      min-height: 100vh;
-      background: var(--card);
-      border-right: 1px solid var(--borda);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0;
-      z-index: 100;
-    }
-
-    .sidebar-logo {
-      padding: 28px 20px 20px;
-      border-bottom: 1px solid var(--borda);
-    }
-
-    .sidebar-logo h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      color: var(--tiffany);
-      letter-spacing: 1px;
-    }
-
-    .sidebar-logo span {
-      font-size: 0.65rem;
-      color: var(--cinza);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .sidebar-menu {
-      padding: 16px 12px;
-      flex: 1;
-    }
-
-    .menu-label {
-      font-size: 0.62rem;
-      color: var(--cinza);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      padding: 6px 8px;
-      margin-bottom: 4px;
-    }
-
-    .s-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--cinza);
-      transition: all 0.15s;
-      width: 100%;
-      background: none;
-      border: none;
-      text-align: left;
-      margin-bottom: 2px;
-    }
-
-    .s-btn:hover { background: var(--card2); color: var(--texto); }
-    .s-btn.active { background: rgba(10,191,188,0.12); color: var(--tiffany); }
-
-    .s-icon {
-      width: 22px;
-      text-align: center;
-      font-size: 0.82rem;
-      font-weight: 900;
-    }
-
-    .sidebar-footer {
-      padding: 16px 12px;
-      border-top: 1px solid var(--borda);
-    }
-
-    .logout-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--cinza);
-      background: none;
-      border: none;
-      width: 100%;
-      transition: all 0.15s;
-    }
-
-    .logout-btn:hover { color: var(--erro); background: rgba(239,68,68,0.1); }
-
-    /* ===== MAIN ===== */
-    .main {
-      margin-left: 220px;
-      flex: 1;
-      padding: 32px;
-      min-height: 100vh;
-    }
-
-    /* ===== TOPBAR ===== */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .topbar-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      color: var(--texto);
-      font-weight: 700;
-    }
-
-    .topbar-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .search-box {
-      padding: 9px 16px;
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      color: var(--texto);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.85rem;
-      width: 220px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-box:focus { border-color: var(--tiffany); }
-
-    .refresh-btn {
-      padding: 9px 16px;
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      color: var(--tiffany);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .refresh-btn:hover { background: var(--card2); }
-
-    /* ===== STATS ===== */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 16px;
-      padding: 20px 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .stat-val {
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--tiffany);
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--cinza);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* ===== FILTROS ===== */
-    .filtros-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-
-    .filtros-label {
-      font-size: 0.75rem;
-      color: var(--cinza);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-right: 4px;
-    }
-
-    .filtro-btn {
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--borda);
-      background: var(--card);
-      color: var(--cinza);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .filtro-btn:hover { border-color: var(--tiffany); color: var(--tiffany); }
-    .filtro-btn.active { background: var(--tiffany); color: var(--azul); border-color: var(--tiffany); }
-
-    .filtro-count {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.15);
-      border-radius: 10px;
-      padding: 0 6px;
-      font-size: 0.7rem;
-      margin-left: 4px;
-    }
-
-    /* ===== MONTH SECTIONS ===== */
-    .month-section {
-      margin-bottom: 20px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--borda);
-    }
-
-    .month-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 22px;
-      background: var(--card2);
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.15s;
-    }
-
-    .month-header:hover { background: #203f5e; }
-
-    .month-header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .month-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--tiffany);
-      box-shadow: 0 0 8px rgba(10,191,188,0.5);
-    }
-
-    .month-name {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--texto);
-      text-transform: capitalize;
-    }
-
-    .month-count {
-      font-size: 0.75rem;
-      color: var(--cinza);
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-weight: 700;
-    }
-
-    .month-chevron {
-      font-size: 0.75rem;
-      color: var(--cinza);
-      transition: transform 0.2s;
-    }
-
-    .month-chevron.open { transform: rotate(180deg); }
-
-    .month-body { display: none; }
-    .month-body.open { display: block; }
-
-    /* ===== TABLE ===== */
-    .table-wrap { overflow-x: auto; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    thead th {
-      font-size: 0.68rem;
-      color: var(--cinza);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 800;
-      padding: 12px 16px;
-      text-align: left;
-      background: var(--card);
-      border-bottom: 1px solid var(--borda);
-    }
-
-    tbody tr {
-      border-bottom: 1px solid var(--borda);
-      cursor: pointer;
-      transition: background 0.12s;
-    }
-
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: rgba(10,191,188,0.05); }
-
-    tbody td {
-      padding: 13px 16px;
-      font-size: 0.85rem;
-      vertical-align: middle;
-      background: var(--card);
-    }
-
-    .td-name {
-      font-weight: 700;
-      color: var(--texto);
-    }
-
-    .td-muted { color: var(--cinza); font-size: 0.82rem; }
-
-    .td-tag {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      background: rgba(10,191,188,0.12);
-      color: var(--tiffany);
-      border: 1px solid rgba(10,191,188,0.2);
-    }
-
-    .td-tag.danger {
-      background: rgba(239,68,68,0.12);
-      color: #f87171;
-      border-color: rgba(239,68,68,0.25);
-    }
-
-    .td-tag.warn {
-      background: rgba(249,115,22,0.12);
-      color: #fb923c;
-      border-color: rgba(249,115,22,0.25);
-    }
-
-    .td-tag.ok {
-      background: rgba(16,185,129,0.1);
-      color: #34d399;
-      border-color: rgba(16,185,129,0.2);
-    }
-
-    .td-date {
-      font-size: 0.78rem;
-      color: var(--cinza);
-      white-space: nowrap;
-    }
-
-    .btn-ver {
-      padding: 5px 14px;
-      background: rgba(10,191,188,0.1);
-      border: 1px solid rgba(10,191,188,0.25);
-      border-radius: 8px;
-      color: var(--tiffany);
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn-ver:hover { background: rgba(10,191,188,0.2); }
-
-    /* ===== EMPTY / LOADING ===== */
-    .loading {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 40px;
-      color: var(--cinza);
-      font-size: 0.88rem;
-    }
-
-    .spinner {
-      width: 20px; height: 20px;
-      border: 2px solid var(--borda);
-      border-top-color: var(--tiffany);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .empty {
-      text-align: center;
-      padding: 56px 24px;
-      color: var(--cinza);
-    }
-
-    .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
-    .empty h3 { color: var(--texto); font-size: 1rem; margin-bottom: 6px; }
-    .empty p { font-size: 0.82rem; }
-
-    /* ===== MODAL ===== */
-    #modalBg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    #modalBg.open { display: flex; }
-
-    .modal {
-      background: var(--card);
-      border: 1px solid var(--borda);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 680px;
-      max-height: 88vh;
-      overflow-y: auto;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 22px 28px;
-      border-bottom: 1px solid var(--borda);
-      position: sticky;
-      top: 0;
-      background: var(--card);
-      z-index: 2;
-    }
-
-    .modal-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--texto);
-    }
-
-    .modal-close {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      background: var(--card2);
-      border: none;
-      color: var(--cinza);
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-close:hover { color: var(--texto); }
-
-    .modal-body { padding: 24px 28px; }
-
-    .m-section {
-      margin-bottom: 18px;
-    }
-
-    .m-section-title {
-      font-size: 0.68rem;
-      color: var(--cinza);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .m-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .m-tag {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      background: var(--azul);
-      color: var(--texto);
-      border: 1px solid var(--borda);
-    }
-
-    .m-tag.red { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.25); }
-    .m-tag.yellow { background: rgba(249,115,22,0.12); color: #fb923c; border-color: rgba(249,115,22,0.25); }
-    .m-tag.green { background: rgba(16,185,129,0.1); color: #34d399; border-color: rgba(16,185,129,0.2); }
-    .m-tag.blue { background: rgba(10,191,188,0.1); color: var(--tiffany); border-color: rgba(10,191,188,0.2); }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      padding: 18px 28px;
-      border-top: 1px solid var(--borda);
-    }
-
-    .print-btn, .pdf-btn {
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
-    .print-btn {
-      background: var(--card2);
-      border: 1px solid var(--borda);
-      color: var(--texto);
-    }
-
-    .pdf-btn {
-      background: var(--tiffany);
-      border: none;
-      color: var(--azul);
-    }
-
-    .print-btn:hover, .pdf-btn:hover { opacity: 0.82; }
-
-    /* ALERT sem fichas no mês */
-    .no-fichas-mes {
-      padding: 24px 20px;
-      text-align: center;
-      color: var(--cinza);
-      font-size: 0.82rem;
-      background: var(--card);
-    }
-
-    @media (max-width: 900px) {
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .sidebar { width: 60px; }
-      .s-btn span:not(.s-icon) { display: none; }
-      .sidebar-logo h1, .sidebar-logo span, .menu-label { display: none; }
-      .main { margin-left: 60px; padding: 20px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin - NEODONTO</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0ABFBC; --teal2: #0891B2;
+  --navy: #0A1628; --card: #111E30; --card2: #162236;
+  --border: rgba(10,191,188,0.15);
+  --text: #E8F4F8; --muted: #6A8FA8;
+  --danger: #FF5C7A; --warn: #F5A623; --green: #2ECC71; --gold: #c9a84c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--navy); font-family: 'DM Sans', sans-serif; color: var(--text); min-height: 100vh; }
+
+/* LOGIN */
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(ellipse at 30% 20%, rgba(10,191,188,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(8,145,178,0.06) 0%, transparent 50%), var(--navy); }
+.login-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 380px; text-align: center; }
+.login-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; letter-spacing: 3px; color: var(--teal); margin-bottom: 4px; }
+.login-sub { font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 32px; }
+.login-card input { width: 100%; background: rgba(10,191,188,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
+.login-card input:focus { border-color: var(--teal); }
+.login-card input::placeholder { color: var(--muted); }
+.login-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--teal), var(--teal2)); color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s; }
+.login-btn:hover { opacity: 0.88; }
+.login-err { color: var(--danger); font-size: 0.82rem; margin-top: 10px; }
+
+/* DASHBOARD */
+.dash { display: none; min-height: 100vh; }
+.sidebar { position: fixed; top: 0; left: 0; width: 220px; height: 100vh; background: var(--card); border-right: 1px solid var(--border); padding: 28px 16px; z-index: 100; display: flex; flex-direction: column; }
+.s-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; color: var(--teal); margin-bottom: 2px; padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-sub { font-size: 0.7rem; color: var(--muted); padding: 0 8px; margin-bottom: 28px; letter-spacing: 1px; }
+.s-label { font-size: 0.65rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 0 8px; margin-bottom: 8px; }
+.s-btn { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.88rem; color: var(--muted); cursor: pointer; transition: all 0.2s; margin-bottom: 4px; border: none; background: none; width: 100%; text-align: left; }
+.s-btn:hover, .s-btn.active { background: rgba(10,191,188,0.1); color: var(--text); }
+.s-btn.active { color: var(--teal); }
+.s-icon { font-size: 1rem; width: 20px; text-align: center; }
+.s-spacer { flex: 1; }
+.s-logout { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; color: var(--danger); cursor: pointer; border: none; background: none; width: 100%; }
+.s-logout:hover { background: rgba(255,92,122,0.08); }
+
+.main { margin-left: 220px; padding: 28px 24px; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+.topbar-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.search-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; width: 220px; transition: border-color 0.2s; }
+.search-box:focus { border-color: var(--teal); }
+.search-box::placeholder { color: var(--muted); }
+.refresh-btn { background: rgba(10,191,188,0.1); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; color: var(--teal); font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.refresh-btn:hover { background: rgba(10,191,188,0.2); }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(10,191,188,0.06); }
+.stat-icon { font-size: 1.4rem; margin-bottom: 12px; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--teal); line-height: 1; }
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+.table-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.table-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.table-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+.badge { background: rgba(10,191,188,0.12); color: var(--teal); border-radius: 99px; padding: 3px 10px; font-size: 0.75rem; font-weight: 600; }
+
+table { width: 100%; border-collapse: collapse; }
+thead th { padding: 12px 16px; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; text-align: left; border-bottom: 1px solid var(--border); font-weight: 500; }
+tbody tr { border-bottom: 1px solid rgba(10,191,188,0.06); transition: background 0.15s; cursor: pointer; }
+tbody tr:hover { background: rgba(10,191,188,0.04); }
+tbody tr:last-child { border-bottom: none; }
+td { padding: 13px 16px; font-size: 0.88rem; vertical-align: middle; }
+.td-name { font-weight: 500; color: var(--text); }
+.td-muted { color: var(--muted); font-size: 0.82rem; }
+.td-tag { display: inline-block; background: rgba(10,191,188,0.1); color: var(--teal); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; margin: 2px; }
+.td-tag.warn { background: rgba(245,166,35,0.12); color: var(--warn); }
+.td-tag.danger { background: rgba(255,92,122,0.1); color: var(--danger); }
+.td-tag.gold { background: rgba(201,168,76,0.12); color: var(--gold); }
+.view-btn { background: rgba(10,191,188,0.1); border: none; border-radius: 8px; padding: 6px 12px; color: var(--teal); font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+.view-btn:hover { background: rgba(10,191,188,0.2); }
+
+.loading { text-align: center; padding: 60px; color: var(--muted); font-size: 0.9rem; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MODAL */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; padding: 20px; overflow-y: auto; backdrop-filter: blur(4px); }
+.modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding-top: 40px; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 600px; overflow: hidden; animation: modalIn 0.3s ease; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(-20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.modal-head { background: linear-gradient(135deg, var(--teal), var(--teal2)); padding: 24px; position: relative; }
+.modal-name { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: #fff; }
+.modal-date { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.15); border: none; border-radius: 8px; width: 32px; height: 32px; color: #fff; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 24px; }
+.m-section { margin-bottom: 20px; }
+.m-section-title { font-size: 0.72rem; color: var(--teal); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.m-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.m-tag { background: rgba(10,191,188,0.08); border: 1px solid rgba(10,191,188,0.15); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.82rem; }
+.m-tag.red { background: rgba(255,92,122,0.08); border-color: rgba(255,92,122,0.2); color: var(--danger); }
+.m-tag.yellow { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.2); color: var(--warn); }
+.m-tag.green { background: rgba(46,204,113,0.08); border-color: rgba(46,204,113,0.2); color: var(--green); }
+.m-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty h3 { font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+.empty p { font-size: 0.85rem; }
+
+.filtros-wrap { margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filtros-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; white-space: nowrap; }
+.filtro-btn { padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--card2); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.filtro-btn:hover { border-color: var(--teal); color: var(--text); }
+.filtro-btn.ativo { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 500; }
+.filtro-count { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 99px; padding: 1px 7px; font-size: 0.72rem; margin-left: 4px; }
+
+.avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); background: var(--card2); flex-shrink: 0; }
+.avatar-placeholder { width: 38px; height: 38px; border-radius: 50%; background: var(--card2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.td-paciente { display: flex; align-items: center; gap: 10px; }
+.modal-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); position: absolute; top: 20px; right: 20px; }
+.modal-avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2rem; position: absolute; top: 20px; right: 20px; }
+
+/* STARS */
+.star-display { display: inline-flex; gap: 2px; }
+.star-display span { color: var(--gold); font-size: 0.9rem; }
+.star-display span.empty { color: var(--card2); }
+
+/* NPS BADGE */
+.nps-badge { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; }
+.nps-badge.promoter { background: rgba(46,204,113,0.15); color: var(--green); }
+.nps-badge.neutral { background: rgba(245,166,35,0.15); color: var(--warn); }
+.nps-badge.detractor { background: rgba(255,92,122,0.15); color: var(--danger); }
+
+/* FEEDBACK STATS */
+.fb-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.fb-stat { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; text-align: center; }
+.fb-stat-val { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--teal); }
+.fb-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+/* DENTISTA RANKING */
+.dentista-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 24px; }
+.dentista-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+.dentista-avatar { width: 42px; height: 42px; border-radius: 50%; background: rgba(10,191,188,0.1); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.dentista-info { flex: 1; min-width: 0; }
+.dentista-nome { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dentista-count { font-size: 0.75rem; color: var(--muted); }
+.dentista-nota { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--gold); }
+
+/* MODAL FEEDBACK */
+.fb-modal-stars { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
+.fb-modal-star-item { text-align: center; }
+.fb-modal-star-label { font-size: 0.7rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+.print-btn { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); border-radius: 10px; padding: 8px 16px; color: #2ECC71; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.print-btn:hover { background: rgba(46,204,113,0.22); }
+.pdf-btn { background: rgba(220,38,38,0.12); border: 1px solid rgba(220,38,38,0.3); border-radius: 10px; padding: 8px 16px; color: #FF5C7A; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+.pdf-btn:hover { background: rgba(220,38,38,0.22); }
+.modal-actions { display: flex; gap: 10px; padding: 0 24px 24px; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 16px; }
+  .stats, .fb-stats { grid-template-columns: 1fr 1fr; }
+  .dentista-grid { grid-template-columns: 1fr; }
+  .search-box { width: 150px; }
+}
+
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area { position: fixed !important; inset: 0 !important; background: #fff !important; color: #111 !important; padding: 32px !important; font-family: Arial, sans-serif !important; font-size: 13px !important; }
+  .print-area h1 { color: #0ABFBC; font-size: 1.4rem; margin-bottom: 4px; }
+  .print-area h2 { font-size: 1rem; color: #333; margin: 16px 0 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  .print-area .p-row { display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .print-area .p-label { font-weight: bold; color: #555; min-width: 140px; }
+  .print-area .p-tag { background: #f0f0f0; border-radius: 4px; padding: 2px 8px; font-size: 12px; margin: 2px; display: inline-block; }
+  .print-area .p-tag.red { background: #fee2e2; color: #dc2626; }
+  .print-area .p-tag.yellow { background: #fef3c7; color: #d97706; }
+  .print-area .p-tag.green { background: #dcfce7; color: #16a34a; }
+  .print-area .p-foto { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; float: right; margin: 0 0 12px 16px; border: 2px solid #0ABFBC; }
+  .print-area .p-header { overflow: hidden; margin-bottom: 16px; border-bottom: 2px solid #0ABFBC; padding-bottom: 12px; }
+}
+
+  /* MONTH SECTIONS */
+  .month-section { margin-bottom: 16px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .month-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--card2); cursor: pointer; user-select: none; transition: background 0.15s; }
+  .month-header:hover { background: rgba(10,191,188,0.07); }
+  .month-header-left { display: flex; align-items: center; gap: 12px; }
+  .month-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px rgba(10,191,188,0.5); }
+  .month-name { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); text-transform: capitalize; }
+  .month-count { background: rgba(10,191,188,0.1); color: var(--teal); border-radius: 20px; padding: 2px 10px; font-size: 0.72rem; font-weight: 600; }
+  .month-chevron { color: var(--muted); font-size: 0.7rem; transition: transform 0.2s; }
+  .month-chevron.open { transform: rotate(180deg); }
+  .month-body { display: none; }
+  .month-body.open { display: block; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="loginWrap">
+<div class="login-wrap" id="loginWrap">
   <div class="login-card">
-    <div class="login-logo">
-      <h1>NEODONTO</h1>
-      <p>Admin Panel</p>
-    </div>
-    <div class="login-field">
-      <label>Email</label>
-      <input type="email" id="loginEmail" placeholder="email@clinica.com"/>
-    </div>
-    <div class="login-field">
-      <label>Senha</label>
-      <input type="password" id="loginSenha" placeholder="••••••••" onkeydown="if(event.key==='Enter') fazerLogin()"/>
-    </div>
-    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
-    <div class="login-err" id="loginErr">Email ou senha incorretos.</div>
+    <div class="login-logo">NEODONTO</div>
+    <div class="login-sub">PAINEL ADMINISTRATIVO</div>
+    <input type="email" id="loginEmail" placeholder="E-mail" autocomplete="email">
+    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
+    <button class="login-btn" onclick="fazerLogin()">ENTRAR -></button>
+    <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="appWrap">
-
-  <!-- SIDEBAR -->
+<!-- DASHBOARD -->
+<div class="dash" id="dashWrap">
   <div class="sidebar">
-    <div class="sidebar-logo">
-      <h1>NEODONTO</h1>
-      <span>Admin Panel</span>
-    </div>
-    <div class="sidebar-menu">
-      <div class="menu-label">Menu</div>
-      <button class="s-btn active" id="btnMenuPacientes" onclick="mudarAba('pacientes')">
-        <span class="s-icon">[D]</span><span>Pacientes</span>
-      </button>
-      <button class="s-btn" id="btnMenuKids" onclick="mudarAba('kids')">
-        <span class="s-icon">[K]</span><span>Kids</span>
-      </button>
-      <button class="s-btn" id="btnMenuFeedbacks" onclick="mudarAba('feedbacks')">
-        <span class="s-icon">[F]</span><span>Feedbacks</span>
-      </button>
-    </div>
-    <div class="sidebar-footer">
-      <button class="logout-btn" onclick="fazerLogout()">
-        <span>[S]</span><span>Sair</span>
-      </button>
-    </div>
+    <div class="s-logo">NEODONTO</div>
+    <div class="s-sub">ADMIN PANEL</div>
+    <div class="s-label">Menu</div>
+    <button class="s-btn active" id="btnMenuPacientes" onclick="mudarAba('pacientes')"><span class="s-icon">🦷</span> Pacientes</button>
+    <button class="s-btn" id="btnMenuKids" onclick="mudarAba('kids')"><span class="s-icon">👶</span> Kids</button>
+    <button class="s-btn" id="btnMenuFeedbacks" onclick="mudarAba('feedbacks')"><span class="s-icon">⭐</span> Feedbacks</button>
+    <div class="s-spacer"></div>
+    <button class="s-logout" onclick="fazerLogout()"><span>[S]</span> Sair</button>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
     <!-- ABA PACIENTES -->
@@ -750,53 +230,45 @@
       <div class="topbar">
         <div class="topbar-title">Fichas de Anamnese</div>
         <div class="topbar-right">
-          <input type="text" class="search-box" id="searchBox" placeholder="Buscar paciente..." oninput="filtrarPacientes()"/>
-          <button class="refresh-btn" onclick="carregarDados()">Atualizar</button>
+          <input type="text" class="search-box" id="searchBox" placeholder=" Buscar paciente..." oninput="filtrarPacientes()">
+          <button class="refresh-btn" onclick="carregarDados()">R Atualizar</button>
         </div>
       </div>
       <div class="stats">
-        <div class="stat-card">
-          <div class="stat-val" id="totalPacientes">—</div>
-          <div class="stat-label">Total de pacientes</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="totalHoje">—</div>
-          <div class="stat-label">Fichas hoje</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="totalAlergias">—</div>
-          <div class="stat-label">Com alergias</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="totalMedo">—</div>
-          <div class="stat-label">Com medo/ansiedade</div>
-        </div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="totalPacientes">-</div><div class="stat-label">Total de pacientes</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="totalHoje">-</div><div class="stat-label">Fichas hoje</div></div>
+        <div class="stat-card"><div class="stat-icon">!</div><div class="stat-val" id="totalAlergias">-</div><div class="stat-label">Com alergias</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="totalMedo">-</div><div class="stat-label">Com medo/ansiedade</div></div>
       </div>
-      <div class="filtros-wrap" id="filtrosWrap">
-        <span class="filtros-label">Filtrar por motivo:</span>
-      </div>
-      <div id="tableArea">
-        <div class="loading"><div class="spinner"></div>Carregando fichas...</div>
+      <div class="filtros-wrap" id="filtrosWrap"><span class="filtros-label">> Filtrar por motivo:</span></div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Todos os Pacientes</div>
+          <div class="badge" id="countBadge">0 fichas</div>
+        </div>
+        <div id="tableArea"><div class="loading"><div class="spinner"></div>Carregando fichas...</div></div>
       </div>
     </div>
+
 
     <!-- ABA KIDS -->
     <div id="abaKids" style="display:none;">
       <div class="topbar">
-        <div class="topbar-title">Fichas de Anamnese — Kids</div>
+        <div class="topbar-title">Fichas Kids *</div>
         <div class="topbar-right">
-          <input type="text" class="search-box" id="searchKids" placeholder="Buscar criança..." oninput="filtrarKids()"/>
-          <button class="refresh-btn" onclick="carregarKids()">Atualizar</button>
+          <input type="text" class="search-box" id="searchKids" placeholder=" Buscar crianca..." oninput="filtrarKids()">
+          <button class="refresh-btn" onclick="carregarKids()">R Atualizar</button>
         </div>
       </div>
       <div class="stats">
-        <div class="stat-card"><div class="stat-val" id="totalKids">—</div><div class="stat-label">Total kids</div></div>
-        <div class="stat-card"><div class="stat-val" id="kidsHoje">—</div><div class="stat-label">Fichas hoje</div></div>
-        <div class="stat-card"><div class="stat-val" id="kidsAlergias">—</div><div class="stat-label">Com alergias</div></div>
-        <div class="stat-card"><div class="stat-val" id="kidsMedo">—</div><div class="stat-label">Com ansiedade</div></div>
+        <div class="stat-card"><div class="stat-icon">*</div><div class="stat-val" id="totalKids">-</div><div class="stat-label">Total kids</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="kidsHoje">-</div><div class="stat-label">Fichas hoje</div></div>
+        <div class="stat-card"><div class="stat-icon">!</div><div class="stat-val" id="kidsAlergias">-</div><div class="stat-label">Com alergias</div></div>
+        <div class="stat-card"><div class="stat-icon"></div><div class="stat-val" id="kidsMedo">-</div><div class="stat-label">Com ansiedade</div></div>
       </div>
-      <div id="kidsTableArea">
-        <div class="loading"><div class="spinner"></div>Carregando fichas kids...</div>
+      <div class="table-card">
+        <div class="table-header"><div class="table-title">Pacientes Kids</div><div class="badge" id="kidsCountBadge">0 fichas</div></div>
+        <div id="kidsTableArea"><div class="loading"><div class="spinner"></div>Carregando fichas kids...</div></div>
       </div>
     </div>
 
@@ -805,49 +277,54 @@
       <div class="topbar">
         <div class="topbar-title">Feedbacks dos Pacientes</div>
         <div class="topbar-right">
-          <button class="refresh-btn" onclick="carregarFeedbacks()">Atualizar</button>
+          <input type="text" class="search-box" id="searchFeedback" placeholder=" Buscar dentista..." oninput="filtrarFeedbacks()">
+          <button class="refresh-btn" onclick="carregarFeedbacks()">R Atualizar</button>
         </div>
       </div>
-      <div class="stats">
-        <div class="stat-card"><div class="stat-val" id="totalFeedbacks">—</div><div class="stat-label">Total feedbacks</div></div>
-        <div class="stat-card"><div class="stat-val" id="mediaFeedbacks">—</div><div class="stat-label">Média de nota</div></div>
-        <div class="stat-card"><div class="stat-val" id="feedbacksHoje">—</div><div class="stat-label">Hoje</div></div>
-        <div class="stat-card"><div class="stat-val" id="feedbacksPositivos">—</div><div class="stat-label">Nota 5</div></div>
+
+      <!-- STATS FEEDBACKS -->
+      <div class="fb-stats">
+        <div class="fb-stat"><div class="stat-icon">*</div><div class="fb-stat-val" id="fbTotal">-</div><div class="fb-stat-label">Total de feedbacks</div></div>
+        <div class="fb-stat"><div class="stat-icon"></div><div class="fb-stat-val" id="fbNps">-</div><div class="fb-stat-label">NPS medio</div></div>
+        <div class="fb-stat"><div class="stat-icon">*</div><div class="fb-stat-val" id="fbNota">-</div><div class="fb-stat-label">Nota geral media</div></div>
+        <div class="fb-stat"><div class="stat-icon">v</div><div class="fb-stat-val" id="fbGoogle">-</div><div class="fb-stat-label">Autorizam Google</div></div>
       </div>
-      <div id="feedbacksTableArea">
-        <div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>
+
+      <!-- RANKING DENTISTAS -->
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:14px;"> Media por dentista</div>
+      <div class="dentista-grid" id="dentistaGrid"><div class="loading"><div class="spinner"></div>Carregando...</div></div>
+
+      <!-- LISTA FEEDBACKS -->
+      <div class="table-card" style="margin-top:8px;">
+        <div class="table-header">
+          <div class="table-title">Todos os Feedbacks</div>
+          <div class="badge" id="fbCountBadge">0 feedbacks</div>
+        </div>
+        <div id="fbTableArea"><div class="loading"><div class="spinner"></div>Carregando feedbacks...</div></div>
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- MODAL -->
-<div id="modalBg" onclick="fecharModal(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modalTitle">Ficha do Paciente</div>
-      <button class="modal-close" onclick="document.getElementById('modalBg').classList.remove('open')">✕</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-actions" id="modalActions"></div>
-  </div>
+<div class="print-area" id="printArea" style="display:none"></div>
+
+<div class="modal-bg" id="modalBg" onclick="fecharModal(event)">
+  <div class="modal" id="modalContent"></div>
 </div>
 
 <script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, collection, getDocs, query, orderBy }
-    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDZBMnOmBV0SpHEXfQnFblA2JqDTGHFWFU",
+    apiKey: "AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",
     authDomain: "neodonto-808ea.firebaseapp.com",
     projectId: "neodonto-808ea",
-    storageBucket: "neodonto-808ea.appspot.com",
-    messagingSenderId: "753443499145",
-    appId: "1:753443499145:web:f9e3e4cb4b1c0ef1f3acd3"
+    storageBucket: "neodonto-808ea.firebasestorage.app",
+    messagingSenderId: "602833895297",
+    appId: "1:602833895297:web:6744ea4b28739aced43280"
   };
 
   const app  = initializeApp(firebaseConfig);
@@ -855,148 +332,71 @@
   const db   = getFirestore(app);
 
   let todosPacientes = [];
-  let filtroAtivo    = 'Todos';
-  let todosKids      = [];
   let todosFeedbacks = [];
 
-  // AUTH
-  onAuthStateChanged(auth, function(user) {
+  // -- AUTH --
+  onAuthStateChanged(auth, user => {
     if (user) {
       document.getElementById('loginWrap').style.display = 'none';
-      document.getElementById('appWrap').style.display   = 'flex';
+      document.getElementById('dashWrap').style.display = 'block';
       carregarDados();
     } else {
       document.getElementById('loginWrap').style.display = 'flex';
-      document.getElementById('appWrap').style.display   = 'none';
+      document.getElementById('dashWrap').style.display = 'none';
     }
   });
 
   window.fazerLogin = async function() {
-    var email = document.getElementById('loginEmail').value.trim();
-    var senha = document.getElementById('loginSenha').value;
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-    } catch(e) {
-      document.getElementById('loginErr').style.display = 'block';
-    }
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const err   = document.getElementById('loginErr');
+    err.textContent = '';
+    try { await signInWithEmailAndPassword(auth, email, pass); }
+    catch(e) { err.textContent = 'E-mail ou senha incorretos.'; }
   };
 
   window.fazerLogout = async function() { await signOut(auth); };
 
-  // ABAS
-  window.mudarAba = function(aba) {
-    var abas = ['abaPacientes','abaKids','abaFeedbacks'];
-    var btns = ['btnMenuPacientes','btnMenuKids','btnMenuFeedbacks'];
-    abas.forEach(function(id) { document.getElementById(id).style.display = 'none'; });
-    btns.forEach(function(id) { var el = document.getElementById(id); if(el) el.classList.remove('active'); });
-    var nomeId = 'aba' + aba.charAt(0).toUpperCase() + aba.slice(1);
-    document.getElementById(nomeId).style.display = 'block';
-    var btnId = 'btnMenu' + aba.charAt(0).toUpperCase() + aba.slice(1);
-    document.getElementById(btnId).classList.add('active');
-    if (aba === 'kids' && todosKids.length === 0) carregarKids();
-    if (aba === 'feedbacks' && todosFeedbacks.length === 0) carregarFeedbacks();
-  };
+  // -- ABAS --
 
-  // AGRUPAR POR MES
-  function agruparPorMes(lista) {
-    var meses = {};
-    lista.forEach(function(p) {
-      var chave = 'Sem data';
-      var ordem = '0000-00';
-      if (p.enviadoEm && p.enviadoEm.seconds) {
-        var d = new Date(p.enviadoEm.seconds * 1000);
-        var ano = d.getFullYear();
-        var mes = d.getMonth();
-        chave = d.toLocaleString('pt-BR', {month:'long'}) + ' de ' + ano;
-        ordem = ano + '-' + String(mes+1).padStart(2,'0');
-      }
-      if (!meses[chave]) meses[chave] = { fichas: [], ordem: ordem };
-      meses[chave].fichas.push(p);
-    });
-    return Object.entries(meses)
-      .sort(function(a,b) { return b[1].ordem.localeCompare(a[1].ordem); })
-      .map(function(entry) { return { nome: entry[0], fichas: entry[1].fichas }; });
-  }
 
-  window.toggleMes = function(header) {
-    var body    = header.nextElementSibling;
-    var chevron = header.querySelector('.month-chevron');
-    body.classList.toggle('open');
-    chevron.classList.toggle('open');
-  };
-
-  // ---- PACIENTES ----
+  // -- PACIENTES --
   window.carregarDados = async function() {
-    document.getElementById('tableArea').innerHTML =
-      '<div class="loading"><div class="spinner"></div>Carregando fichas...</div>';
+    document.getElementById('tableArea').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando fichas...</div>`;
     try {
-      var q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
-      var snap = await getDocs(q);
-      todosPacientes = snap.docs.map(function(doc) { return Object.assign({id: doc.id}, doc.data()); });
+      const q    = collection(db, 'anamneses');
+      const snap = await getDocs(q);
+      todosPacientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderizarPacientes(todosPacientes);
       atualizarStats(todosPacientes);
-      construirFiltros(todosPacientes);
-      renderizarPorMes(todosPacientes);
+      gerarFiltrosMotivo();
     } catch(e) {
-      document.getElementById('tableArea').innerHTML =
-        '<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3><p>Verifique as regras do Firestore.</p></div>';
+      document.getElementById('tableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3><p>Verifique as regras do Firestore.</p></div>`;
     }
   };
 
   function atualizarStats(lista) {
     document.getElementById('totalPacientes').textContent = lista.length;
-    var hoje = new Date().toDateString();
-    document.getElementById('totalHoje').textContent =
-      lista.filter(function(p) { return p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje; }).length;
-    document.getElementById('totalAlergias').textContent =
-      lista.filter(function(p) { return p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias') && !p.alergias.includes('Nao tenho alergias'); }).length;
-    document.getElementById('totalMedo').textContent =
-      lista.filter(function(p) { return p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia')); }).length;
+    const hoje = new Date().toDateString();
+    document.getElementById('totalHoje').textContent      = lista.filter(p => p.enviadoEm && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString() === hoje).length;
+    document.getElementById('totalAlergias').textContent  = lista.filter(p => p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias')).length;
+    document.getElementById('totalMedo').textContent      = lista.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso') || p.ansiedade.includes('medo') || p.ansiedade.includes('Fobia'))).length;
   }
 
-  function construirFiltros(lista) {
-    var motivos = [];
-    lista.forEach(function(p) { if(p.motivoConsulta && motivos.indexOf(p.motivoConsulta)===-1) motivos.push(p.motivoConsulta); });
-    var wrap = document.getElementById('filtrosWrap');
-    var total = lista.length;
-    wrap.innerHTML = '<span class="filtros-label">Filtrar por motivo:</span>';
-
-    var btnTodos = document.createElement('button');
-    btnTodos.className = 'filtro-btn' + (filtroAtivo==='Todos' ? ' active' : '');
-    btnTodos.innerHTML = 'Todos <span class="filtro-count">' + total + '</span>';
-    btnTodos.onclick = function() { filtroAtivo='Todos'; construirFiltros(todosPacientes); renderizarPorMes(todosPacientes); };
-    wrap.appendChild(btnTodos);
-
-    motivos.forEach(function(m) {
-      var cnt = lista.filter(function(p) { return p.motivoConsulta===m; }).length;
-      var btn = document.createElement('button');
-      btn.className = 'filtro-btn' + (filtroAtivo===m ? ' active' : '');
-      btn.innerHTML = m + ' <span class="filtro-count">' + cnt + '</span>';
-      btn.onclick = (function(motivo) {
-        return function() {
-          filtroAtivo = motivo;
-          construirFiltros(todosPacientes);
-          renderizarPorMes(todosPacientes.filter(function(p) { return p.motivoConsulta===motivo; }));
-        };
-      })(m);
-      wrap.appendChild(btn);
-    });
-  }
-
-  function renderizarPorMes(lista) {
+  function renderizarPacientes(lista) {
+    document.getElementById('countBadge').textContent = lista.length + ' fichas';
     var tableArea = document.getElementById('tableArea');
     if (lista.length === 0) {
-      tableArea.innerHTML = '<div class="empty"><div class="empty-icon">!</div><h3>Nenhuma ficha encontrada</h3><p>As fichas preenchidas pelos pacientes aparecerao aqui.</p></div>';
+      tableArea.innerHTML = '<div class="empty"><div class="empty-icon"></div><h3>Nenhuma ficha encontrada</h3><p>As fichas preenchidas pelos pacientes aparecerao aqui.</p></div>';
       return;
     }
     window._listaPacientes = lista;
     var grupos = agruparPorMes(lista);
     tableArea.innerHTML = '';
-
     grupos.forEach(function(grupo, gi) {
       var isOpen = gi === 0;
       var section = document.createElement('div');
       section.className = 'month-section';
-
       var header = document.createElement('div');
       header.className = 'month-header';
       header.setAttribute('onclick', 'toggleMes(this)');
@@ -1007,305 +407,170 @@
           '<div class="month-count">' + grupo.fichas.length + ' ' + (grupo.fichas.length===1?'ficha':'fichas') + '</div>' +
         '</div>' +
         '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
-
-      var body = document.createElement('div');
-      body.className = 'month-body' + (isOpen ? ' open' : '');
-
       var rows = '';
       grupo.fichas.forEach(function(p) {
         var idx = lista.indexOf(p);
-        var nome   = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '---';
-        var tel    = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '---';
-        var motivo = p.motivoConsulta || '---';
-        var data   = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
-        var time   = p.timeFutebol || '---';
-        var temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias') && p.alergias.join('').indexOf('alergias')===- 1;
-        var temMedo = p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0 || p.ansiedade.indexOf('Fobia')>=0);
+        var nome   = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '-';
+        var tel    = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '-';
+        var motivo = p.motivoConsulta || '-';
+        var ts     = p.criadoEm || p.enviadoEm;
+        var data   = ts ? new Date(ts.seconds*1000).toLocaleDateString('pt-BR') : '-';
+        var selfie = p.dadosPessoais && p.dadosPessoais.selfie;
+        var avatarHtml = selfie
+          ? '<img class="avatar" src="' + selfie + '" alt="Foto" />'
+          : '<div class="avatar-placeholder">*</div>';
+        var temAlergia = p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias');
+        var temMedo    = p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0 || p.ansiedade.indexOf('Fobia')>=0);
         var alertas = '';
         if (temAlergia) alertas += '<span class="td-tag danger">! Alergia</span>';
-        if (temMedo)    alertas += '<span class="td-tag warn">Ansioso</span>';
-        if (!temAlergia && !temMedo) alertas = '<span class="td-tag ok">OK</span>';
-        rows += '<tr onclick="abrirModal(' + idx + ')">' +
-          '<td><div class="td-name">' + nome + '</div></td>' +
+        if (temMedo)    alertas += '<span class="td-tag warn"> Ansioso</span>';
+        if (!temAlergia && !temMedo) alertas = '<span class="td-tag">v Ok</span>';
+        rows +=
+          '<tr onclick="abrirModalPaciente(' + idx + ')">' +
+          '<td><div class="td-paciente">' + avatarHtml + '<div class="td-name">' + nome + '</div></div></td>' +
           '<td><div class="td-muted">' + tel + '</div></td>' +
           '<td><span class="td-tag">' + motivo + '</span></td>' +
           '<td>' + alertas + '</td>' +
-          '<td><span class="td-muted">' + time + '</span></td>' +
-          '<td><span class="td-date">' + data + '</span></td>' +
-          '<td><button class="btn-ver" onclick="event.stopPropagation();abrirModal(' + idx + ')">Ver ficha</button></td>' +
+          '<td><div class="td-muted">' + (p.timeFutebol||'-') + '</div></td>' +
+          '<td><div class="td-muted">' + data + '</div></td>' +
+          '<td><button class="view-btn" onclick="event.stopPropagation();abrirModalPaciente(' + idx + ')">Ver ficha</button></td>' +
           '</tr>';
       });
-
+      var body = document.createElement('div');
+      body.className = 'month-body' + (isOpen?' open':'');
       body.innerHTML =
-        '<div class="table-wrap">' +
-          '<table>' +
-            '<thead><tr>' +
-              '<th>Paciente</th><th>Telefone</th><th>Motivo</th>' +
-              '<th>Alertas</th><th>Time</th><th>Data</th><th></th>' +
-            '</tr></thead>' +
-            '<tbody>' + rows + '</tbody>' +
-          '</table>' +
-        '</div>';
-
+        '<table>' +
+        '<thead><tr><th>Paciente</th><th>Telefone</th><th>Motivo</th><th>Alertas</th><th>Time</th><th>Data</th><th></th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table>';
       section.appendChild(header);
       section.appendChild(body);
       tableArea.appendChild(section);
     });
   }
 
-  window.filtrarPacientes = function() {
-    var q = document.getElementById('searchBox').value.toLowerCase();
-    var filtrados = todosPacientes.filter(function(p) {
-      var nome = ((p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '').toLowerCase();
-      var tel  = ((p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '').toLowerCase();
-      var ok = nome.indexOf(q)>=0 || tel.indexOf(q)>=0;
-      if (filtroAtivo==='Todos') return ok;
-      return ok && p.motivoConsulta===filtroAtivo;
-    });
-    renderizarPorMes(filtrados);
-  };
+  let filtroMotivoAtivo = null;
 
-  // MODAL PACIENTES
-  window.abrirModal = function(index) {
-    var lista = window._listaPacientes || todosPacientes;
-    var p = lista[index];
-    var tagList = function(arr, cor) {
-      if (!arr || arr.length===0) return '<span class="m-tag">---</span>';
-      return arr.map(function(t) { return '<span class="m-tag ' + (cor||'') + '">' + t + '</span>'; }).join('');
-    };
-    var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '---';
-    var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '---';
-    var email = (p.dadosPessoais && p.dadosPessoais.email) ? p.dadosPessoais.email : '---';
-    var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
-    var hora = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
-    var temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias') && p.alergias.join('').indexOf('alergias')===-1;
-
-    document.getElementById('modalTitle').textContent = nome;
-    document.getElementById('modalBody').innerHTML =
-      '<div class="m-section"><div class="m-section-title">Dados Pessoais</div><div class="m-tags">' +
-        '<span class="m-tag blue">' + tel + '</span>' +
-        '<span class="m-tag">' + email + '</span>' +
-        '<span class="m-tag">' + data + (hora?' '+hora:'') + '</span>' +
-      '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Motivo da Consulta</div><div class="m-tags">' +
-        '<span class="m-tag blue">' + (p.motivoConsulta||'---') + '</span>' +
-      '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Alergias' + (temAlergia?' (!)':'') + '</div><div class="m-tags">' +
-        tagList(p.alergias, temAlergia?'red':'') +
-      '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Medicamentos</div><div class="m-tags">' + tagList(p.medicamentos,'yellow') + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Saude Bucal</div><div class="m-tags">' + tagList(p.saudeBucal) + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Ansiedade</div><div class="m-tags"><span class="m-tag yellow">' + (p.ansiedade||'---') + '</span></div></div>' +
-      '<div class="m-section"><div class="m-section-title">Habitos</div><div class="m-tags">' + tagList(p.habitos) + '</div></div>' +
-      '<div style="border-top:1px solid var(--borda);margin:16px 0"></div>' +
-      '<div class="m-section"><div class="m-section-title">Time de Futebol</div><div class="m-tags"><span class="m-tag">' + (p.timeFutebol||'---') + '</span></div></div>' +
-      '<div class="m-section"><div class="m-section-title">Musica</div><div class="m-tags">' + tagList(p.musica) + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Filmes</div><div class="m-tags">' + tagList(p.filmes) + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Lazer</div><div class="m-tags">' + tagList(p.lazer) + '</div></div>';
-
-    document.getElementById('modalActions').innerHTML =
-      '<button class="print-btn" onclick="imprimirFicha(' + index + ')">Imprimir ficha</button>' +
-      '<button class="pdf-btn" onclick="salvarPDF(' + index + ')">Salvar PDF</button>';
-
-    document.getElementById('modalBg').classList.add('open');
-  };
-
-  window.fecharModal = function(e) {
-    if (!e || e.target === document.getElementById('modalBg'))
-      document.getElementById('modalBg').classList.remove('open');
-  };
-
-  window.imprimirFicha = function(index) {
-    var lista = window._listaPacientes || todosPacientes;
-    var p = lista[index];
-    var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '---';
-    var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '---';
-    var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
-    var w = window.open('','_blank');
-    w.document.write('<html><head><title>Ficha - ' + nome + '</title>' +
-      '<style>body{font-family:sans-serif;padding:32px;color:#111}h1{font-size:1.4rem}h2{font-size:0.9rem;color:#555;margin:16px 0 4px}p{margin:2px 0}hr{margin:20px 0;border:1px solid #ddd}</style>' +
-      '</head><body>' +
-      '<h1>Ficha de Anamnese - ' + nome + '</h1>' +
-      '<p>Telefone: ' + tel + ' | Data: ' + data + '</p><hr>' +
-      '<h2>Motivo da Consulta</h2><p>' + (p.motivoConsulta||'---') + '</p>' +
-      '<h2>Alergias</h2><p>' + (p.alergias ? p.alergias.join(', ') : '---') + '</p>' +
-      '<h2>Medicamentos</h2><p>' + (p.medicamentos ? p.medicamentos.join(', ') : '---') + '</p>' +
-      '<h2>Saude Bucal</h2><p>' + (p.saudeBucal ? p.saudeBucal.join(', ') : '---') + '</p>' +
-      '<h2>Ansiedade</h2><p>' + (p.ansiedade||'---') + '</p>' +
-      '<h2>Habitos</h2><p>' + (p.habitos ? p.habitos.join(', ') : '---') + '</p>' +
-      '<hr>' +
-      '<h2>Time de Futebol</h2><p>' + (p.timeFutebol||'---') + '</p>' +
-      '<h2>Musica</h2><p>' + (p.musica ? p.musica.join(', ') : '---') + '</p>' +
-      '<h2>Filmes</h2><p>' + (p.filmes ? p.filmes.join(', ') : '---') + '</p>' +
-      '<h2>Lazer</h2><p>' + (p.lazer ? p.lazer.join(', ') : '---') + '</p>' +
-      '</body></html>');
-    w.document.close();
-    w.print();
-  };
-
-  window.salvarPDF = function(index) { window.imprimirFicha(index); };
-
-  // ---- KIDS ----
-  window.carregarKids = async function() {
-    document.getElementById('kidsTableArea').innerHTML =
-      '<div class="loading"><div class="spinner"></div>Carregando...</div>';
-    try {
-      var q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
-      var snap = await getDocs(q);
-      todosKids = snap.docs
-        .map(function(d) { return Object.assign({id:d.id}, d.data()); })
-        .filter(function(p) { return p.tipo==='infantil' || (p.dadosPessoais && p.dadosPessoais.escola) || p.nomeCrianca || p.nomeResponsavel; });
-      var hoje = new Date().toDateString();
-      document.getElementById('totalKids').textContent = todosKids.length;
-      document.getElementById('kidsHoje').textContent = todosKids.filter(function(p) { return p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje; }).length;
-      document.getElementById('kidsAlergias').textContent = todosKids.filter(function(p) { return p.alergias && p.alergias.length>0; }).length;
-      document.getElementById('kidsMedo').textContent = todosKids.filter(function(p) { return p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0); }).length;
-      renderizarKidsPorMes(todosKids);
-    } catch(e) {
-      document.getElementById('kidsTableArea').innerHTML =
-        '<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>';
-    }
-  };
-
-  window.filtrarKids = function() {
-    var q = document.getElementById('searchKids').value.toLowerCase();
-    var filtrados = todosKids.filter(function(p) {
-      var nome = ((p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'')).toLowerCase();
-      return nome.indexOf(q)>=0;
-    });
-    renderizarKidsPorMes(filtrados);
-  };
-
-  function renderizarKidsPorMes(lista) {
-    var area = document.getElementById('kidsTableArea');
-    if (lista.length === 0) {
-      area.innerHTML = '<div class="empty"><div class="empty-icon">!</div><h3>Nenhuma ficha kids</h3><p>As fichas infantis aparecerao aqui.</p></div>';
-      return;
-    }
-    window._listaKids = lista;
-    var grupos = agruparPorMes(lista);
-    area.innerHTML = '';
-
-    grupos.forEach(function(grupo, gi) {
-      var isOpen = gi === 0;
-      var section = document.createElement('div');
-      section.className = 'month-section';
-
-      var header = document.createElement('div');
-      header.className = 'month-header';
-      header.setAttribute('onclick', 'toggleMes(this)');
-      header.innerHTML =
-        '<div class="month-header-left">' +
-          '<div class="month-dot"></div>' +
-          '<div class="month-name">' + grupo.nome + '</div>' +
-          '<div class="month-count">' + grupo.fichas.length + ' ' + (grupo.fichas.length===1?'ficha':'fichas') + '</div>' +
-        '</div>' +
-        '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
-
-      var rows = '';
-      grupo.fichas.forEach(function(p) {
-        var idx = lista.indexOf(p);
-        var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'---');
-        var resp = (p.dadosPessoais && p.dadosPessoais.responsavel) ? p.dadosPessoais.responsavel : (p.nomeResponsavel||'---');
-        var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : (p.whatsappResponsavel||'---');
-        var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
-        var temAlergia = p.alergias && p.alergias.length>0;
-        var temMedo    = p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0);
-        var alertas = '';
-        if (temAlergia) alertas += '<span class="td-tag danger">! Alergia</span>';
-        if (temMedo)    alertas += '<span class="td-tag warn">Ansioso</span>';
-        if (!temAlergia && !temMedo) alertas = '<span class="td-tag ok">OK</span>';
-        rows +=
-          '<tr onclick="abrirModalKids(' + idx + ')">' +
-          '<td><div class="td-name">' + nome + '</div></td>' +
-          '<td><div class="td-muted">' + resp + '</div></td>' +
-          '<td><div class="td-muted">' + tel + '</div></td>' +
-          '<td>' + alertas + '</td>' +
-          '<td><span class="td-date">' + data + '</span></td>' +
-          '<td><button class="btn-ver" onclick="event.stopPropagation();abrirModalKids(' + idx + ')">Ver ficha</button></td>' +
-          '</tr>';
-      });
-
-      var body = document.createElement('div');
-      body.className = 'month-body' + (isOpen ? ' open' : '');
-      body.innerHTML =
-        '<div class="table-wrap"><table>' +
-        '<thead><tr><th>Crianca</th><th>Responsavel</th><th>Telefone</th><th>Alertas</th><th>Data</th><th></th></tr></thead>' +
-        '<tbody>' + rows + '</tbody></table></div>';
-
-      section.appendChild(header);
-      section.appendChild(body);
-      area.appendChild(section);
-    });
+  function gerarFiltrosMotivo() {
+    const motivos = {};
+    todosPacientes.forEach(p => { const m = p.motivoConsulta || 'Outros'; motivos[m] = (motivos[m]||0)+1; });
+    const wrap = document.getElementById('filtrosWrap');
+    const btns = Object.entries(motivos).sort((a,b)=>b[1]-a[1]).map(([m,count]) =>
+      `<button class="filtro-btn" onclick="filtrarMotivo('${m}')">${m}<span class="filtro-count">${count}</span></button>`
+    ).join('');
+    wrap.innerHTML = `<span class="filtros-label">> Filtrar por motivo:</span>
+      <button class="filtro-btn ativo" onclick="filtrarMotivo(null)">Todos <span class="filtro-count">${todosPacientes.length}</span></button>${btns}`;
   }
 
-  window.abrirModalKids = function(index) {
-    var lista = window._listaKids || todosKids;
-    var p = lista[index];
-    var tagList = function(arr, cor) {
-      if (!arr || arr.length===0) return '<span class="m-tag">---</span>';
-      return arr.map(function(t) { return '<span class="m-tag ' + (cor||'') + '">' + t + '</span>'; }).join('');
-    };
-    var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'---');
-    var resp = (p.dadosPessoais && p.dadosPessoais.responsavel) ? p.dadosPessoais.responsavel : (p.nomeResponsavel||'---');
-    var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : (p.whatsappResponsavel||'---');
-    var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
-
-    document.getElementById('modalTitle').textContent = nome + ' (Kids)';
-    document.getElementById('modalBody').innerHTML =
-      '<div class="m-section"><div class="m-section-title">Responsavel</div><div class="m-tags">' +
-        '<span class="m-tag">' + resp + '</span>' +
-        '<span class="m-tag blue">' + tel + '</span>' +
-        '<span class="m-tag">' + data + '</span>' +
-      '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Alergias</div><div class="m-tags">' + tagList(p.alergias,'red') + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Medicamentos</div><div class="m-tags">' + tagList(p.medicamentos,'yellow') + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Ansiedade</div><div class="m-tags"><span class="m-tag yellow">' + (p.ansiedade||'---') + '</span></div></div>' +
-      '<div style="border-top:1px solid var(--borda);margin:16px 0"></div>' +
-      '<div class="m-section"><div class="m-section-title">Alimentacao</div><div class="m-tags">' + tagList(p.alimentacao) + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Brincadeiras</div><div class="m-tags">' + tagList(p.brincadeiras) + '</div></div>' +
-      '<div class="m-section"><div class="m-section-title">Desenhos / Filmes</div><div class="m-tags">' + tagList(p.desenhos || p.filmesKids) + '</div></div>';
-
-    document.getElementById('modalActions').innerHTML =
-      '<button class="print-btn" onclick="imprimirFicha(' + index + ')">Imprimir ficha</button>';
-    document.getElementById('modalBg').classList.add('open');
+  window.filtrarMotivo = function(motivo) {
+    filtroMotivoAtivo = motivo;
+    document.querySelectorAll('.filtro-btn').forEach(btn => {
+      btn.classList.remove('ativo');
+      const labelBase = btn.textContent.replace(/\d+/g,'').trim();
+      if ((!motivo && labelBase==='Todos') || labelBase===motivo) btn.classList.add('ativo');
+    });
+    aplicarFiltros();
   };
 
-  // ---- FEEDBACKS ----
+  window.filtrarPacientes = function() { aplicarFiltros(); };
+
+  function aplicarFiltros() {
+    const q = document.getElementById('searchBox').value.toLowerCase();
+    let resultado = todosPacientes.filter(p =>
+      (p.dadosPessoais?.nome||'').toLowerCase().includes(q) ||
+      (p.dadosPessoais?.telefone||'').includes(q)
+    );
+    if (filtroMotivoAtivo) resultado = resultado.filter(p => (p.motivoConsulta||'Outros')===filtroMotivoAtivo);
+    renderizarPacientes(resultado);
+  }
+
+  // -- FEEDBACKS --
   window.carregarFeedbacks = async function() {
-    document.getElementById('feedbacksTableArea').innerHTML =
-      '<div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>';
+    document.getElementById('fbTableArea').innerHTML  = `<div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>`;
+    document.getElementById('dentistaGrid').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
     try {
-      var q = query(collection(db, 'feedbacks'), orderBy('enviadoEm', 'desc'));
-      var snap = await getDocs(q);
-      todosFeedbacks = snap.docs.map(function(d) { return Object.assign({id:d.id}, d.data()); });
-      var hoje = new Date().toDateString();
-      document.getElementById('totalFeedbacks').textContent = todosFeedbacks.length;
-      var notas = todosFeedbacks.filter(function(f) { return f.nota; }).map(function(f) { return Number(f.nota); });
-      document.getElementById('mediaFeedbacks').textContent = notas.length>0 ? (notas.reduce(function(a,b){return a+b;},0)/notas.length).toFixed(1) : '---';
-      document.getElementById('feedbacksHoje').textContent = todosFeedbacks.filter(function(f) { return f.enviadoEm && new Date(f.enviadoEm.seconds*1000).toDateString()===hoje; }).length;
-      document.getElementById('feedbacksPositivos').textContent = todosFeedbacks.filter(function(f) { return Number(f.nota)===5; }).length;
-      renderizarFeedbacksPorMes(todosFeedbacks);
+      const q    = collection(db, 'feedbacks');
+      const snap = await getDocs(q);
+      todosFeedbacks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderizarFeedbacks(todosFeedbacks);
+      renderizarStatsFeedbacks(todosFeedbacks);
+      renderizarDentistas(todosFeedbacks);
     } catch(e) {
-      document.getElementById('feedbacksTableArea').innerHTML =
-        '<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>';
+      document.getElementById('fbTableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar feedbacks</h3><p>${e.message}</p></div>`;
     }
   };
 
-  function renderizarFeedbacksPorMes(lista) {
-    var area = document.getElementById('feedbacksTableArea');
+  function renderizarStatsFeedbacks(lista) {
+    document.getElementById('fbTotal').textContent  = lista.length;
+    const comNps    = lista.filter(f => f.nps !== null && f.nps !== undefined);
+    const npsMedia  = comNps.length ? (comNps.reduce((s,f)=>s+f.nps,0)/comNps.length).toFixed(1) : '-';
+    document.getElementById('fbNps').textContent    = npsMedia;
+    const comNota   = lista.filter(f => (f.avaliacao_geral || 0));
+    const notaMedia = comNota.length ? (comNota.reduce((s,f)=>s+f.avaliacao_geral,0)/comNota.length).toFixed(1) : '-';
+    document.getElementById('fbNota').textContent   = notaMedia ? `${notaMedia}` : '-';
+    const google    = lista.filter(f => f.autorizaGoogle).length;
+    document.getElementById('fbGoogle').textContent = google;
+  }
+
+  function renderizarDentistas(lista) {
+    const mapa = {};
+    lista.forEach(f => {
+      if (!f.dentista) return;
+      if (!mapa[f.dentista]) mapa[f.dentista] = { notas: [], count: 0 };
+      if (f.avaliacao_dentista) mapa[f.dentista].notas.push(f.avaliacao_dentista);
+      mapa[f.dentista].count++;
+    });
+
+    const dentistas = Object.entries(mapa).map(([nome, dados]) => ({
+      nome,
+      count: dados.count,
+      media: dados.notas.length ? (dados.notas.reduce((s,n)=>s+n,0)/dados.notas.length).toFixed(1) : '-'
+    })).sort((a,b) => parseFloat(b.media)||0 - parseFloat(a.media)||0);
+
+    if (dentistas.length === 0) {
+      document.getElementById('dentistaGrid').innerHTML = `<div class="empty"><p>Nenhum feedback com dentista informado.</p></div>`;
+      return;
+    }
+
+    document.getElementById('dentistaGrid').innerHTML = dentistas.map(d => `
+      <div class="dentista-card">
+        <div class="dentista-avatar">*</div>
+        <div class="dentista-info">
+          <div class="dentista-nome">${d.nome}</div>
+          <div class="dentista-count">${d.count} avaliacao${d.count !== 1 ? 'oes' : ''}</div>
+          <div>${renderStars(parseFloat(d.media)||0)}</div>
+        </div>
+        <div class="dentista-nota">${d.media}</div>
+      </div>`).join('');
+  }
+
+  window.renderStars = function renderStars(nota) {
+    let html = '<div class="star-display">';
+    for (let i = 1; i <= 5; i++) {
+      html += `<span ${i <= Math.round(nota) ? '' : 'class="empty"'}>&#9733;</span>`;
+    }
+    return html + '</div>';
+  }
+
+  function npsClass(n) {
+    if (n === null || n === undefined) return '';
+    if (n >= 9) return 'promoter';
+    if (n >= 7) return 'neutral';
+    return 'detractor';
+  }
+
+  function renderizarFeedbacks(lista) {
+    document.getElementById('fbCountBadge').textContent = lista.length + ' feedbacks';
+    var area = document.getElementById('fbTableArea');
     if (lista.length === 0) {
-      area.innerHTML = '<div class="empty"><div class="empty-icon">!</div><h3>Nenhum feedback</h3></div>';
+      area.innerHTML = '<div class="empty"><div class="empty-icon">*</div><h3>Nenhum feedback ainda</h3><p>Os feedbacks enviados pelos pacientes aparecerao aqui.</p></div>';
       return;
     }
     var grupos = agruparPorMes(lista);
     area.innerHTML = '';
-
     grupos.forEach(function(grupo, gi) {
       var isOpen = gi === 0;
       var section = document.createElement('div');
       section.className = 'month-section';
-
       var header = document.createElement('div');
       header.className = 'month-header';
       header.setAttribute('onclick', 'toggleMes(this)');
@@ -1316,37 +581,601 @@
           '<div class="month-count">' + grupo.fichas.length + ' feedbacks</div>' +
         '</div>' +
         '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
-
       var rows = '';
-      grupo.fichas.forEach(function(f) {
-        var nome    = f.nome || (f.dadosPessoais && f.dadosPessoais.nome) || '---';
-        var nota    = f.nota || '---';
-        var coment  = f.comentario || f.mensagem || '---';
-        var data    = f.enviadoEm ? new Date(f.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
-        var estrelas = nota!=='---' ? ('&#9733;').repeat(Number(nota)) : '---';
-        var notaCls  = Number(nota)>=4 ? 'ok' : (Number(nota)>=3 ? 'warn' : 'danger');
+      grupo.fichas.forEach(function(fb) {
+        var idx = lista.indexOf(fb);
+        var nome  = fb.nome || (fb.dadosPessoais&&fb.dadosPessoais.nome) || '-';
+        var nota  = fb.nota || fb.avaliacao || '-';
+        var coment= fb.comentario || fb.mensagem || fb.texto || '';
+        var ts    = fb.criadoEm || fb.enviadoEm;
+        var data  = ts ? new Date(ts.seconds*1000).toLocaleDateString('pt-BR') : '-';
+        var stars = '';
+        if (nota !== '-') {
+          var n = parseInt(nota);
+          for (var s=1; s<=5; s++) stars += (s<=n ? '&#9733;' : '&#9734;');
+        }
+        var cls = parseInt(nota)>=4 ? '' : (parseInt(nota)>=3 ? 'warn' : 'danger');
         rows +=
-          '<tr>' +
+          '<tr onclick="abrirModalFeedback(' + idx + ')" style="cursor:pointer">' +
           '<td><div class="td-name">' + nome + '</div></td>' +
-          '<td><span class="td-tag ' + notaCls + '">' + estrelas + '</span></td>' +
-          '<td><div class="td-muted" style="max-width:300px">' + coment + '</div></td>' +
-          '<td><span class="td-date">' + data + '</span></td>' +
+          '<td><span class="td-tag ' + cls + '" style="letter-spacing:2px">' + (stars||nota) + '</span></td>' +
+          '<td><div class="td-muted" style="max-width:320px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + coment + '</div></td>' +
+          '<td><div class="td-muted">' + data + '</div></td>' +
+          '<td><button class="view-btn" onclick="event.stopPropagation();abrirModalFeedback(' + idx + ')">Ver</button></td>' +
           '</tr>';
       });
-
       var body = document.createElement('div');
-      body.className = 'month-body' + (isOpen ? ' open' : '');
+      body.className = 'month-body' + (isOpen?' open':'');
       body.innerHTML =
-        '<div class="table-wrap"><table>' +
-        '<thead><tr><th>Paciente</th><th>Nota</th><th>Comentario</th><th>Data</th></tr></thead>' +
-        '<tbody>' + rows + '</tbody></table></div>';
-
+        '<table><thead><tr><th>Paciente</th><th>Nota</th><th>Comentario</th><th>Data</th><th></th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table>';
       section.appendChild(header);
       section.appendChild(body);
       area.appendChild(section);
     });
   }
 
+  window.filtrarFeedbacks = function() {
+    const q = document.getElementById('searchFeedback').value.toLowerCase();
+    const resultado = todosFeedbacks.filter(f =>
+      (f.nome||'').toLowerCase().includes(q) ||
+      (f.dentista||'').toLowerCase().includes(q) ||
+      (f.tratamento||'').toLowerCase().includes(q)
+    );
+    renderizarFeedbacks(resultado);
+  };
+
+  // -- MODAL FEEDBACK --
+  window.abrirModalFeedback = function(i) {
+    const f = todosFeedbacks[i];
+    const nome     = f.anonimo ? ' Anonimo' : (f.nome || '-');
+    const data     = ((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) ? new Date(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((f.criadoEm || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp) || f.timestamp).seconds*1000).toLocaleString('pt-BR') : '-';
+    const nClass   = npsClass(f.nps);
+    const destaques = (f.destaques_positivos||[]).map(d=>`<span class="m-tag">${d}</span>`).join('') || '<span class="m-empty">Nenhum selecionado</span>';
+
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-head">
+        <div class="modal-name">* ${nome}</div>
+        <div class="modal-date">* ${f.dentista||'-'} &nbsp;|&nbsp;  ${data}</div>
+        <div class="modal-date" style="margin-top:4px"> ${f.tratamento||'-'}</div>
+        <button class="modal-close" onclick="fecharModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="fb-modal-stars">
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Geral</div>${renderStars(f.avaliacao_geral||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Dentista</div>${renderStars(f.avaliacao_dentista||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">Recepcao</div>${renderStars(f.avaliacao_recepcao||0)}</div>
+          <div class="fb-modal-star-item"><div class="fb-modal-star-label">NPS</div><span class="nps-badge ${nClass}" style="width:auto;padding:4px 12px;">${f.nps!==null&&f.nps!==undefined?f.nps:'-'}</span></div>
+        </div>
+        <div class="m-section"><div class="m-section-title"> Como se sentiu</div><div class="m-tags"><span class="m-tag">${(f.emocao || f.sentimento)||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Destaques positivos</div><div class="m-tags">${destaques}</div></div>
+        ${f.comentarioPositivo ? `<div class="m-section"><div class="m-section-title"> O que mais gostou</div><div style="font-size:0.88rem;color:var(--text);line-height:1.6;padding:12px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${f.comentarioPositivo}</div></div>` : ''}
+        ${f.comentarioMelhoria ? `<div class="m-section"><div class="m-section-title"> Sugestao de melhoria</div><div style="font-size:0.88rem;color:var(--text);line-height:1.6;padding:12px;background:rgba(245,166,35,0.05);border-radius:10px;border:1px solid rgba(245,166,35,0.2)">${f.comentarioMelhoria}</div></div>` : ''}
+        <div class="m-section" style="margin-bottom:0"><div class="m-section-title"> Autoriza Google</div><div class="m-tags"><span class="m-tag ${f.autorizaGoogle?'green':''}">${f.autorizaGoogle?'v Sim':'x Nao'}</span></div></div>
+      </div>`;
+
+    document.getElementById('modalBg').classList.add('open');
+  };
+
+  // -- MODAL PACIENTE --
+  window.abrirModalPaciente = function(index) {
+    const p = todosPacientes[index];
+    const nome   = p.dadosPessoais?.nome || '-';
+    const nascRaw= p.dadosPessoais?.nascimento || '';
+    const nasc   = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
+    const tel    = p.dadosPessoais?.telefone || '-';
+    const data   = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
+
+    function tagList(arr, cls='') {
+      if (!arr||arr.length===0) return `<span class="m-empty">Nenhum informado</span>`;
+      if (!Array.isArray(arr)) return `<span class="m-tag ${cls}">${arr}</span>`;
+      return arr.map(t=>`<span class="m-tag ${cls}">${t}</span>`).join('');
+    }
+
+    const temAlergia = p.alergias && p.alergias.length > 0 && !p.alergias.includes('Nao tenho alergias');
+    const fotoModal  = p.dadosPessoais?.selfie
+      ? `<img class="modal-avatar" src="${p.dadosPessoais.selfie}" alt="Foto" />`
+      : `<div class="modal-avatar-placeholder">*</div>`;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-head">
+        <div class="modal-name">* ${nome}</div>
+        <div class="modal-date"> Nascimento: ${nasc} &nbsp;|&nbsp;  ${tel}</div>
+        <div class="modal-date" style="margin-top:4px"> Enviado em: ${data}</div>
+        ${fotoModal}
+        <button class="modal-close" onclick="fecharModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="m-section"><div class="m-section-title">> Motivo</div><div class="m-tags"><span class="m-tag green">${p.motivoConsulta||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Saude Geral</div><div class="m-tags">${tagList(p.saudeGeral)}</div></div>
+        <div class="m-section"><div class="m-section-title">! Alergias</div><div class="m-tags">${tagList(p.alergias, temAlergia?'red':'')}</div></div>
+        <div class="m-section"><div class="m-section-title"> Medicamentos</div><div class="m-tags">${tagList(p.medicamentos,'yellow')}</div></div>
+        <div class="m-section"><div class="m-section-title">* Saude Bucal</div><div class="m-tags">${tagList(p.saudeBucal)}</div></div>
+        <div class="m-section"><div class="m-section-title"> Ansiedade</div><div class="m-tags"><span class="m-tag yellow">${p.ansiedade||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Habitos</div><div class="m-tags">${tagList(p.habitos)}</div></div>
+        <div style="border-top:1px solid var(--border);margin:16px 0"></div>
+        <div class="m-section"><div class="m-section-title"> Time</div><div class="m-tags"><span class="m-tag">${p.timeFutebol||'-'}</span></div></div>
+        <div class="m-section"><div class="m-section-title"> Musica</div><div class="m-tags">${tagList(p.musica)}</div></div>
+        <div class="m-section"><div class="m-section-title"> Filmes</div><div class="m-tags">${tagList(p.filmes)}</div></div>
+        <div class="m-section"><div class="m-section-title"> Lazer</div><div class="m-tags">${tagList(p.lazer)}</div></div>
+      </div>
+      <div class="modal-actions">
+        <button class="print-btn" onclick="imprimirFicha(${index})"> Imprimir ficha</button>
+        <button class="pdf-btn" onclick="salvarPDF(${index})"> Salvar PDF</button>
+      </div>`;
+
+    document.getElementById('modalBg').classList.add('open');
+  };
+
+
+  // -- KIDS --
+  let todosKids = [];
+  window.carregarKids = async function() {
+    document.getElementById('kidsTableArea').innerHTML = `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
+    try {
+      const q = collection(db, 'anamneses');
+      const snap = await getDocs(q);
+      const todas = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      todosKids = todas.filter(p => p.crianca?.nome || p.tipo === 'infantil');
+      renderizarKids(todosKids);
+      const hoje = new Date().toDateString();
+      document.getElementById('totalKids').textContent = todosKids.length;
+      document.getElementById('kidsHoje').textContent = todosKids.filter(p => (p.criadoEm||p.enviadoEm) && new Date((p.criadoEm||p.enviadoEm).seconds*1000).toDateString()===hoje).length;
+      document.getElementById('kidsAlergias').textContent = todosKids.filter(p => p.saudeGeral?.alergiaMedicamento==='Sim' || p.saudeGeral?.alergiaLatex==='Sim' || p.saudeGeral?.outrasAlergias || (p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias'))).length;
+      document.getElementById('kidsMedo').textContent = todosKids.filter(p => { const s = p.comportamento?.sentimentoHoje || p.ansiedade || ''; return s.toLowerCase().includes('ansios') || s.toLowerCase().includes('medo') || s.toLowerCase().includes('nervos'); }).length;
+    } catch(e) {
+      document.getElementById('kidsTableArea').innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>`;
+    }
+  };
+
+  function renderizarKids(lista) {
+    document.getElementById('kidsCountBadge').textContent = lista.length + ' fichas';
+    var area = document.getElementById('kidsTableArea');
+    if (lista.length === 0) {
+      area.innerHTML = '<div class="empty"><div class="empty-icon">*</div><h3>Nenhuma ficha kids</h3><p>As fichas infantis aparecerao aqui.</p></div>';
+      return;
+    }
+    window._listaKids = lista;
+    var grupos = agruparPorMes(lista);
+    area.innerHTML = '';
+    grupos.forEach(function(grupo, gi) {
+      var isOpen = gi === 0;
+      var section = document.createElement('div');
+      section.className = 'month-section';
+      var header = document.createElement('div');
+      header.className = 'month-header';
+      header.setAttribute('onclick', 'toggleMes(this)');
+      header.innerHTML =
+        '<div class="month-header-left">' +
+          '<div class="month-dot"></div>' +
+          '<div class="month-name">' + grupo.nome + '</div>' +
+          '<div class="month-count">' + grupo.fichas.length + ' ' + (grupo.fichas.length===1?'ficha':'fichas') + '</div>' +
+        '</div>' +
+        '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
+      var rows = '';
+      grupo.fichas.forEach(function(p) {
+        var idx = lista.indexOf(p);
+        var nome = (p.crianca&&p.crianca.nome) ? p.crianca.nome : ((p.dadosPessoais&&p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'-'));
+        var resp = (p.responsavel&&p.responsavel.nome) ? p.responsavel.nome : ((p.dadosPessoais&&p.dadosPessoais.responsavel) ? p.dadosPessoais.responsavel : (p.nomeResponsavel||'-'));
+        var tel  = (p.responsavel&&p.responsavel.whatsapp) ? p.responsavel.whatsapp : ((p.dadosPessoais&&p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : (p.whatsappResponsavel||'-'));
+        var ts   = p.criadoEm || p.enviadoEm;
+        var data = ts ? new Date(ts.seconds*1000).toLocaleDateString('pt-BR') : '-';
+        var temAlergia = (p.saudeGeral && (p.saudeGeral.alergiaMedicamento==='Sim'||p.saudeGeral.alergiaLatex==='Sim')) || (p.alergias&&p.alergias.length>0&&!p.alergias.includes('Nao tenho alergias'));
+        rows +=
+          '<tr style="cursor:pointer" onclick="abrirModalKids(' + idx + ')">' +
+          '<td><div class="td-paciente"><div class="avatar-placeholder">*</div><div class="td-name">' + nome + '</div></div></td>' +
+          '<td><div class="td-muted">' + resp + '</div></td>' +
+          '<td><div class="td-muted">' + tel + '</div></td>' +
+          '<td>' + (temAlergia ? '<span class="td-tag danger">! Alergia</span>' : '<span class="td-tag">v Ok</span>') + '</td>' +
+          '<td><div class="td-muted">' + data + '</div></td>' +
+          '</tr>';
+      });
+      var body = document.createElement('div');
+      body.className = 'month-body' + (isOpen?' open':'');
+      body.innerHTML =
+        '<table><thead><tr><th>Crianca</th><th>Responsavel</th><th>Telefone</th><th>Alertas</th><th>Data</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table>';
+      section.appendChild(header);
+      section.appendChild(body);
+      area.appendChild(section);
+    });
+  }
+
+  window.filtrarKids = function() {
+    const q = document.getElementById('searchKids').value.toLowerCase();
+    const r = todosKids.filter(p => {
+      const nome = (p.crianca?.nome || p.dadosPessoais?.nome || p.nomeCrianca || '').toLowerCase();
+      const resp = (p.responsavel?.nome || p.dadosPessoais?.responsavel || p.nomeResponsavel || '').toLowerCase();
+      return nome.includes(q) || resp.includes(q);
+    });
+    renderizarKids(r);
+  };
+
+  // mudarAba - atualizar para incluir kids
+
+  window.toggleMes = function(header) {
+    var body    = header.nextElementSibling;
+    var chevron = header.querySelector('.month-chevron');
+    body.classList.toggle('open');
+    chevron.classList.toggle('open');
+  };
+
+  function agruparPorMes(lista) {
+    var meses = {};
+    lista.forEach(function(p) {
+      var chave = 'Sem data';
+      var ordem = '0000-00';
+      var ts = p.enviadoEm || p.criadoEm;
+      if (ts && ts.seconds) {
+        var d = new Date(ts.seconds * 1000);
+        chave = d.toLocaleString('pt-BR', {month:'long'}) + ' de ' + d.getFullYear();
+        ordem = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      }
+      if (!meses[chave]) meses[chave] = { fichas: [], ordem: ordem };
+      meses[chave].fichas.push(p);
+    });
+    return Object.entries(meses)
+      .sort(function(a,b) { return b[1].ordem.localeCompare(a[1].ordem); })
+      .map(function(e) { return { nome: e[0], fichas: e[1].fichas }; });
+  }
+
+  window.mudarAba = function(aba) {
+    ['abaPacientes','abaKids','abaFeedbacks'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+    ['btnMenuPacientes','btnMenuKids','btnMenuFeedbacks'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.classList.remove('active');
+    });
+    const abaId = 'aba' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    const btnId = 'btnMenu' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    const abaEl = document.getElementById(abaId);
+    const btnEl = document.getElementById(btnId);
+    if(abaEl) abaEl.style.display = 'block';
+    if(btnEl) btnEl.classList.add('active');
+    if(aba==='kids' && todosKids.length===0) carregarKids();
+    if(aba==='feedbacks' && todosFeedbacks.length===0) carregarFeedbacks();
+  };
+
+  // -- MODAL KIDS --
+  window.abrirModalKids = function(index) {
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || p.nomeCrianca || '-';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const idade= p.crianca?.idade || '-';
+    const sexo = p.crianca?.sexo || '-';
+    const resp = p.responsavel?.nome || p.nomeResponsavel || '-';
+    const tel  = p.responsavel?.whatsapp || p.whatsappResponsavel || '-';
+    const plano= p.responsavel?.plano || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : (p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-');
+
+    function tag(v, cls='') {
+      if (!v || v === '-') return `<span class="m-empty">Não informado</span>`;
+      return `<span class="m-tag ${cls}">${v}</span>`;
+    }
+    function tagArr(arr, cls='') {
+      if (!arr || arr.length === 0) return `<span class="m-empty">Nenhum informado</span>`;
+      return arr.map(t => `<span class="m-tag ${cls}">${t}</span>`).join('');
+    }
+
+    const s  = p.saudeGeral || {};
+    const sb = p.saudeBucal || {};
+    const al = p.alimentacao || {};
+    const mc = p.mundoCrianca || {};
+    const co = p.comportamento || {};
+    const av = p.avaliacao || {};
+
+    const temAlergia = s.alergiaMedicamento === 'Sim' || s.alergiaLatex === 'Sim';
+
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-head">
+        ${p.foto ? `<img class="modal-avatar" src="${p.foto}" alt="Foto" />` : `<div class="modal-avatar-placeholder">👶</div>`}         <div class="modal-name">👶 ${nome}</div>
+        <div class="modal-date">📅 ${nasc} &nbsp;|&nbsp; ${idade} &nbsp;|&nbsp; ${sexo}</div>
+        <div class="modal-date" style="margin-top:4px">👨‍👩‍👧 Responsável: ${resp} &nbsp;|&nbsp; 📱 ${tel}</div>
+        <div class="modal-date" style="margin-top:4px">📋 Enviado em: ${data}</div>
+        <button class="modal-close" onclick="fecharModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="m-section"><div class="m-section-title">🏥 Plano</div><div class="m-tags">${tag(plano)}</div></div>
+        <div class="m-section"><div class="m-section-title">❤️ Condições de Saúde</div><div class="m-tags">${tagArr(s.condicoes)}</div></div>
+        <div class="m-section"><div class="m-section-title">${temAlergia?'⚠️':'✅'} Alergias</div><div class="m-tags">
+          ${s.alergiaMedicamento==='Sim' ? `<span class="m-tag red">💊 Medicamento: ${s.alergiaMedDesc||'sim'}</span>` : ''}
+          ${s.alergiaLatex==='Sim' ? '<span class="m-tag red">🧤 Látex</span>' : ''}
+          ${s.outrasAlergias ? `<span class="m-tag red">${s.outrasAlergias}</span>` : ''}
+          ${!temAlergia && !s.outrasAlergias ? '<span class="m-tag">Sem alergias</span>' : ''}
+        </div></div>
+        <div class="m-section"><div class="m-section-title">💊 Medicamentos</div><div class="m-tags">${s.tomaMedicamento==='Sim' ? tag(s.medicamentos,'yellow') : '<span class="m-tag">Não toma</span>'}</div></div>
+        <div class="m-section"><div class="m-section-title">🦷 Saúde Bucal</div><div class="m-tags">
+          ${tag('Dentista: '+sb.jaDentista)}
+          ${tag('Escovação: '+sb.frequenciaEscovacao)}
+          ${tag('Ajuda: '+sb.ajudaEscovacao)}
+          ${tagArr(sb.habitosBucais)}
+        </div></div>
+        ${sb.queixaPrincipal ? `<div class="m-section"><div class="m-section-title">💬 Queixa</div><div style="font-size:0.88rem;color:var(--text);padding:10px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${sb.queixaPrincipal}</div></div>` : ''}
+        <div style="border-top:1px solid var(--border);margin:14px 0"></div>
+        <div class="m-section"><div class="m-section-title">🍎 Alimentação</div><div class="m-tags">
+          ${tagArr(al.comidaFavorita)}
+          ${tag('Doces: '+al.frequenciaDoces)}
+          ${tag('Refri: '+al.refrigerante)}
+        </div></div>
+        <div class="m-section"><div class="m-section-title">🎮 Brincadeiras</div><div class="m-tags">${tagArr(mc.brincadeiras)}</div></div>
+        <div class="m-section"><div class="m-section-title">⭐ Personagens</div><div class="m-tags">${tagArr(mc.personagens)}</div></div>
+        <div class="m-section"><div class="m-section-title">😊 Comportamento</div><div class="m-tags">
+          ${tag('Hoje: '+co.sentimentoHoje)}
+          ${tag('Novidades: '+co.reacaoNova)}
+          ${tagArr(co.confortoOptions)}
+        </div></div>
+        ${co.observacoes ? `<div class="m-section"><div class="m-section-title">📝 Obs. Comportamento</div><div style="font-size:0.88rem;color:var(--text);padding:10px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${co.observacoes}</div></div>` : ''}
+        <div class="m-section"><div class="m-section-title">📢 Como soube</div><div class="m-tags">${tag(av.comoSoube)}</div></div>
+        ${av.mensagemEquipe ? `<div class="m-section"><div class="m-section-title">💌 Mensagem à equipe</div><div style="font-size:0.88rem;color:var(--text);padding:10px;background:rgba(10,191,188,0.05);border-radius:10px;border:1px solid var(--border)">${av.mensagemEquipe}</div></div>` : ''}
+      </div>
+      <div class="modal-actions">
+        <button class="print-btn" onclick="imprimirKids(${index})">🖨️ Imprimir ficha</button>
+        <button class="pdf-btn" onclick="salvarPDFKids(${index})">📄 Salvar PDF</button>
+      </div>`;
+
+    document.getElementById('modalBg').classList.add('open');
+  };
+
+  window.imprimirKids = function(index) {
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || '-';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const resp = p.responsavel?.nome || '-';
+    const tel  = p.responsavel?.whatsapp || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const s    = p.saudeGeral || {};
+    const sb   = p.saudeBucal || {};
+    const al   = p.alimentacao || {};
+    const mc   = p.mundoCrianca || {};
+    const co   = p.comportamento || {};
+    const av   = p.avaliacao || {};
+    const fmt  = v => v || '—';
+    const fmtArr = arr => Array.isArray(arr) && arr.length ? arr.join(', ') : '—';
+
+    document.getElementById('printArea').style.display = 'block';
+    document.getElementById('printArea').innerHTML = `
+      <div style="font-family:Arial,sans-serif;font-size:12px;color:#000;max-width:700px;margin:auto">
+        <div style="border-bottom:2px solid #0abfbc;padding-bottom:8px;margin-bottom:16px">
+          <strong style="font-size:18px;color:#1a3a5c">NEODONTO Kids — Ficha de Anamnese</strong><br>
+          <span style="color:#666">Emitida em: ${new Date().toLocaleString('pt-BR')}</span>
+        </div>
+        <div style="margin-bottom:12px"><strong>👶 Criança:</strong> ${fmt(nome)} &nbsp;|&nbsp; <strong>Nasc.:</strong> ${nasc} &nbsp;|&nbsp; <strong>Idade:</strong> ${fmt(p.crianca?.idade)}</div>
+        <div style="margin-bottom:12px"><strong>👨‍👩‍👧 Responsável:</strong> ${fmt(resp)} &nbsp;|&nbsp; <strong>WhatsApp:</strong> ${fmt(tel)} &nbsp;|&nbsp; <strong>Plano:</strong> ${fmt(p.responsavel?.plano)}</div>
+        <hr style="margin:12px 0;border-color:#ccc"/>
+        <div style="margin-bottom:8px"><strong>❤️ Condições:</strong> ${fmtArr(s.condicoes)}</div>
+        <div style="margin-bottom:8px"><strong>⚠️ Alergia med.:</strong> ${fmt(s.alergiaMedicamento)} ${s.alergiaMedDesc?'— '+s.alergiaMedDesc:''} &nbsp;|&nbsp; <strong>Látex:</strong> ${fmt(s.alergiaLatex)}</div>
+        <div style="margin-bottom:8px"><strong>💊 Medicamentos:</strong> ${s.tomaMedicamento==='Sim' ? fmt(s.medicamentos) : 'Não toma'}</div>
+        <div style="margin-bottom:8px"><strong>🦷 Dentista antes:</strong> ${fmt(sb.jaDentista)} &nbsp;|&nbsp; <strong>Escovação:</strong> ${fmt(sb.frequenciaEscovacao)} &nbsp;|&nbsp; <strong>Ajuda:</strong> ${fmt(sb.ajudaEscovacao)}</div>
+        <div style="margin-bottom:8px"><strong>🦷 Hábitos bucais:</strong> ${fmtArr(sb.habitosBucais)}</div>
+        ${sb.queixaPrincipal?`<div style="margin-bottom:8px"><strong>💬 Queixa:</strong> ${sb.queixaPrincipal}</div>`:''}
+        <hr style="margin:12px 0;border-color:#ccc"/>
+        <div style="margin-bottom:8px"><strong>🍎 Comidas favoritas:</strong> ${fmtArr(al.comidaFavorita)} &nbsp;|&nbsp; <strong>Doces:</strong> ${fmt(al.frequenciaDoces)}</div>
+        <div style="margin-bottom:8px"><strong>🎮 Brincadeiras:</strong> ${fmtArr(mc.brincadeiras)}</div>
+        <div style="margin-bottom:8px"><strong>⭐ Personagens:</strong> ${fmtArr(mc.personagens)} &nbsp;|&nbsp; <strong>Cor fav.:</strong> ${fmt(mc.corFavorita)}</div>
+        <div style="margin-bottom:8px"><strong>😊 Sentimento hoje:</strong> ${fmt(co.sentimentoHoje)} &nbsp;|&nbsp; <strong>Reação novidades:</strong> ${fmt(co.reacaoNova)}</div>
+        <div style="margin-bottom:8px"><strong>🤗 Conforto:</strong> ${fmtArr(co.confortoOptions)}</div>
+        ${co.observacoes?`<div style="margin-bottom:8px"><strong>📝 Obs.:</strong> ${co.observacoes}</div>`:''}
+        <hr style="margin:12px 0;border-color:#ccc"/>
+        <div style="margin-bottom:8px"><strong>📢 Como soube:</strong> ${fmt(av.comoSoube)} &nbsp;|&nbsp; <strong>⭐ Avaliação:</strong> ${av.estrelas||'—'}/5</div>
+        ${av.mensagemEquipe?`<div style="margin-bottom:8px"><strong>💌 Mensagem:</strong> ${av.mensagemEquipe}</div>`:''}
+        <div style="margin-top:24px;border-top:1px solid #ccc;padding-top:8px;color:#999;text-align:center;font-size:10px">
+          NEODONTO Odontologia — Goiânia, GO | (62) 4106-1198
+        </div>
+      </div>`;
+    setTimeout(() => { window.print(); document.getElementById('printArea').style.display='none'; }, 300);
+  };
+
+  window.salvarPDFKids = function(index) {
+    const { jsPDF } = window.jspdf;
+    const p    = todosKids[index];
+    const nome = p.crianca?.nome || 'Crianca';
+    const nasc = p.crianca?.dataNascimento ? p.crianca.dataNascimento.split('-').reverse().join('/') : '-';
+    const idade= p.crianca?.idade || '-';
+    const resp = p.responsavel?.nome || '-';
+    const tel  = p.responsavel?.whatsapp || '-';
+    const plano= p.responsavel?.plano || '-';
+    const data = p.criadoEm ? new Date(p.criadoEm.seconds*1000).toLocaleString('pt-BR') : '-';
+    const s    = p.saudeGeral    || {};
+    const sb   = p.saudeBucal   || {};
+    const al   = p.alimentacao  || {};
+    const mc   = p.mundoCrianca || {};
+    const co   = p.comportamento|| {};
+    const av   = p.avaliacao    || {};
+    const fmt  = v => v || '-';
+    const fmtArr = arr => Array.isArray(arr) && arr.length ? arr.join(', ') : '-';
+
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const W = 210; let y = 0;
+
+    // Header
+    doc.setFillColor(10,191,188); doc.rect(0,0,W,32,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(22); doc.setFont('helvetica','bold');
+    doc.text('NEODONTO Kids',14,14);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text('Ficha de Anamnese Infantil',14,21);
+    doc.text('Emitida em: '+new Date().toLocaleString('pt-BR'),14,27); y=42;
+
+    function secao(titulo, linhas) {
+      if(y>260){doc.addPage();y=20;}
+      doc.setTextColor(10,191,188); doc.setFontSize(10); doc.setFont('helvetica','bold');
+      doc.text(titulo,14,y);
+      doc.setDrawColor(10,191,188); doc.setLineWidth(0.3); doc.line(14,y+2,W-14,y+2); y+=8;
+      doc.setTextColor(50,50,50); doc.setFontSize(9); doc.setFont('helvetica','normal');
+      linhas.forEach(([label, val]) => {
+        if(!val || val==='-') return;
+        if(y>270){doc.addPage();y=20;}
+        doc.setFont('helvetica','bold'); doc.text(label+':',14,y);
+        doc.setFont('helvetica','normal');
+        const lines = doc.splitTextToSize(String(val), W-65);
+        doc.text(lines,60,y); y+=6*lines.length;
+      });
+      y+=4;
+    }
+
+    secao('CRIANÇA', [
+      ['Nome', nome], ['Nascimento', nasc], ['Idade', idade],
+      ['Sexo', p.crianca?.sexo], ['Escola', p.crianca?.escola]
+    ]);
+    secao('RESPONSÁVEL', [
+      ['Nome', resp], ['Parentesco', p.responsavel?.parentesco],
+      ['WhatsApp', tel], ['Plano', plano]
+    ]);
+    secao('SAÚDE GERAL', [
+      ['Condições', fmtArr(s.condicoes)],
+      ['Alergia med.', s.alergiaMedicamento==='Sim' ? 'Sim — '+fmt(s.alergiaMedDesc) : 'Não'],
+      ['Alergia látex', fmt(s.alergiaLatex)],
+      ['Outras alergias', s.outrasAlergias],
+      ['Medicamentos', s.tomaMedicamento==='Sim' ? fmt(s.medicamentos) : 'Não toma'],
+      ['Acomp. médico', s.acompanhamentoMedico]
+    ]);
+    secao('SAÚDE BUCAL', [
+      ['Já foi ao dentista', sb.jaDentista],
+      ['Frequência escovação', sb.frequenciaEscovacao],
+      ['Ajuda na escovação', sb.ajudaEscovacao],
+      ['Hábitos bucais', fmtArr(sb.habitosBucais)],
+      ['Queixa principal', sb.queixaPrincipal]
+    ]);
+    secao('ALIMENTAÇÃO', [
+      ['Comidas favoritas', fmtArr(al.comidaFavorita)],
+      ['Frequência doces', al.frequenciaDoces],
+      ['Refrigerante', al.refrigerante],
+      ['Come na cama', al.comeNaCama]
+    ]);
+    secao('MUNDO DA CRIANÇA', [
+      ['Brincadeiras', fmtArr(mc.brincadeiras)],
+      ['Personagens', fmtArr(mc.personagens)],
+      ['Cor favorita', mc.corFavorita],
+      ['Animal favorito', mc.animalFavorito]
+    ]);
+    secao('COMPORTAMENTO', [
+      ['Sentimento hoje', co.sentimentoHoje],
+      ['Reação a novidades', co.reacaoNova],
+      ['Conforto', fmtArr(co.confortoOptions)],
+      ['Observações', co.observacoes]
+    ]);
+    secao('AVALIAÇÃO', [
+      ['Como soube', av.comoSoube],
+      ['Estrelas', av.estrelas ? av.estrelas+'/5' : '-'],
+      ['Mensagem à equipe', av.mensagemEquipe]
+    ]);
+
+    // Footer
+    const pages = doc.getNumberOfPages();
+    for(let i=1;i<=pages;i++){
+      doc.setPage(i);
+      doc.setFontSize(8); doc.setTextColor(180,180,180);
+      doc.text('NEODONTO Odontologia — Goiânia, GO | (62) 4106-1198',14,290);
+      doc.text('Página '+i+' de '+pages, W-30,290);
+    }
+    doc.save('anamnese-kids-'+nome.split(' ')[0].toLowerCase()+'.pdf');
+  };
+
+  window.fecharModal = function(e) {
+    if (!e || e.target === document.getElementById('modalBg'))
+      document.getElementById('modalBg').classList.remove('open');
+  };
+
+  // -- IMPRIMIR / PDF --
+  window.imprimirFicha = function(index) {
+    const p    = todosPacientes[index];
+    const nome = p.dadosPessoais?.nome || '-';
+    const nascRaw = p.dadosPessoais?.nascimento || '';
+    const nasc = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
+    const tel  = p.dadosPessoais?.telefone || '-';
+    const email= p.dadosPessoais?.email || '-';
+    const cpf  = p.dadosPessoais?.cpf || '-';
+    const resp = p.dadosPessoais?.responsavel || '-';
+    const data = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
+    const selfie = p.dadosPessoais?.selfie;
+    const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias');
+    function tags(arr, cls='') {
+      if (!arr||arr.length===0) return '<span style="color:#999;font-style:italic">Nenhum</span>';
+      return arr.map(t=>`<span class="p-tag ${cls}">${t}</span>`).join('');
+    }
+    document.getElementById('printArea').style.display = 'block';
+    document.getElementById('printArea').innerHTML = `
+      <div class="p-header">
+        ${selfie?`<img class="p-foto" src="${selfie}" />`:''}
+        <h1>NEODONTO</h1>
+        <div style="color:#555;font-size:12px">Ficha de Anamnese - Enviado em: ${data}</div>
+        <h2 style="margin-top:10px">${nome}</h2>
+        <div class="p-row"><span class="p-label">Nascimento:</span> ${nasc}</div>
+        <div class="p-row"><span class="p-label">CPF:</span> ${cpf}</div>
+        <div class="p-row"><span class="p-label">Telefone:</span> ${tel}</div>
+        <div class="p-row"><span class="p-label">E-mail:</span> ${email}</div>
+        <div class="p-row"><span class="p-label">Responsavel:</span> ${resp}</div>
+      </div>
+      <h2>> Motivo da Consulta</h2><div>${tags([p.motivoConsulta],'green')}</div>
+      <h2> Saude Geral</h2><div>${tags(p.saudeGeral)}</div>
+      <h2>${temAlergia?'! ':''} Alergias</h2><div>${tags(p.alergias,temAlergia?'red':'')}</div>
+      <h2> Medicamentos</h2><div>${tags(p.medicamentos,'yellow')}</div>
+      <h2>* Saude Bucal</h2><div>${tags(p.saudeBucal)}</div>
+      <h2> Ansiedade</h2><div>${tags([p.ansiedade])}</div>
+      <h2> Habitos</h2><div>${tags(p.habitos)}</div>
+      <hr style="margin:16px 0;border-color:#eee"/>
+      <h2> Time / Preferencias</h2>
+      <div class="p-row"><span class="p-label">Time:</span> ${p.timeFutebol||'-'}</div>
+      <div class="p-row"><span class="p-label">Musica:</span> ${tags(p.musica)}</div>
+      <div class="p-row"><span class="p-label">Filmes:</span> ${tags(p.filmes)}</div>
+      <div class="p-row"><span class="p-label">Lazer:</span> ${tags(p.lazer)}</div>
+      <div style="margin-top:40px;border-top:1px solid #ddd;padding-top:12px;color:#999;font-size:11px;text-align:center">
+        NEODONTO - Ficha gerada em ${new Date().toLocaleString('pt-BR')}
+      </div>`;
+    setTimeout(() => { window.print(); document.getElementById('printArea').style.display='none'; }, 300);
+  };
+
+  window.salvarPDF = function(index) {
+    const { jsPDF } = window.jspdf;
+    const p    = todosPacientes[index];
+    const nome = p.dadosPessoais?.nome || 'Paciente';
+    const nascRaw = p.dadosPessoais?.nascimento||'';
+    const nasc = nascRaw ? nascRaw.split('-').reverse().join('/') : '-';
+    const tel  = p.dadosPessoais?.telefone||'-';
+    const email= p.dadosPessoais?.email||'-';
+    const cpf  = p.dadosPessoais?.cpf||'-';
+    const resp = p.dadosPessoais?.responsavel||'-';
+    const data = p.enviadoEm ? new Date((p.criadoEm||p.enviadoEm).seconds*1000).toLocaleString('pt-BR') : '-';
+    const selfie = p.dadosPessoais?.selfie;
+    const temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias');
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const W=210; let y=0;
+    doc.setFillColor(10,191,188); doc.rect(0,0,W,32,'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(22); doc.setFont('helvetica','bold'); doc.text('NEODONTO',14,14);
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.text('Ficha de Anamnese',14,21); doc.text('Enviado em: '+data,14,27); y=42;
+    if(selfie){try{doc.addImage(selfie,'JPEG',W-44,36,30,30,'','FAST'); doc.setDrawColor(10,191,188); doc.setLineWidth(0.5); doc.circle(W-29,51,15);}catch(e){}}
+    doc.setTextColor(10,191,188); doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.text('DADOS PESSOAIS',14,y);
+    doc.setDrawColor(10,191,188); doc.setLineWidth(0.3); doc.line(14,y+2,W-14,y+2); y+=8;
+    doc.setTextColor(50,50,50); doc.setFontSize(10);
+    [[`Nome:`,nome],[`Nascimento:`,nasc],[`Telefone:`,tel],[`E-mail:`,email],[`CPF:`,cpf]].forEach(([l,v])=>{
+      doc.setFont('helvetica','bold'); doc.text(l,14,y); doc.setFont('helvetica','normal'); doc.text(v,50,y); y+=6;
+    });
+    y+=4;
+    function secao(titulo,itens,corFundo){
+      if(y>260){doc.addPage();y=20;}
+      doc.setTextColor(10,191,188); doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.text(titulo,14,y);
+      doc.line(14,y+2,W-14,y+2); y+=7;
+      doc.setTextColor(50,50,50); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      if(!itens||itens.length===0||(itens.length===1&&!itens[0])){doc.setTextColor(150,150,150);doc.text('Nenhum informado',14,y);y+=6;}
+      else{let x=14;itens.forEach(item=>{if(!item)return;const w=doc.getTextWidth(item)+8;if(x+w>W-14){x=14;y+=7;}if(y>270){doc.addPage();y=20;x=14;}if(corFundo){doc.setFillColor(...corFundo);doc.roundedRect(x,y-4,w,6,1,1,'F');}doc.setTextColor(50,50,50);doc.text(item,x+4,y);x+=w+4;});y+=8;}y+=2;
+    }
+    secao('MOTIVO DA CONSULTA',[p.motivoConsulta],[220,252,231]);
+    secao('SAUDE GERAL',p.saudeGeral,[240,240,240]);
+    secao(temAlergia?' ALERGIAS':'ALERGIAS',p.alergias,temAlergia?[254,226,226]:[240,240,240]);
+    secao('MEDICAMENTOS',p.medicamentos,[254,243,199]);
+    secao('SAUDE BUCAL',p.saudeBucal,[240,240,240]);
+    secao('ANSIEDADE',[p.ansiedade],[240,240,240]);
+    secao('HABITOS',p.habitos,[240,240,240]);
+    if(y>240){doc.addPage();y=20;}
+    secao('PREFERENCIAS',[p.timeFutebol?' '+p.timeFutebol:null,...(p.musica||[]),...(p.filmes||[]),...(p.lazer||[])].filter(Boolean),[240,240,240]);
+    const pages=doc.getNumberOfPages();
+    for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('NEODONTO - Gerado em '+new Date().toLocaleString('pt-BR'),14,290);doc.text('Pagina '+i+' de '+pages,W-30,290);}
+    doc.save('anamnese-'+nome.split(' ')[0].toLowerCase()+'.pdf');
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key==='Enter' && document.getElementById('loginWrap').style.display!=='none') window.fazerLogin();
+  });
 </script>
 </body>
 </html>
