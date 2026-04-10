@@ -859,8 +859,8 @@
   let todosKids      = [];
   let todosFeedbacks = [];
 
-  // ── AUTH ──
-  onAuthStateChanged(auth, user => {
+  // AUTH
+  onAuthStateChanged(auth, function(user) {
     if (user) {
       document.getElementById('loginWrap').style.display = 'none';
       document.getElementById('appWrap').style.display   = 'flex';
@@ -872,8 +872,8 @@
   });
 
   window.fazerLogin = async function() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const senha = document.getElementById('loginSenha').value;
+    var email = document.getElementById('loginEmail').value.trim();
+    var senha = document.getElementById('loginSenha').value;
     try {
       await signInWithEmailAndPassword(auth, email, senha);
     } catch(e) {
@@ -883,257 +883,230 @@
 
   window.fazerLogout = async function() { await signOut(auth); };
 
-  // ── ABAS ──
+  // ABAS
   window.mudarAba = function(aba) {
-    ['abaPacientes','abaKids','abaFeedbacks'].forEach(id =>
-      document.getElementById(id).style.display = 'none'
-    );
-    ['btnMenuPacientes','btnMenuKids','btnMenuFeedbacks'].forEach(id =>
-      document.getElementById(id)?.classList.remove('active')
-    );
-    const nomeId = 'aba' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    var abas = ['abaPacientes','abaKids','abaFeedbacks'];
+    var btns = ['btnMenuPacientes','btnMenuKids','btnMenuFeedbacks'];
+    abas.forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+    btns.forEach(function(id) { var el = document.getElementById(id); if(el) el.classList.remove('active'); });
+    var nomeId = 'aba' + aba.charAt(0).toUpperCase() + aba.slice(1);
     document.getElementById(nomeId).style.display = 'block';
-    document.getElementById('btnMenu' + aba.charAt(0).toUpperCase() + aba.slice(1)).classList.add('active');
+    var btnId = 'btnMenu' + aba.charAt(0).toUpperCase() + aba.slice(1);
+    document.getElementById(btnId).classList.add('active');
     if (aba === 'kids' && todosKids.length === 0) carregarKids();
     if (aba === 'feedbacks' && todosFeedbacks.length === 0) carregarFeedbacks();
   };
 
-  // ══════════════════════════════════════════
-  //  PACIENTES
-  // ══════════════════════════════════════════
+  // AGRUPAR POR MES
+  function agruparPorMes(lista) {
+    var meses = {};
+    lista.forEach(function(p) {
+      var chave = 'Sem data';
+      var ordem = '0000-00';
+      if (p.enviadoEm && p.enviadoEm.seconds) {
+        var d = new Date(p.enviadoEm.seconds * 1000);
+        var ano = d.getFullYear();
+        var mes = d.getMonth();
+        chave = d.toLocaleString('pt-BR', {month:'long'}) + ' de ' + ano;
+        ordem = ano + '-' + String(mes+1).padStart(2,'0');
+      }
+      if (!meses[chave]) meses[chave] = { fichas: [], ordem: ordem };
+      meses[chave].fichas.push(p);
+    });
+    return Object.entries(meses)
+      .sort(function(a,b) { return b[1].ordem.localeCompare(a[1].ordem); })
+      .map(function(entry) { return { nome: entry[0], fichas: entry[1].fichas }; });
+  }
+
+  window.toggleMes = function(header) {
+    var body    = header.nextElementSibling;
+    var chevron = header.querySelector('.month-chevron');
+    body.classList.toggle('open');
+    chevron.classList.toggle('open');
+  };
+
+  // ---- PACIENTES ----
   window.carregarDados = async function() {
     document.getElementById('tableArea').innerHTML =
-      `<div class="loading"><div class="spinner"></div>Carregando fichas...</div>`;
+      '<div class="loading"><div class="spinner"></div>Carregando fichas...</div>';
     try {
-      const q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
-      const snap = await getDocs(q);
-      todosPacientes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      var q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
+      var snap = await getDocs(q);
+      todosPacientes = snap.docs.map(function(doc) { return Object.assign({id: doc.id}, doc.data()); });
       atualizarStats(todosPacientes);
       construirFiltros(todosPacientes);
       renderizarPorMes(todosPacientes);
     } catch(e) {
       document.getElementById('tableArea').innerHTML =
-        `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3><p>Verifique as regras do Firestore.</p></div>`;
+        '<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3><p>Verifique as regras do Firestore.</p></div>';
     }
   };
 
   function atualizarStats(lista) {
     document.getElementById('totalPacientes').textContent = lista.length;
-    const hoje = new Date().toDateString();
+    var hoje = new Date().toDateString();
     document.getElementById('totalHoje').textContent =
-      lista.filter(p => p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje).length;
+      lista.filter(function(p) { return p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje; }).length;
     document.getElementById('totalAlergias').textContent =
-      lista.filter(p => p.alergias?.length>0 && !p.alergias.includes('Nao tenho alergias') && !p.alergias.includes('Não tenho alergias')).length;
+      lista.filter(function(p) { return p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias') && !p.alergias.includes('Nao tenho alergias'); }).length;
     document.getElementById('totalMedo').textContent =
-      lista.filter(p => p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia'))).length;
+      lista.filter(function(p) { return p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia')); }).length;
   }
 
   function construirFiltros(lista) {
-    const motivos = [...new Set(lista.map(p => p.motivoConsulta).filter(Boolean))];
-    const wrap = document.getElementById('filtrosWrap');
-    const total = lista.length;
-    wrap.innerHTML = `<span class="filtros-label">Filtrar por motivo:</span>`;
-    const btnTodos = document.createElement('button');
-    btnTodos.className = 'filtro-btn' + (filtroAtivo==='Todos'?' active':'');
-    btnTodos.innerHTML = `Todos <span class="filtro-count">${total}</span>`;
-    btnTodos.onclick = () => { filtroAtivo='Todos'; construirFiltros(todosPacientes); renderizarPorMes(todosPacientes); };
+    var motivos = [];
+    lista.forEach(function(p) { if(p.motivoConsulta && motivos.indexOf(p.motivoConsulta)===-1) motivos.push(p.motivoConsulta); });
+    var wrap = document.getElementById('filtrosWrap');
+    var total = lista.length;
+    wrap.innerHTML = '<span class="filtros-label">Filtrar por motivo:</span>';
+
+    var btnTodos = document.createElement('button');
+    btnTodos.className = 'filtro-btn' + (filtroAtivo==='Todos' ? ' active' : '');
+    btnTodos.innerHTML = 'Todos <span class="filtro-count">' + total + '</span>';
+    btnTodos.onclick = function() { filtroAtivo='Todos'; construirFiltros(todosPacientes); renderizarPorMes(todosPacientes); };
     wrap.appendChild(btnTodos);
-    motivos.forEach(m => {
-      const cnt = lista.filter(p => p.motivoConsulta===m).length;
-      const btn = document.createElement('button');
-      btn.className = 'filtro-btn' + (filtroAtivo===m?' active':'');
-      btn.innerHTML = `${m} <span class="filtro-count">${cnt}</span>`;
-      btn.onclick = () => { filtroAtivo=m; construirFiltros(todosPacientes); renderizarPorMes(todosPacientes.filter(p=>p.motivoConsulta===m)); };
+
+    motivos.forEach(function(m) {
+      var cnt = lista.filter(function(p) { return p.motivoConsulta===m; }).length;
+      var btn = document.createElement('button');
+      btn.className = 'filtro-btn' + (filtroAtivo===m ? ' active' : '');
+      btn.innerHTML = m + ' <span class="filtro-count">' + cnt + '</span>';
+      btn.onclick = (function(motivo) {
+        return function() {
+          filtroAtivo = motivo;
+          construirFiltros(todosPacientes);
+          renderizarPorMes(todosPacientes.filter(function(p) { return p.motivoConsulta===motivo; }));
+        };
+      })(m);
       wrap.appendChild(btn);
     });
   }
 
-  // ── AGRUPAR POR MÊS ──
-  function agruparPorMes(lista) {
-    const meses = {};
-    lista.forEach(p => {
-      let chave = 'Sem data';
-      let ordem = '0000-00';
-      if (p.enviadoEm?.seconds) {
-        const d = new Date(p.enviadoEm.seconds * 1000);
-        const ano = d.getFullYear();
-        const mes = d.getMonth(); // 0-11
-        chave = `${d.toLocaleString('pt-BR', {month:'long'})} de ${ano}`;
-        ordem = `${ano}-${String(mes+1).padStart(2,'0')}`;
-      }
-      if (!meses[chave]) meses[chave] = { fichas: [], ordem };
-      meses[chave].fichas.push(p);
-    });
-    // Ordenar por ordem decrescente (mais recente primeiro)
-    return Object.entries(meses)
-      .sort((a, b) => b[1].ordem.localeCompare(a[1].ordem))
-      .map(([nome, { fichas }]) => ({ nome, fichas }));
-  }
-
   function renderizarPorMes(lista) {
-    const tableArea = document.getElementById('tableArea');
-
+    var tableArea = document.getElementById('tableArea');
     if (lista.length === 0) {
-      tableArea.innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Nenhuma ficha encontrada</h3><p>As fichas preenchidas pelos pacientes aparecerão aqui.</p></div>`;
+      tableArea.innerHTML = '<div class="empty"><div class="empty-icon">!</div><h3>Nenhuma ficha encontrada</h3><p>As fichas preenchidas pelos pacientes aparecerao aqui.</p></div>';
       return;
     }
-
-    // Índice global para o modal
     window._listaPacientes = lista;
-
-    const grupos = agruparPorMes(lista);
+    var grupos = agruparPorMes(lista);
     tableArea.innerHTML = '';
 
-    grupos.forEach((grupo, gi) => {
-      const section = document.createElement('div');
+    grupos.forEach(function(grupo, gi) {
+      var isOpen = gi === 0;
+      var section = document.createElement('div');
       section.className = 'month-section';
 
-      const isOpen = gi === 0; // Primeiro mês aberto por padrão
+      var header = document.createElement('div');
+      header.className = 'month-header';
+      header.setAttribute('onclick', 'toggleMes(this)');
+      header.innerHTML =
+        '<div class="month-header-left">' +
+          '<div class="month-dot"></div>' +
+          '<div class="month-name">' + grupo.nome + '</div>' +
+          '<div class="month-count">' + grupo.fichas.length + ' ' + (grupo.fichas.length===1?'ficha':'fichas') + '</div>' +
+        '</div>' +
+        '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
 
-      section.innerHTML = `
-        <div class="month-header" onclick="toggleMes(this)">
-          <div class="month-header-left">
-            <div class="month-dot"></div>
-            <div class="month-name">${grupo.nome}</div>
-            <div class="month-count">${grupo.fichas.length} ${grupo.fichas.length===1?'ficha':'fichas'}</div>
-          </div>
-          <div class="month-chevron ${isOpen?'open'}">&#9660;</div>
-        </div>
-        <div class="month-body ${isOpen?'open'}">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Paciente</th>
-                  <th>Telefone</th>
-                  <th>Motivo</th>
-                  <th>Alertas</th>
-                  <th>Time</th>
-                  <th>Data</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                ${grupo.fichas.map((p) => {
-                  const idx = lista.indexOf(p);
-                  const nome   = p.dadosPessoais?.nome || '—';
-                  const tel    = p.dadosPessoais?.telefone || '—';
-                  const motivo = p.motivoConsulta || '—';
-                  const data   = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '—';
-                  const time   = p.timeFutebol || '—';
-                  const temAlergia = p.alergias?.length>0 && !p.alergias.includes('Nao tenho alergias') && !p.alergias.includes('Não tenho alergias');
-                  const temMedo   = p.ansiedade && (p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia'));
-                  return `<tr onclick="abrirModal(${idx})">
-                    <td><div class="td-name">${nome}</div></td>
-                    <td><div class="td-muted">${tel}</div></td>
-                    <td><span class="td-tag">${motivo}</span></td>
-                    <td>
-                      ${temAlergia?'<span class="td-tag danger">! Alergia</span>':''}
-                      ${temMedo?'<span class="td-tag warn">Ansioso</span>':''}
-                      ${!temAlergia&&!temMedo?'<span class="td-tag ok">OK</span>':''}
-                    </td>
-                    <td><span class="td-muted">${time}</span></td>
-                    <td><span class="td-date">${data}</span></td>
-                    <td><button class="btn-ver" onclick="event.stopPropagation();abrirModal(${idx})">Ver ficha</button></td>
-                  </tr>`;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
+      var body = document.createElement('div');
+      body.className = 'month-body' + (isOpen ? ' open' : '');
+
+      var rows = '';
+      grupo.fichas.forEach(function(p) {
+        var idx = lista.indexOf(p);
+        var nome   = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '---';
+        var tel    = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '---';
+        var motivo = p.motivoConsulta || '---';
+        var data   = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
+        var time   = p.timeFutebol || '---';
+        var temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias') && p.alergias.join('').indexOf('alergias')===- 1;
+        var temMedo = p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0 || p.ansiedade.indexOf('Fobia')>=0);
+        var alertas = '';
+        if (temAlergia) alertas += '<span class="td-tag danger">! Alergia</span>';
+        if (temMedo)    alertas += '<span class="td-tag warn">Ansioso</span>';
+        if (!temAlergia && !temMedo) alertas = '<span class="td-tag ok">OK</span>';
+        rows += '<tr onclick="abrirModal(' + idx + ')">' +
+          '<td><div class="td-name">' + nome + '</div></td>' +
+          '<td><div class="td-muted">' + tel + '</div></td>' +
+          '<td><span class="td-tag">' + motivo + '</span></td>' +
+          '<td>' + alertas + '</td>' +
+          '<td><span class="td-muted">' + time + '</span></td>' +
+          '<td><span class="td-date">' + data + '</span></td>' +
+          '<td><button class="btn-ver" onclick="event.stopPropagation();abrirModal(' + idx + ')">Ver ficha</button></td>' +
+          '</tr>';
+      });
+
+      body.innerHTML =
+        '<div class="table-wrap">' +
+          '<table>' +
+            '<thead><tr>' +
+              '<th>Paciente</th><th>Telefone</th><th>Motivo</th>' +
+              '<th>Alertas</th><th>Time</th><th>Data</th><th></th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+          '</table>' +
+        '</div>';
+
+      section.appendChild(header);
+      section.appendChild(body);
       tableArea.appendChild(section);
     });
   }
 
-  window.toggleMes = function(header) {
-    const body    = header.nextElementSibling;
-    const chevron = header.querySelector('.month-chevron');
-    body.classList.toggle('open');
-    chevron.classList.toggle('open');
-  };
-
   window.filtrarPacientes = function() {
-    const q = document.getElementById('searchBox').value.toLowerCase();
-    const filtrados = todosPacientes.filter(p => {
-      const nome = (p.dadosPessoais?.nome||'').toLowerCase();
-      const tel  = (p.dadosPessoais?.telefone||'').toLowerCase();
-      const ok = nome.includes(q) || tel.includes(q);
+    var q = document.getElementById('searchBox').value.toLowerCase();
+    var filtrados = todosPacientes.filter(function(p) {
+      var nome = ((p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '').toLowerCase();
+      var tel  = ((p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '').toLowerCase();
+      var ok = nome.indexOf(q)>=0 || tel.indexOf(q)>=0;
       if (filtroAtivo==='Todos') return ok;
       return ok && p.motivoConsulta===filtroAtivo;
     });
     renderizarPorMes(filtrados);
   };
 
-  // ── MODAL ──
+  // MODAL PACIENTES
   window.abrirModal = function(index) {
-    const lista = window._listaPacientes || todosPacientes;
-    const p = lista[index];
-    const tagList = (arr, cor) => arr?.length>0
-      ? arr.map(t=>`<span class="m-tag ${cor||''}">${t}</span>`).join('')
-      : '<span class="m-tag">—</span>';
-
-    const nome  = p.dadosPessoais?.nome || '—';
-    const data  = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '—';
-    const hora  = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
-    const temAlergia = p.alergias?.length>0 && !p.alergias.includes('Nao tenho alergias') && !p.alergias.includes('Não tenho alergias');
+    var lista = window._listaPacientes || todosPacientes;
+    var p = lista[index];
+    var tagList = function(arr, cor) {
+      if (!arr || arr.length===0) return '<span class="m-tag">---</span>';
+      return arr.map(function(t) { return '<span class="m-tag ' + (cor||'') + '">' + t + '</span>'; }).join('');
+    };
+    var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '---';
+    var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '---';
+    var email = (p.dadosPessoais && p.dadosPessoais.email) ? p.dadosPessoais.email : '---';
+    var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
+    var hora = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
+    var temAlergia = p.alergias && p.alergias.length>0 && !p.alergias.includes('Nao tenho alergias') && p.alergias.join('').indexOf('alergias')===-1;
 
     document.getElementById('modalTitle').textContent = nome;
-    document.getElementById('modalBody').innerHTML = `
-      <div class="m-section">
-        <div class="m-section-title">Dados Pessoais</div>
-        <div class="m-tags">
-          <span class="m-tag blue">${p.dadosPessoais?.telefone||'—'}</span>
-          <span class="m-tag">${p.dadosPessoais?.email||'—'}</span>
-          <span class="m-tag">${data}${hora?' '+hora:''}</span>
-        </div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Motivo da Consulta</div>
-        <div class="m-tags"><span class="m-tag blue">${p.motivoConsulta||'—'}</span></div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Alergias ${temAlergia?'(!)':''}</div>
-        <div class="m-tags">${tagList(p.alergias, temAlergia?'red':'')}</div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Medicamentos</div>
-        <div class="m-tags">${tagList(p.medicamentos,'yellow')}</div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Saude Bucal</div>
-        <div class="m-tags">${tagList(p.saudeBucal)}</div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Ansiedade</div>
-        <div class="m-tags"><span class="m-tag yellow">${p.ansiedade||'—'}</span></div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Habitos</div>
-        <div class="m-tags">${tagList(p.habitos)}</div>
-      </div>
-      <div style="border-top:1px solid var(--borda);margin:16px 0"></div>
-      <div class="m-section">
-        <div class="m-section-title">Time de Futebol</div>
-        <div class="m-tags"><span class="m-tag">${p.timeFutebol||'—'}</span></div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Musica</div>
-        <div class="m-tags">${tagList(p.musica)}</div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Filmes</div>
-        <div class="m-tags">${tagList(p.filmes)}</div>
-      </div>
-      <div class="m-section">
-        <div class="m-section-title">Lazer</div>
-        <div class="m-tags">${tagList(p.lazer)}</div>
-      </div>
-    `;
-    document.getElementById('modalActions').innerHTML = `
-      <button class="print-btn" onclick="imprimirFicha(${index})">Imprimir ficha</button>
-      <button class="pdf-btn" onclick="salvarPDF(${index})">Salvar PDF</button>
-    `;
+    document.getElementById('modalBody').innerHTML =
+      '<div class="m-section"><div class="m-section-title">Dados Pessoais</div><div class="m-tags">' +
+        '<span class="m-tag blue">' + tel + '</span>' +
+        '<span class="m-tag">' + email + '</span>' +
+        '<span class="m-tag">' + data + (hora?' '+hora:'') + '</span>' +
+      '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Motivo da Consulta</div><div class="m-tags">' +
+        '<span class="m-tag blue">' + (p.motivoConsulta||'---') + '</span>' +
+      '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Alergias' + (temAlergia?' (!)':'') + '</div><div class="m-tags">' +
+        tagList(p.alergias, temAlergia?'red':'') +
+      '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Medicamentos</div><div class="m-tags">' + tagList(p.medicamentos,'yellow') + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Saude Bucal</div><div class="m-tags">' + tagList(p.saudeBucal) + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Ansiedade</div><div class="m-tags"><span class="m-tag yellow">' + (p.ansiedade||'---') + '</span></div></div>' +
+      '<div class="m-section"><div class="m-section-title">Habitos</div><div class="m-tags">' + tagList(p.habitos) + '</div></div>' +
+      '<div style="border-top:1px solid var(--borda);margin:16px 0"></div>' +
+      '<div class="m-section"><div class="m-section-title">Time de Futebol</div><div class="m-tags"><span class="m-tag">' + (p.timeFutebol||'---') + '</span></div></div>' +
+      '<div class="m-section"><div class="m-section-title">Musica</div><div class="m-tags">' + tagList(p.musica) + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Filmes</div><div class="m-tags">' + tagList(p.filmes) + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Lazer</div><div class="m-tags">' + tagList(p.lazer) + '</div></div>';
+
+    document.getElementById('modalActions').innerHTML =
+      '<button class="print-btn" onclick="imprimirFicha(' + index + ')">Imprimir ficha</button>' +
+      '<button class="pdf-btn" onclick="salvarPDF(' + index + ')">Salvar PDF</button>';
+
     document.getElementById('modalBg').classList.add('open');
   };
 
@@ -1143,235 +1116,233 @@
   };
 
   window.imprimirFicha = function(index) {
-    const lista = window._listaPacientes || todosPacientes;
-    const p = lista[index];
-    const nome = p.dadosPessoais?.nome || '—';
-    const tel  = p.dadosPessoais?.telefone || '—';
-    const data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '—';
-    const w = window.open('','_blank');
-    w.document.write(`<html><head><title>Ficha - ${nome}</title>
-      <style>body{font-family:sans-serif;padding:32px;color:#111}h1{font-size:1.4rem}h2{font-size:0.9rem;color:#555;margin:16px 0 4px}p{margin:2px 0}hr{margin:20px 0;border:1px solid #ddd}</style>
-      </head><body>
-      <h1>Ficha de Anamnese — ${nome}</h1>
-      <p>Telefone: ${tel} | Data: ${data}</p><hr>
-      <h2>Motivo da Consulta</h2><p>${p.motivoConsulta||'—'}</p>
-      <h2>Alergias</h2><p>${p.alergias?.join(', ')||'—'}</p>
-      <h2>Medicamentos</h2><p>${p.medicamentos?.join(', ')||'—'}</p>
-      <h2>Saude Bucal</h2><p>${p.saudeBucal?.join(', ')||'—'}</p>
-      <h2>Ansiedade</h2><p>${p.ansiedade||'—'}</p>
-      <h2>Habitos</h2><p>${p.habitos?.join(', ')||'—'}</p>
-      <hr><h2>Time de Futebol</h2><p>${p.timeFutebol||'—'}</p>
-      <h2>Musica</h2><p>${p.musica?.join(', ')||'—'}</p>
-      <h2>Filmes</h2><p>${p.filmes?.join(', ')||'—'}</p>
-      <h2>Lazer</h2><p>${p.lazer?.join(', ')||'—'}</p>
-      </body></html>`);
+    var lista = window._listaPacientes || todosPacientes;
+    var p = lista[index];
+    var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : '---';
+    var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : '---';
+    var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
+    var w = window.open('','_blank');
+    w.document.write('<html><head><title>Ficha - ' + nome + '</title>' +
+      '<style>body{font-family:sans-serif;padding:32px;color:#111}h1{font-size:1.4rem}h2{font-size:0.9rem;color:#555;margin:16px 0 4px}p{margin:2px 0}hr{margin:20px 0;border:1px solid #ddd}</style>' +
+      '</head><body>' +
+      '<h1>Ficha de Anamnese - ' + nome + '</h1>' +
+      '<p>Telefone: ' + tel + ' | Data: ' + data + '</p><hr>' +
+      '<h2>Motivo da Consulta</h2><p>' + (p.motivoConsulta||'---') + '</p>' +
+      '<h2>Alergias</h2><p>' + (p.alergias ? p.alergias.join(', ') : '---') + '</p>' +
+      '<h2>Medicamentos</h2><p>' + (p.medicamentos ? p.medicamentos.join(', ') : '---') + '</p>' +
+      '<h2>Saude Bucal</h2><p>' + (p.saudeBucal ? p.saudeBucal.join(', ') : '---') + '</p>' +
+      '<h2>Ansiedade</h2><p>' + (p.ansiedade||'---') + '</p>' +
+      '<h2>Habitos</h2><p>' + (p.habitos ? p.habitos.join(', ') : '---') + '</p>' +
+      '<hr>' +
+      '<h2>Time de Futebol</h2><p>' + (p.timeFutebol||'---') + '</p>' +
+      '<h2>Musica</h2><p>' + (p.musica ? p.musica.join(', ') : '---') + '</p>' +
+      '<h2>Filmes</h2><p>' + (p.filmes ? p.filmes.join(', ') : '---') + '</p>' +
+      '<h2>Lazer</h2><p>' + (p.lazer ? p.lazer.join(', ') : '---') + '</p>' +
+      '</body></html>');
     w.document.close();
     w.print();
   };
 
   window.salvarPDF = function(index) { window.imprimirFicha(index); };
 
-  // ══════════════════════════════════════════
-  //  KIDS
-  // ══════════════════════════════════════════
+  // ---- KIDS ----
   window.carregarKids = async function() {
     document.getElementById('kidsTableArea').innerHTML =
-      `<div class="loading"><div class="spinner"></div>Carregando...</div>`;
+      '<div class="loading"><div class="spinner"></div>Carregando...</div>';
     try {
-      const q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
-      const snap = await getDocs(q);
+      var q = query(collection(db, 'anamneses'), orderBy('enviadoEm', 'desc'));
+      var snap = await getDocs(q);
       todosKids = snap.docs
-        .map(d => ({id:d.id,...d.data()}))
-        .filter(p => p.tipo==='infantil' || p.dadosPessoais?.escola || p.nomeCrianca || p.nomeResponsavel);
-      const hoje = new Date().toDateString();
+        .map(function(d) { return Object.assign({id:d.id}, d.data()); })
+        .filter(function(p) { return p.tipo==='infantil' || (p.dadosPessoais && p.dadosPessoais.escola) || p.nomeCrianca || p.nomeResponsavel; });
+      var hoje = new Date().toDateString();
       document.getElementById('totalKids').textContent = todosKids.length;
-      document.getElementById('kidsHoje').textContent  = todosKids.filter(p=>p.enviadoEm&&new Date(p.enviadoEm.seconds*1000).toDateString()===hoje).length;
-      document.getElementById('kidsAlergias').textContent = todosKids.filter(p=>p.alergias?.length>0&&!p.alergias.includes('Não tenho alergias')).length;
-      document.getElementById('kidsMedo').textContent = todosKids.filter(p=>p.ansiedade&&(p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo')||p.ansiedade.includes('Fobia'))).length;
+      document.getElementById('kidsHoje').textContent = todosKids.filter(function(p) { return p.enviadoEm && new Date(p.enviadoEm.seconds*1000).toDateString()===hoje; }).length;
+      document.getElementById('kidsAlergias').textContent = todosKids.filter(function(p) { return p.alergias && p.alergias.length>0; }).length;
+      document.getElementById('kidsMedo').textContent = todosKids.filter(function(p) { return p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0); }).length;
       renderizarKidsPorMes(todosKids);
     } catch(e) {
       document.getElementById('kidsTableArea').innerHTML =
-        `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>`;
+        '<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>';
     }
   };
 
   window.filtrarKids = function() {
-    const q = document.getElementById('searchKids').value.toLowerCase();
-    const filtrados = todosKids.filter(p => {
-      const nome = (p.dadosPessoais?.nome||p.nomeCrianca||'').toLowerCase();
-      return nome.includes(q);
+    var q = document.getElementById('searchKids').value.toLowerCase();
+    var filtrados = todosKids.filter(function(p) {
+      var nome = ((p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'')).toLowerCase();
+      return nome.indexOf(q)>=0;
     });
     renderizarKidsPorMes(filtrados);
   };
 
   function renderizarKidsPorMes(lista) {
-    const area = document.getElementById('kidsTableArea');
+    var area = document.getElementById('kidsTableArea');
     if (lista.length === 0) {
-      area.innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Nenhuma ficha kids</h3><p>As fichas infantis aparecerão aqui.</p></div>`;
+      area.innerHTML = '<div class="empty"><div class="empty-icon">!</div><h3>Nenhuma ficha kids</h3><p>As fichas infantis aparecerao aqui.</p></div>';
       return;
     }
     window._listaKids = lista;
-    const grupos = agruparPorMes(lista);
+    var grupos = agruparPorMes(lista);
     area.innerHTML = '';
-    grupos.forEach((grupo, gi) => {
-      const section = document.createElement('div');
+
+    grupos.forEach(function(grupo, gi) {
+      var isOpen = gi === 0;
+      var section = document.createElement('div');
       section.className = 'month-section';
-      const isOpen = gi === 0;
-      section.innerHTML = `
-        <div class="month-header" onclick="toggleMes(this)">
-          <div class="month-header-left">
-            <div class="month-dot"></div>
-            <div class="month-name">${grupo.nome}</div>
-            <div class="month-count">${grupo.fichas.length} ${grupo.fichas.length===1?'ficha':'fichas'}</div>
-          </div>
-          <div class="month-chevron ${isOpen?'open'}">&#9660;</div>
-        </div>
-        <div class="month-body ${isOpen?'open'}">
-          <div class="table-wrap">
-            <table>
-              <thead><tr>
-                <th>Crianca</th><th>Responsavel</th><th>Telefone</th><th>Alertas</th><th>Data</th><th></th>
-              </tr></thead>
-              <tbody>
-                ${grupo.fichas.map(p => {
-                  const idx = lista.indexOf(p);
-                  const nome = p.dadosPessoais?.nome||p.nomeCrianca||'—';
-                  const resp = p.dadosPessoais?.responsavel||p.nomeResponsavel||'—';
-                  const tel  = p.dadosPessoais?.telefone||p.whatsappResponsavel||'—';
-                  const data = p.enviadoEm?new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR'):'—';
-                  const temAlergia = p.alergias?.length>0&&!p.alergias.includes('Não tenho alergias');
-                  const temMedo = p.ansiedade&&(p.ansiedade.includes('ansioso')||p.ansiedade.includes('medo'));
-                  return `<tr onclick="abrirModalKids(${idx})">
-                    <td><div class="td-name">${nome}</div></td>
-                    <td><div class="td-muted">${resp}</div></td>
-                    <td><div class="td-muted">${tel}</div></td>
-                    <td>
-                      ${temAlergia?'<span class="td-tag danger">! Alergia</span>':''}
-                      ${temMedo?'<span class="td-tag warn">Ansioso</span>':''}
-                      ${!temAlergia&&!temMedo?'<span class="td-tag ok">OK</span>':''}
-                    </td>
-                    <td><span class="td-date">${data}</span></td>
-                    <td><button class="btn-ver" onclick="event.stopPropagation();abrirModalKids(${idx})">Ver ficha</button></td>
-                  </tr>`;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
+
+      var header = document.createElement('div');
+      header.className = 'month-header';
+      header.setAttribute('onclick', 'toggleMes(this)');
+      header.innerHTML =
+        '<div class="month-header-left">' +
+          '<div class="month-dot"></div>' +
+          '<div class="month-name">' + grupo.nome + '</div>' +
+          '<div class="month-count">' + grupo.fichas.length + ' ' + (grupo.fichas.length===1?'ficha':'fichas') + '</div>' +
+        '</div>' +
+        '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
+
+      var rows = '';
+      grupo.fichas.forEach(function(p) {
+        var idx = lista.indexOf(p);
+        var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'---');
+        var resp = (p.dadosPessoais && p.dadosPessoais.responsavel) ? p.dadosPessoais.responsavel : (p.nomeResponsavel||'---');
+        var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : (p.whatsappResponsavel||'---');
+        var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
+        var temAlergia = p.alergias && p.alergias.length>0;
+        var temMedo    = p.ansiedade && (p.ansiedade.indexOf('ansioso')>=0 || p.ansiedade.indexOf('medo')>=0);
+        var alertas = '';
+        if (temAlergia) alertas += '<span class="td-tag danger">! Alergia</span>';
+        if (temMedo)    alertas += '<span class="td-tag warn">Ansioso</span>';
+        if (!temAlergia && !temMedo) alertas = '<span class="td-tag ok">OK</span>';
+        rows +=
+          '<tr onclick="abrirModalKids(' + idx + ')">' +
+          '<td><div class="td-name">' + nome + '</div></td>' +
+          '<td><div class="td-muted">' + resp + '</div></td>' +
+          '<td><div class="td-muted">' + tel + '</div></td>' +
+          '<td>' + alertas + '</td>' +
+          '<td><span class="td-date">' + data + '</span></td>' +
+          '<td><button class="btn-ver" onclick="event.stopPropagation();abrirModalKids(' + idx + ')">Ver ficha</button></td>' +
+          '</tr>';
+      });
+
+      var body = document.createElement('div');
+      body.className = 'month-body' + (isOpen ? ' open' : '');
+      body.innerHTML =
+        '<div class="table-wrap"><table>' +
+        '<thead><tr><th>Crianca</th><th>Responsavel</th><th>Telefone</th><th>Alertas</th><th>Data</th><th></th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table></div>';
+
+      section.appendChild(header);
+      section.appendChild(body);
       area.appendChild(section);
     });
   }
 
   window.abrirModalKids = function(index) {
-    const lista = window._listaKids || todosKids;
-    const p = lista[index];
-    const nome = p.dadosPessoais?.nome||p.nomeCrianca||'—';
-    const data = p.enviadoEm?new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR'):'—';
-    const tagList = (arr,cor) => arr?.length>0?arr.map(t=>`<span class="m-tag ${cor||''}">${t}</span>`).join(''):'<span class="m-tag">—</span>';
+    var lista = window._listaKids || todosKids;
+    var p = lista[index];
+    var tagList = function(arr, cor) {
+      if (!arr || arr.length===0) return '<span class="m-tag">---</span>';
+      return arr.map(function(t) { return '<span class="m-tag ' + (cor||'') + '">' + t + '</span>'; }).join('');
+    };
+    var nome = (p.dadosPessoais && p.dadosPessoais.nome) ? p.dadosPessoais.nome : (p.nomeCrianca||'---');
+    var resp = (p.dadosPessoais && p.dadosPessoais.responsavel) ? p.dadosPessoais.responsavel : (p.nomeResponsavel||'---');
+    var tel  = (p.dadosPessoais && p.dadosPessoais.telefone) ? p.dadosPessoais.telefone : (p.whatsappResponsavel||'---');
+    var data = p.enviadoEm ? new Date(p.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
 
     document.getElementById('modalTitle').textContent = nome + ' (Kids)';
-    document.getElementById('modalBody').innerHTML = `
-      <div class="m-section"><div class="m-section-title">Responsavel</div>
-        <div class="m-tags">
-          <span class="m-tag">${p.dadosPessoais?.responsavel||p.nomeResponsavel||'—'}</span>
-          <span class="m-tag blue">${p.dadosPessoais?.telefone||p.whatsappResponsavel||'—'}</span>
-          <span class="m-tag">${data}</span>
-        </div>
-      </div>
-      <div class="m-section"><div class="m-section-title">Alergias</div>
-        <div class="m-tags">${tagList(p.alergias,'red')}</div>
-      </div>
-      <div class="m-section"><div class="m-section-title">Medicamentos</div>
-        <div class="m-tags">${tagList(p.medicamentos,'yellow')}</div>
-      </div>
-      <div class="m-section"><div class="m-section-title">Ansiedade</div>
-        <div class="m-tags"><span class="m-tag yellow">${p.ansiedade||'—'}</span></div>
-      </div>
-      <div style="border-top:1px solid var(--borda);margin:16px 0"></div>
-      <div class="m-section"><div class="m-section-title">Alimentacao</div>
-        <div class="m-tags">${tagList(p.alimentacao)}</div>
-      </div>
-      <div class="m-section"><div class="m-section-title">Brincadeiras</div>
-        <div class="m-tags">${tagList(p.brincadeiras)}</div>
-      </div>
-      <div class="m-section"><div class="m-section-title">Desenhos / Filmes</div>
-        <div class="m-tags">${tagList(p.desenhos||p.filmesKids)}</div>
-      </div>
-    `;
-    document.getElementById('modalActions').innerHTML = `
-      <button class="print-btn" onclick="imprimirFicha(${index})">Imprimir ficha</button>
-    `;
+    document.getElementById('modalBody').innerHTML =
+      '<div class="m-section"><div class="m-section-title">Responsavel</div><div class="m-tags">' +
+        '<span class="m-tag">' + resp + '</span>' +
+        '<span class="m-tag blue">' + tel + '</span>' +
+        '<span class="m-tag">' + data + '</span>' +
+      '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Alergias</div><div class="m-tags">' + tagList(p.alergias,'red') + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Medicamentos</div><div class="m-tags">' + tagList(p.medicamentos,'yellow') + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Ansiedade</div><div class="m-tags"><span class="m-tag yellow">' + (p.ansiedade||'---') + '</span></div></div>' +
+      '<div style="border-top:1px solid var(--borda);margin:16px 0"></div>' +
+      '<div class="m-section"><div class="m-section-title">Alimentacao</div><div class="m-tags">' + tagList(p.alimentacao) + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Brincadeiras</div><div class="m-tags">' + tagList(p.brincadeiras) + '</div></div>' +
+      '<div class="m-section"><div class="m-section-title">Desenhos / Filmes</div><div class="m-tags">' + tagList(p.desenhos || p.filmesKids) + '</div></div>';
+
+    document.getElementById('modalActions').innerHTML =
+      '<button class="print-btn" onclick="imprimirFicha(' + index + ')">Imprimir ficha</button>';
     document.getElementById('modalBg').classList.add('open');
   };
 
-  // ══════════════════════════════════════════
-  //  FEEDBACKS
-  // ══════════════════════════════════════════
+  // ---- FEEDBACKS ----
   window.carregarFeedbacks = async function() {
     document.getElementById('feedbacksTableArea').innerHTML =
-      `<div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>`;
+      '<div class="loading"><div class="spinner"></div>Carregando feedbacks...</div>';
     try {
-      const q = query(collection(db, 'feedbacks'), orderBy('enviadoEm', 'desc'));
-      const snap = await getDocs(q);
-      todosFeedbacks = snap.docs.map(d => ({id:d.id,...d.data()}));
-      const hoje = new Date().toDateString();
+      var q = query(collection(db, 'feedbacks'), orderBy('enviadoEm', 'desc'));
+      var snap = await getDocs(q);
+      todosFeedbacks = snap.docs.map(function(d) { return Object.assign({id:d.id}, d.data()); });
+      var hoje = new Date().toDateString();
       document.getElementById('totalFeedbacks').textContent = todosFeedbacks.length;
-      const notas = todosFeedbacks.filter(f=>f.nota).map(f=>Number(f.nota));
-      document.getElementById('mediaFeedbacks').textContent = notas.length>0?(notas.reduce((a,b)=>a+b,0)/notas.length).toFixed(1):'—';
-      document.getElementById('feedbacksHoje').textContent = todosFeedbacks.filter(f=>f.enviadoEm&&new Date(f.enviadoEm.seconds*1000).toDateString()===hoje).length;
-      document.getElementById('feedbacksPositivos').textContent = todosFeedbacks.filter(f=>Number(f.nota)===5).length;
+      var notas = todosFeedbacks.filter(function(f) { return f.nota; }).map(function(f) { return Number(f.nota); });
+      document.getElementById('mediaFeedbacks').textContent = notas.length>0 ? (notas.reduce(function(a,b){return a+b;},0)/notas.length).toFixed(1) : '---';
+      document.getElementById('feedbacksHoje').textContent = todosFeedbacks.filter(function(f) { return f.enviadoEm && new Date(f.enviadoEm.seconds*1000).toDateString()===hoje; }).length;
+      document.getElementById('feedbacksPositivos').textContent = todosFeedbacks.filter(function(f) { return Number(f.nota)===5; }).length;
       renderizarFeedbacksPorMes(todosFeedbacks);
     } catch(e) {
       document.getElementById('feedbacksTableArea').innerHTML =
-        `<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>`;
+        '<div class="empty"><div class="empty-icon">!</div><h3>Erro ao carregar</h3></div>';
     }
   };
 
   function renderizarFeedbacksPorMes(lista) {
-    const area = document.getElementById('feedbacksTableArea');
+    var area = document.getElementById('feedbacksTableArea');
     if (lista.length === 0) {
-      area.innerHTML = `<div class="empty"><div class="empty-icon">!</div><h3>Nenhum feedback</h3></div>`;
+      area.innerHTML = '<div class="empty"><div class="empty-icon">!</div><h3>Nenhum feedback</h3></div>';
       return;
     }
-    const grupos = agruparPorMes(lista);
+    var grupos = agruparPorMes(lista);
     area.innerHTML = '';
-    grupos.forEach((grupo, gi) => {
-      const section = document.createElement('div');
+
+    grupos.forEach(function(grupo, gi) {
+      var isOpen = gi === 0;
+      var section = document.createElement('div');
       section.className = 'month-section';
-      const isOpen = gi === 0;
-      section.innerHTML = `
-        <div class="month-header" onclick="toggleMes(this)">
-          <div class="month-header-left">
-            <div class="month-dot"></div>
-            <div class="month-name">${grupo.nome}</div>
-            <div class="month-count">${grupo.fichas.length} feedbacks</div>
-          </div>
-          <div class="month-chevron ${isOpen?'open'}">&#9660;</div>
-        </div>
-        <div class="month-body ${isOpen?'open'}">
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Paciente</th><th>Nota</th><th>Comentario</th><th>Data</th></tr></thead>
-              <tbody>
-                ${grupo.fichas.map(f => {
-                  const nome = f.nome||f.dadosPessoais?.nome||'—';
-                  const nota = f.nota||'—';
-                  const coment = f.comentario||f.mensagem||'—';
-                  const data = f.enviadoEm?new Date(f.enviadoEm.seconds*1000).toLocaleDateString('pt-BR'):'—';
-                  const estrelas = nota!=='—'?'★'.repeat(Number(nota)):'—';
-                  return `<tr>
-                    <td><div class="td-name">${nome}</div></td>
-                    <td><span class="td-tag ${Number(nota)>=4?'ok':Number(nota)>=3?'warn':'danger'}">${estrelas}</span></td>
-                    <td><div class="td-muted" style="max-width:300px">${coment}</div></td>
-                    <td><span class="td-date">${data}</span></td>
-                  </tr>`;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
+
+      var header = document.createElement('div');
+      header.className = 'month-header';
+      header.setAttribute('onclick', 'toggleMes(this)');
+      header.innerHTML =
+        '<div class="month-header-left">' +
+          '<div class="month-dot"></div>' +
+          '<div class="month-name">' + grupo.nome + '</div>' +
+          '<div class="month-count">' + grupo.fichas.length + ' feedbacks</div>' +
+        '</div>' +
+        '<div class="month-chevron ' + (isOpen?'open':'') + '">&#9660;</div>';
+
+      var rows = '';
+      grupo.fichas.forEach(function(f) {
+        var nome    = f.nome || (f.dadosPessoais && f.dadosPessoais.nome) || '---';
+        var nota    = f.nota || '---';
+        var coment  = f.comentario || f.mensagem || '---';
+        var data    = f.enviadoEm ? new Date(f.enviadoEm.seconds*1000).toLocaleDateString('pt-BR') : '---';
+        var estrelas = nota!=='---' ? ('&#9733;').repeat(Number(nota)) : '---';
+        var notaCls  = Number(nota)>=4 ? 'ok' : (Number(nota)>=3 ? 'warn' : 'danger');
+        rows +=
+          '<tr>' +
+          '<td><div class="td-name">' + nome + '</div></td>' +
+          '<td><span class="td-tag ' + notaCls + '">' + estrelas + '</span></td>' +
+          '<td><div class="td-muted" style="max-width:300px">' + coment + '</div></td>' +
+          '<td><span class="td-date">' + data + '</span></td>' +
+          '</tr>';
+      });
+
+      var body = document.createElement('div');
+      body.className = 'month-body' + (isOpen ? ' open' : '');
+      body.innerHTML =
+        '<div class="table-wrap"><table>' +
+        '<thead><tr><th>Paciente</th><th>Nota</th><th>Comentario</th><th>Data</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody></table></div>';
+
+      section.appendChild(header);
+      section.appendChild(body);
       area.appendChild(section);
     });
   }
