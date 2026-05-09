@@ -108,6 +108,17 @@
 </head>
 <body>
 
+
+<script>
+// Stubs para evitar erros antes do Firebase carregar
+function setLoginTipo(t){ if(window._setLoginTipo) window._setLoginTipo(t); }
+function buscarPaciente(){ if(window._buscarPaciente) window._buscarPaciente(); }
+function mascararInput(el){ if(window._mascararInput) window._mascararInput(el); }
+function sair(){ if(window._sair) window._sair(); }
+function abrirWpp(){ if(window._abrirWpp) window._abrirWpp(); }
+function gerarPDF(id){ if(window._gerarPDF) window._gerarPDF(id); }
+</script>
+
 <div id="login-screen">
   <div class="login-hero">
     <div style="display:flex;justify-content:center;margin-bottom:22px">
@@ -252,7 +263,7 @@ const firebaseConfig = {
 
 let loginTipo = 'telefone', pacienteAtual = null;
 
-window.setLoginTipo = (tipo) => {
+window._setLoginTipo = window.setLoginTipo = (tipo) => {
   loginTipo = tipo;
   document.querySelectorAll('.tab-toggle').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
@@ -263,7 +274,7 @@ window.setLoginTipo = (tipo) => {
   input.value=''; input.focus();
 };
 
-window.mascararInput = (el) => {
+window._mascararInput = window.mascararInput = (el) => {
   let v = el.value.replace(/\D/g,'');
   if(loginTipo==='telefone') v = v.length<=10 ? v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3') : v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
   else v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
@@ -272,7 +283,7 @@ window.mascararInput = (el) => {
 
 function normalizar(str) { return (str||'').replace(/\D/g,''); }
 
-window.buscarPaciente = async () => {
+window._buscarPaciente = window.buscarPaciente = async () => {
   const val = document.getElementById('login-input').value.trim();
   const err = document.getElementById('login-error');
   const loading = document.getElementById('login-loading');
@@ -342,7 +353,7 @@ async function carregarDocumentos(cpf) {
 }
 
 // ── Gerar PDF no portal do paciente ───────────────────────
-window.gerarPDF = (docId) => {
+window._gerarPDF = window.gerarPDF = (docId) => {
   const d = window._docsCache?.[docId];
   if (!d) return;
   const { jsPDF } = window.jspdf;
@@ -554,7 +565,7 @@ function renderApp() {
   window.scrollTo(0,0);
 }
 
-window.sair = () => {
+window._sair = window.sair = () => {
   pacienteAtual=null;
   window._docsCache={};
   document.getElementById('login-screen').style.display='flex';
@@ -563,7 +574,7 @@ window.sair = () => {
   document.getElementById('login-error').style.display='none';
 };
 
-window.abrirWpp = () => {
+window._abrirWpp = window.abrirWpp = () => {
   const nome=pacienteAtual?.nome?.split(' ')[0]||'';
   window.open(`https://wa.me/556241061198?text=${encodeURIComponent(`Olá! Sou ${nome}, paciente da Neodonto, e gostaria de agendar uma consulta. 😊`)}`, '_blank');
 };
