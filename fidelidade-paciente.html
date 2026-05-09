@@ -78,6 +78,23 @@
   .earn-title{font-size:13px;font-weight:600;}
   .earn-desc{font-size:11px;color:var(--muted);margin-top:2px;}
   .earn-pts{font-size:16px;font-weight:700;color:var(--tiffany);white-space:nowrap;}
+
+  /* ── Meus Documentos ── */
+  .doc-item{background:white;border-radius:14px;padding:14px 16px;border:1px solid var(--border);display:flex;align-items:center;gap:14px;}
+  .doc-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+  .doc-icon.receita{background:#e6fafa;}
+  .doc-icon.atestado{background:#eef2ff;}
+  .doc-info{flex:1;min-width:0;}
+  .doc-tipo{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;}
+  .doc-tipo.receita{color:var(--tiffany-dark);}
+  .doc-tipo.atestado{color:#5b7fd4;}
+  .doc-nome{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .doc-data{font-size:11px;color:var(--muted);margin-top:2px;}
+  .doc-dentista{font-size:11px;color:var(--muted);}
+  .btn-doc-pdf{background:var(--tiffany-light);border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--tiffany-dark);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;}
+  .docs-vazio{text-align:center;padding:28px 20px;color:var(--muted);font-size:13px;background:white;border-radius:14px;border:1px solid var(--border);}
+  .docs-loading{text-align:center;padding:20px;color:var(--muted);font-size:13px;}
+
   .footer{text-align:center;padding:32px 20px 16px;font-size:12px;color:var(--muted);line-height:1.8;}
   .footer a{color:var(--tiffany);text-decoration:none;}
   .wpp-fab{position:fixed;bottom:24px;right:20px;background:#25D366;color:white;border:none;border-radius:50px;padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(37,211,102,0.4);display:flex;align-items:center;gap:8px;transition:transform .2s;z-index:100;}
@@ -86,6 +103,7 @@
   .fade-up{animation:fadeUp .4s ease both;}
   .fade-up-2{animation:fadeUp .4s .1s ease both;}
   .fade-up-3{animation:fadeUp .4s .2s ease both;}
+  .fade-up-4{animation:fadeUp .4s .3s ease both;}
 </style>
 </head>
 <body>
@@ -101,11 +119,11 @@
         <circle cx="457" cy="103" r="4.5" fill="rgba(255,255,255,0.80)"/><circle cx="471" cy="103" r="5.8" fill="rgba(255,255,255,0.80)"/>
       </svg>
     </div>
-    <p>Consulte seus pontos e benefícios<br>no programa de fidelidade</p>
+    <p>Consulte seus pontos, benefícios<br>e documentos odontológicos</p>
   </div>
   <div class="login-form">
     <h2>Acessar minha conta</h2>
-    <p>Digite seu CPF ou telefone para ver seus pontos</p>
+    <p>Digite seu CPF ou telefone para entrar</p>
     <div class="tabs-toggle">
       <button class="tab-toggle active" onclick="setLoginTipo('telefone')">📱 Telefone</button>
       <button class="tab-toggle" onclick="setLoginTipo('cpf')">🪪 CPF</button>
@@ -114,7 +132,7 @@
       <label id="input-label">Telefone com DDD</label>
       <input type="tel" id="login-input" placeholder="(62) 9 9999-9999" oninput="mascararInput(this)" onkeydown="if(event.key==='Enter')buscarPaciente()">
     </div>
-    <button class="btn-login" onclick="buscarPaciente()">Ver meus pontos →</button>
+    <button class="btn-login" onclick="buscarPaciente()">Ver minha área →</button>
     <div id="login-error">Nenhum cadastro encontrado. Fale com a recepção. 😊</div>
     <div id="login-loading">🔍 Buscando seus dados...</div>
   </div>
@@ -171,6 +189,12 @@
     <div class="earn-list" id="resgates-list"></div>
   </div>
 
+  <!-- ── Meus Documentos ── -->
+  <div class="section fade-up-4">
+    <div class="section-title">Meus documentos</div>
+    <div id="docs-list"><div class="docs-loading">🔍 Carregando documentos...</div></div>
+  </div>
+
   <div class="section fade-up-3">
     <div class="section-title">Como ganhar pontos</div>
     <div class="earn-list">
@@ -205,9 +229,10 @@
   <button class="wpp-fab" onclick="abrirWpp()">💬 Agendar consulta</button>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",authDomain:"neodonto-808ea.firebaseapp.com",
@@ -260,6 +285,156 @@ window.buscarPaciente = async () => {
   } catch(e) {
     loading.style.display = 'none';
     err.textContent='Erro ao buscar. Tente novamente.'; err.style.display='block';
+  }
+};
+
+// ── Busca documentos do paciente pelo CPF ──────────────────
+async function carregarDocumentos(cpf) {
+  const lista = document.getElementById('docs-list');
+  if (!cpf) { lista.innerHTML = '<div class="docs-vazio">📄 Nenhum documento encontrado.</div>'; return; }
+  const cpfLimpo = normalizar(cpf);
+  if (!cpfLimpo) { lista.innerHTML = '<div class="docs-vazio">📄 Nenhum documento encontrado.</div>'; return; }
+  try {
+    const snap = await getDocs(collection(db, 'documentos', cpfLimpo, 'lista'));
+    if (snap.empty) {
+      lista.innerHTML = '<div class="docs-vazio">📄 Nenhum documento emitido ainda.</div>';
+      return;
+    }
+    // Ordena por data mais recente
+    const docs = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => {
+        const ta = a.criado_em?.toMillis?.() || 0;
+        const tb = b.criado_em?.toMillis?.() || 0;
+        return tb - ta;
+      });
+
+    lista.innerHTML = '<div class="earn-list">' + docs.map(doc => {
+      const isReceita = doc.tipo === 'receita';
+      return `<div class="doc-item">
+        <div class="doc-icon ${doc.tipo}">${isReceita ? '💊' : '📋'}</div>
+        <div class="doc-info">
+          <div class="doc-tipo ${doc.tipo}">${isReceita ? 'Receita' : 'Atestado — ' + (doc.tipo_label || doc.tipo)}</div>
+          <div class="doc-nome">${doc.paciente_nome || ''}</div>
+          <div class="doc-data">${doc.data || ''} · ${doc.dentista_nome || ''}</div>
+        </div>
+        <button class="btn-doc-pdf" onclick="gerarPDF('${doc.id}')">⬇️ PDF</button>
+      </div>`;
+    }).join('') + '</div>';
+
+    // Guarda os docs para gerar PDFs
+    window._docsCache = {};
+    docs.forEach(d => { window._docsCache[d.id] = d; });
+
+  } catch(e) {
+    console.error(e);
+    lista.innerHTML = '<div class="docs-vazio">⚠️ Erro ao carregar documentos.</div>';
+  }
+}
+
+// ── Gerar PDF no portal do paciente ───────────────────────
+window.gerarPDF = (docId) => {
+  const d = window._docsCache?.[docId];
+  if (!d) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Cabeçalho
+  doc.setFontSize(22); doc.setFont('helvetica','bold');
+  doc.setTextColor(26,31,54); doc.text('NEO',101,20,{align:'right'});
+  doc.setTextColor(0,191,166); doc.text('DONTO',101,20,{align:'left'});
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.setTextColor(150); doc.text('ODONTOLOGIA',105,25,{align:'center'});
+  doc.setFontSize(11); doc.setFont('helvetica','bold');
+  doc.setTextColor(26,31,54); doc.text('(62) 4106-1198',15,33);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.setTextColor(120);
+  doc.text('Av. Pará — Campinas',195,30,{align:'right'});
+  doc.text('Goiânia — GO, 74520-100',195,35,{align:'right'});
+  doc.setDrawColor(0,191,166); doc.setLineWidth(0.8);
+  doc.line(15,40,195,40);
+
+  if (d.tipo === 'receita') {
+    doc.setFontSize(12); doc.setFont('helvetica','bold');
+    doc.setTextColor(26,31,54);
+    doc.text('RECEITUÁRIO ODONTOLÓGICO',105,50,{align:'center'});
+    doc.setLineWidth(0.3); doc.setDrawColor(220); doc.line(15,54,195,54);
+
+    doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(80);
+    doc.text('Paciente:',15,62); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54); doc.text(d.paciente_nome||'',195,62,{align:'right'});
+    doc.setFont('helvetica','normal'); doc.setTextColor(80);
+    doc.text('Data:',15,68); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54); doc.text(d.data||'',195,68,{align:'right'});
+    doc.setFont('helvetica','normal'); doc.setTextColor(80);
+    doc.text('Dentista:',15,74); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54);
+    doc.text(`${d.dentista_nome||''} | CRO: ${d.cro||'-'}`,195,74,{align:'right'});
+
+    let y=86;
+    doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(0,191,166); doc.text('MEDICAMENTOS',15,y); y+=7;
+    doc.setFont('helvetica','normal'); doc.setTextColor(50); doc.setFontSize(10);
+    const ml=doc.splitTextToSize(d.medicamentos||'',175); doc.text(ml,15,y); y+=ml.length*6+10;
+
+    doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(0,191,166); doc.text('INSTRUÇÕES DE USO',15,y); y+=7;
+    doc.setFont('helvetica','normal'); doc.setTextColor(50); doc.setFontSize(10);
+    const il=doc.splitTextToSize(d.instrucoes||'',175); doc.text(il,15,y); y+=il.length*6+10;
+
+    if(d.observacoes){
+      doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(0,191,166); doc.text('OBSERVAÇÕES',15,y); y+=7;
+      doc.setFont('helvetica','normal'); doc.setTextColor(50); doc.setFontSize(10);
+      const ol=doc.splitTextToSize(d.observacoes,175); doc.text(ol,15,y); y+=ol.length*6+10;
+    }
+    y+=14;
+    doc.setDrawColor(80); doc.setLineWidth(0.4); doc.line(60,y,150,y); y+=6;
+    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54); doc.text(d.dentista_nome||'',105,y,{align:'center'}); y+=5;
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(100); doc.text(`CRO: ${d.cro||'-'}`,105,y,{align:'center'}); y+=5;
+    doc.setFontSize(8); doc.setTextColor(160); doc.text('Assinar e carimbar',105,y,{align:'center'});
+    doc.save(`receita_${d.paciente_nome}_${d.data}.pdf`);
+
+  } else {
+    const tipoLabel={comparecimento:'ATESTADO DE COMPARECIMENTO',saude_bucal:'ATESTADO DE SAÚDE BUCAL',afastamento:'ATESTADO DE AFASTAMENTO'};
+    doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54);
+    doc.text(tipoLabel[d.tipo]||'ATESTADO',105,50,{align:'center'});
+    doc.setLineWidth(0.3); doc.setDrawColor(220); doc.line(15,54,195,54);
+
+    doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(80);
+    doc.text('Paciente:',15,62); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54); doc.text(d.paciente_nome||'',195,62,{align:'right'});
+    doc.setFont('helvetica','normal'); doc.setTextColor(80);
+    doc.text('Data:',15,68); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54); doc.text(d.data||'',195,68,{align:'right'});
+    doc.setFont('helvetica','normal'); doc.setTextColor(80);
+    doc.text('Dentista:',15,74); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54);
+    doc.text(`${d.dentista_nome||''} | CRO: ${d.cro||'-'}`,195,74,{align:'right'});
+
+    let y=86;
+    doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(0,191,166); doc.text('TEXTO DO ATESTADO',15,y); y+=7;
+
+    let texto = d.texto || '';
+    if(!texto){
+      const dataInicio = d.data_inicio ? new Date(d.data_inicio+'T12:00:00').toLocaleDateString('pt-BR') : d.data;
+      if(d.tipo==='comparecimento')
+        texto=`Atesto para os devidos fins que o(a) paciente ${d.paciente_nome} compareceu a esta clínica odontológica no dia ${dataInicio}${d.horas?`, pelo período de ${d.horas} hora(s)`:''}`, para tratamento odontológico.`;
+      else if(d.tipo==='saude_bucal')
+        texto=`Atesto para os devidos fins que o(a) paciente ${d.paciente_nome} encontra-se em boas condições de saúde bucal, tendo sido submetido(a) a avaliação clínica nesta data.`;
+      else if(d.tipo==='afastamento'){
+        const dataFim=d.data_fim?new Date(d.data_fim+'T12:00:00').toLocaleDateString('pt-BR'):'-';
+        texto=`Atesto para os devidos fins que o(a) paciente ${d.paciente_nome} necessita de afastamento de suas atividades pelo período de ${dataInicio} a ${dataFim}, por motivo de tratamento odontológico.`;
+      }
+    }
+    doc.setFont('helvetica','normal'); doc.setTextColor(50); doc.setFontSize(10);
+    const tl=doc.splitTextToSize(texto,175); doc.text(tl,15,y); y+=tl.length*6+10;
+
+    if(d.observacoes){
+      doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(0,191,166); doc.text('OBSERVAÇÕES',15,y); y+=7;
+      doc.setFont('helvetica','normal'); doc.setTextColor(50); doc.setFontSize(10);
+      const ol=doc.splitTextToSize(d.observacoes,175); doc.text(ol,15,y); y+=ol.length*6+10;
+    }
+    y+=4;
+    doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(100);
+    doc.text(`Goiânia, ${d.data}`,105,y,{align:'center'});
+    y+=18;
+    doc.setDrawColor(80); doc.setLineWidth(0.4); doc.line(60,y,150,y); y+=6;
+    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(26,31,54); doc.text(d.dentista_nome||'',105,y,{align:'center'}); y+=5;
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(100); doc.text(`CRO: ${d.cro||'-'}`,105,y,{align:'center'}); y+=5;
+    doc.setFontSize(8); doc.setTextColor(160); doc.text('Assinar e carimbar',105,y,{align:'center'});
+    doc.save(`atestado_${d.paciente_nome}_${d.data}.pdf`);
   }
 };
 
@@ -362,6 +537,9 @@ function renderApp() {
     </div>`;
   }).join('');
 
+  // Carrega documentos do paciente pelo CPF
+  carregarDocumentos(p.cpf || '');
+
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-screen').style.display='block';
   window.scrollTo(0,0);
@@ -369,6 +547,7 @@ function renderApp() {
 
 window.sair = () => {
   pacienteAtual=null;
+  window._docsCache={};
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('app-screen').style.display='none';
   document.getElementById('login-input').value='';
