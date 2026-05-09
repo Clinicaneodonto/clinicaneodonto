@@ -230,17 +230,26 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey:"AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",
+  authDomain:"neodonto-808ea.firebaseapp.com",
+  projectId:"neodonto-808ea",
+  storageBucket:"neodonto-808ea.appspot.com",
+  messagingSenderId:"784061951445",
+  appId:"1:784061951445:web:5e97b0f1b3da9e9c76c7e2"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 const firebaseConfig = {
   apiKey:"AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",authDomain:"neodonto-808ea.firebaseapp.com",
   projectId:"neodonto-808ea",storageBucket:"neodonto-808ea.appspot.com",
   messagingSenderId:"784061951445",appId:"1:784061951445:web:5e97b0f1b3da9e9c76c7e2"
 };
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+
 let loginTipo = 'telefone', pacienteAtual = null;
 
 window.setLoginTipo = (tipo) => {
@@ -272,10 +281,10 @@ window.buscarPaciente = async () => {
   loading.style.display = 'block';
   try {
     const campo = loginTipo==='telefone' ? 'telefone' : 'cpf';
-    const snap = await getDocs(query(collection(db,'fidelidade'), where(campo,'==',val)));
+    const snap = await db.collection('fidelidade').where(campo,'==',val).get();
     let docs = snap.docs;
     if(!docs.length) {
-      const snap2 = await getDocs(collection(db,'fidelidade'));
+      const snap2 = await db.collection('fidelidade').get();
       docs = snap2.docs.filter(d => normalizar(d.data()[campo]||'') === normalizar(val));
     }
     loading.style.display = 'none';
@@ -295,7 +304,7 @@ async function carregarDocumentos(cpf) {
   const cpfLimpo = normalizar(cpf);
   if (!cpfLimpo) { lista.innerHTML = '<div class="docs-vazio">📄 Nenhum documento encontrado.</div>'; return; }
   try {
-    const snap = await getDocs(collection(db, 'documentos', cpfLimpo, 'lista'));
+    const snap = await db.collection('documentos').doc(cpfLimpo).collection('lista').get();
     if (snap.empty) {
       lista.innerHTML = '<div class="docs-vazio">📄 Nenhum documento emitido ainda.</div>';
       return;
@@ -410,7 +419,7 @@ window.gerarPDF = (docId) => {
     if(!texto){
       const dataInicio = d.data_inicio ? new Date(d.data_inicio+'T12:00:00').toLocaleDateString('pt-BR') : d.data;
       if(d.tipo==='comparecimento')
-        texto=`Atesto para os devidos fins que o(a) paciente ${d.paciente_nome} compareceu a esta clínica odontológica no dia ${dataInicio}${d.horas?`, pelo período de ${d.horas} hora(s)`:''}`, para tratamento odontológico.`;
+        texto=`Atesto para os devidos fins que o(a) paciente ${d.paciente_nome} compareceu a esta clínica odontológica no dia ${dataInicio}${d.horas?`, pelo período de ${d.horas} hora(s)`:''}, para tratamento odontológico.`;
       else if(d.tipo==='saude_bucal')
         texto=`Atesto para os devidos fins que o(a) paciente ${d.paciente_nome} encontra-se em boas condições de saúde bucal, tendo sido submetido(a) a avaliação clínica nesta data.`;
       else if(d.tipo==='afastamento'){
