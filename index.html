@@ -1040,6 +1040,330 @@
   </a>
 </footer>
 
+<!-- WIDGET CHAT IA -->
+<style>
+  /* ── Botão flutuante ── */
+  #neo-chat-btn {
+    position: fixed; bottom: 2rem; left: 2rem; z-index: 999;
+    width: 58px; height: 58px;
+    background: #1a1a1a;
+    border: 1.5px solid #c9a84c;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: goldPulse 2.5s ease-in-out infinite;
+  }
+  #neo-chat-btn:hover { transform: scale(1.08); box-shadow: 0 4px 32px rgba(201,168,76,0.5); }
+  #neo-chat-tooltip {
+    position: absolute; left: 70px;
+    background: #1a1a1a; color: white;
+    font-size: 0.75rem; padding: 6px 12px;
+    border-radius: 4px; white-space: nowrap;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+  #neo-chat-btn:hover #neo-chat-tooltip { opacity: 1; }
+  @keyframes goldPulse {
+    0%,100% { box-shadow: 0 4px 20px rgba(201,168,76,0.3); }
+    50% { box-shadow: 0 4px 32px rgba(201,168,76,0.6), 0 0 0 8px rgba(201,168,76,0.08); }
+  }
+
+  /* ── Janela do chat ── */
+  #neo-chat-window {
+    position: fixed; bottom: 6rem; left: 2rem; z-index: 998;
+    width: 360px; height: 520px;
+    background: #0f1117;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 16px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    transform: scale(0.9) translateY(20px);
+    opacity: 0; pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    font-family: 'DM Sans', sans-serif;
+  }
+  #neo-chat-window.open {
+    transform: scale(1) translateY(0);
+    opacity: 1; pointer-events: all;
+  }
+
+  /* Header */
+  .nch { 
+    background: #12151e; 
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nch-avatar {
+    width: 36px; height: 36px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .nch-name { font-size: 13px; font-weight: 500; color: #e8e4dc; }
+  .nch-status { font-size: 11px; color: #c9a84c; display: flex; align-items: center; gap: 4px; }
+  .nch-dot { width: 6px; height: 6px; background: #c9a84c; border-radius: 50%; animation: goldPulse 2s infinite; }
+  .nch-close { margin-left: auto; cursor: pointer; color: #5a5a6a; font-size: 18px; line-height: 1; transition: color 0.2s; }
+  .nch-close:hover { color: #e8e4dc; }
+
+  /* Mensagens */
+  #neo-msgs {
+    flex: 1; overflow-y: auto;
+    padding: 14px 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  #neo-msgs::-webkit-scrollbar { width: 3px; }
+  #neo-msgs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  .nm { display: flex; gap: 8px; animation: nmrise 0.3s ease; }
+  .nm.user { flex-direction: row-reverse; }
+  @keyframes nmrise { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+  .nm-av {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0; margin-top: 2px;
+  }
+  .nm-av.agent { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.25); }
+  .nm-av.user  { background: rgba(10,191,188,0.1); border: 1px solid rgba(10,191,188,0.25); }
+
+  .nm-bub {
+    max-width: 78%; padding: 9px 13px;
+    border-radius: 12px; font-size: 13px; line-height: 1.6;
+  }
+  .nm-bub.agent {
+    background: #12151e; border: 1px solid rgba(201,168,76,0.12);
+    border-top-left-radius: 3px; color: #e8e4dc;
+  }
+  .nm-bub.user {
+    background: rgba(10,191,188,0.1); border: 1px solid rgba(10,191,188,0.2);
+    border-top-right-radius: 3px; color: #e8e4dc;
+  }
+  .nm-badge {
+    font-size: 9px; font-weight: 500; letter-spacing: .04em;
+    padding: 1px 6px; border-radius: 20px; margin-bottom: 5px; display: inline-block;
+    background: rgba(201,168,76,0.1); color: #c9a84c; border: 1px solid rgba(201,168,76,0.2);
+  }
+
+  /* Digitando */
+  .nm-dots { display: flex; gap: 3px; align-items: center; padding: 2px 0; }
+  .nm-dots span {
+    width: 5px; height: 5px; background: #c9a84c; border-radius: 50%;
+    opacity: 0.3; animation: nd 1.2s ease-in-out infinite;
+  }
+  .nm-dots span:nth-child(2) { animation-delay: .2s; }
+  .nm-dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes nd { 0%,100%{opacity:.2;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+  /* Quick replies */
+  #neo-qr {
+    padding: 0 12px 8px;
+    display: flex; flex-wrap: wrap; gap: 5px;
+  }
+  .nqr {
+    font-size: 11px; padding: 5px 11px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1); color: #9a9080;
+    background: #12151e; cursor: pointer;
+    transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .nqr:hover { border-color: #c9a84c; color: #c9a84c; background: rgba(201,168,76,0.08); }
+
+  /* Input */
+  .nci {
+    padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; gap: 8px; align-items: flex-end;
+    background: #12151e;
+  }
+  .nci-wrap {
+    flex: 1; background: #0f1117;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+    display: flex; align-items: center; padding: 3px 5px 3px 12px;
+    transition: border-color 0.2s;
+  }
+  .nci-wrap:focus-within { border-color: #c9a84c; }
+  #neo-input {
+    flex: 1; background: none; border: none; outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: #e8e4dc; padding: 7px 0; resize: none;
+    max-height: 80px; line-height: 1.4;
+  }
+  #neo-input::placeholder { color: #3d3a35; }
+  .nci-send {
+    width: 34px; height: 34px; background: #c9a84c;
+    border: none; border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .nci-send:hover { background: #e0c898; transform: scale(1.05); }
+  .nci-send:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .nci-send svg { width: 14px; height: 14px; fill: #1a1a1a; }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    #neo-chat-window { width: calc(100vw - 2rem); left: 1rem; bottom: 5.5rem; }
+    #neo-chat-btn { bottom: 1.5rem; left: 1rem; }
+  }
+</style>
+
+<!-- Botão flutuante -->
+<div id="neo-chat-btn" onclick="neoChatToggle()">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+  </svg>
+  <span id="neo-chat-tooltip">Fale com nossa IA</span>
+</div>
+
+<!-- Janela do chat -->
+<div id="neo-chat-window">
+  <div class="nch">
+    <div class="nch-avatar">✦</div>
+    <div>
+      <div class="nch-name">Assistente NEOdonto</div>
+      <div class="nch-status"><span class="nch-dot"></span> Online agora</div>
+    </div>
+    <div class="nch-close" onclick="neoChatToggle()">✕</div>
+  </div>
+
+  <div id="neo-msgs"></div>
+
+  <div id="neo-qr">
+    <span class="nqr" onclick="neoQuick(this)">Quero agendar</span>
+    <span class="nqr" onclick="neoQuick(this)">Quanto custa o clareamento?</span>
+    <span class="nqr" onclick="neoQuick(this)">Aceitam convênio?</span>
+    <span class="nqr" onclick="neoQuick(this)">Fazem implante?</span>
+  </div>
+
+  <div class="nci">
+    <div class="nci-wrap">
+      <textarea id="neo-input" placeholder="Escreva sua mensagem..." rows="1"></textarea>
+    </div>
+    <button class="nci-send" id="neo-send" onclick="neoSend()">
+      <svg viewBox="0 0 24 24"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const NEO_API = 'https://neodonto-system-production-cc22.up.railway.app/api/agente/chat'
+const NEO_SESSION = 'neo_' + Math.random().toString(36).substr(2,9)
+let neoBusy = false
+let neoOpen = false
+
+function neoChatToggle() {
+  neoOpen = !neoOpen
+  document.getElementById('neo-chat-window').classList.toggle('open', neoOpen)
+  if (neoOpen && document.getElementById('neo-msgs').children.length === 0) {
+    setTimeout(() => neoAddMsg('Olá! 😊 Bem-vindo à NEOdonto Odontologia ✦\n\nSou sua assistente virtual e estou aqui para ajudar com agendamentos, dúvidas sobre tratamentos e muito mais.\n\nComo posso cuidar do seu sorriso hoje?', 'agent'), 400)
+  }
+}
+
+function neoAgentType(text) {
+  if (/\[AGENDAMENTO\]/.test(text)) return '📅 Agendamento'
+  if (/\[DÚVIDA\]|\[DUVIDA\]/.test(text)) return '💬 Dúvidas'
+  if (/\[ORÇAMENTO\]|\[ORCAMENTO\]/.test(text)) return '💰 Orçamento'
+  if (/\[REATIVAÇÃO\]|\[REATIVACAO\]/.test(text)) return '💤 Reativação'
+  return '✦ NEOdonto'
+}
+
+function neoAddMsg(text, role) {
+  const msgs = document.getElementById('neo-msgs')
+  const row = document.createElement('div')
+  row.className = `nm ${role}`
+
+  const av = document.createElement('div')
+  av.className = `nm-av ${role}`
+  av.textContent = role === 'agent' ? '✦' : '👤'
+
+  const col = document.createElement('div')
+  const bub = document.createElement('div')
+  bub.className = `nm-bub ${role}`
+
+  if (role === 'agent') {
+    const badge = document.createElement('div')
+    badge.className = 'nm-badge'
+    badge.textContent = neoAgentType(text)
+    bub.appendChild(badge)
+    bub.appendChild(document.createElement('br'))
+  }
+
+  const clean = text.replace(/\[(AGENDAMENTO|DÚVIDA|DUVIDA|ORÇAMENTO|ORCAMENTO|REATIVAÇÃO|REATIVACAO)\]/g,'').trim()
+  const p = document.createElement('p')
+  p.style.cssText = 'white-space:pre-wrap;margin:0'
+  p.textContent = clean
+  bub.appendChild(p)
+
+  col.appendChild(bub)
+  row.appendChild(av)
+  row.appendChild(col)
+  msgs.appendChild(row)
+  msgs.scrollTop = msgs.scrollHeight
+}
+
+function neoAddTyping() {
+  const msgs = document.getElementById('neo-msgs')
+  const row = document.createElement('div')
+  row.className = 'nm agent'; row.id = 'neo-typing'
+  const av = document.createElement('div')
+  av.className = 'nm-av agent'; av.textContent = '✦'
+  const bub = document.createElement('div')
+  bub.className = 'nm-bub agent'
+  bub.innerHTML = '<div class="nm-dots"><span></span><span></span><span></span></div>'
+  row.appendChild(av); row.appendChild(bub)
+  msgs.appendChild(row)
+  msgs.scrollTop = msgs.scrollHeight
+}
+
+async function neoSend() {
+  if (neoBusy) return
+  const inp = document.getElementById('neo-input')
+  const text = inp.value.trim()
+  if (!text) return
+
+  inp.value = ''; inp.style.height = 'auto'
+  document.getElementById('neo-qr').style.display = 'none'
+  neoAddMsg(text, 'user')
+  neoBusy = true
+  document.getElementById('neo-send').disabled = true
+  neoAddTyping()
+
+  try {
+    const res = await fetch(NEO_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, session_id: NEO_SESSION })
+    })
+    const data = await res.json()
+    document.getElementById('neo-typing')?.remove()
+    neoAddMsg(data.reply || 'Desculpe, tive um problema. Ligue: (62) 4106-1198', 'agent')
+  } catch(e) {
+    document.getElementById('neo-typing')?.remove()
+    neoAddMsg('Não consegui me conectar agora. Ligue para (62) 4106-1198 😊', 'agent')
+  }
+
+  neoBusy = false
+  document.getElementById('neo-send').disabled = false
+}
+
+function neoQuick(el) {
+  document.getElementById('neo-input').value = el.textContent
+  neoSend()
+}
+
+document.getElementById('neo-input').addEventListener('input', function() {
+  this.style.height = 'auto'
+  this.style.height = Math.min(this.scrollHeight, 80) + 'px'
+})
+document.getElementById('neo-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); neoSend() }
+})
+</script>
+
 <!-- WHATSAPP FLUTUANTE -->
 <a href="https://wa.me/556241061198?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20consulta%20na%20Neodonto." target="_blank" id="whatsapp-float" style="position:fixed;bottom:2rem;right:2rem;z-index:999;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,0.45);transition:transform 0.2s,box-shadow 0.2s;animation:wppPulse 2.5s ease-in-out infinite;">
   <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
