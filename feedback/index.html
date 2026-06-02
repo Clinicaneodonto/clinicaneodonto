@@ -19,21 +19,7 @@
 <meta name="twitter:description" content="Como foi sua experiência? Avalie nosso atendimento em Goiânia.">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<!-- Firebase SDKs (compat — scripts normais, sem ESM) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script>
-  firebase.initializeApp({
-    apiKey:            "AIzaSyDUJjgEbHToezyzZAMWP5VR1IWHjRF6icM",
-    authDomain:        "neodonto-808ea.firebaseapp.com",
-    projectId:         "neodonto-808ea",
-    storageBucket:     "neodonto-808ea.firebasestorage.app",
-    messagingSenderId: "602833895297",
-    appId:             "1:602833895297:web:6744ea4b28739aced43280",
-    measurementId:     "G-JNP1JFP6G7"
-  });
-  var db = firebase.firestore();
-</script>
+
 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -483,21 +469,27 @@
       comentarioPositivo: document.getElementById('comentarioPositivo').value.trim(),
       comentarioMelhoria: document.getElementById('comentarioMelhoria').value.trim(),
       autorizaGoogle:     document.getElementById('autorizaGoogle').checked,
-      criadoEm:           firebase.firestore.FieldValue.serverTimestamp()
+      criadoEm: new Date().toISOString()
     };
 
-    db.collection('feedback').add(dados)
-      .then(function() {
-        document.getElementById('formMain').style.display = 'none';
-        document.getElementById('successScreen').classList.add('show');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      })
-      .catch(function(err) {
-        console.error('Erro Firestore:', err);
-        btn.textContent = 'Enviar avaliação ✦';
-        btn.disabled = false;
-        mostrarToast('❌ Erro: ' + err.message);
-      });
+    fetch('https://neodonto-system-production-cc22.up.railway.app/api/feedbacks/publico', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      if (!resp.ok) throw new Error(resp.erro || 'Erro ao salvar');
+      document.getElementById('formMain').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(function(err) {
+      console.error('Erro:', err.message);
+      btn.textContent = 'Enviar avaliação ✦';
+      btn.disabled = false;
+      mostrarToast('❌ Erro: ' + err.message);
+    });
   }
 </script>
 </body>
