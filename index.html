@@ -1373,11 +1373,23 @@ function neoCaptureSubmit() {
   body.style.display = 'flex'
  
   // Primeira mensagem já com o nome
-  setTimeout(() => {
-    neoAddMsg(
-      `Oii, tudo bem? 😊 Sou a Bia, assistente virtual da NEOdonto!\n\nQue bom te ver por aqui, ${neoNome.split(' ')[0]}! 🦷✨\n\nPosso te ajudar com agendamentos, dúvidas ou informações sobre nossos tratamentos. Como posso te ajudar hoje?`,
-      'agent'
-    )
+   setTimeout(async () => {
+    try {
+      const res = await fetch(NEO_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Olá! Meu nome é ${neoNome} e meu WhatsApp é ${neoTel}.`,
+          session_id: NEO_SESSION
+        })
+      })
+      const data = await res.json()
+      // Mostra a resposta da Bia (já vai cumprimentar pelo nome)
+      neoAddMsg(data.reply || '', 'agent')
+    } catch(e) {
+      neoAddMsg(`Oii! 😊 Sou a Bia, assistente da NEOdonto! Como posso te ajudar hoje, ${neoNome.split(' ')[0]}?`, 'agent')
+    }
+    document.getElementById('neo-qr').style.display = 'flex'
   }, 400)
 }
  
