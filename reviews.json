@@ -1,42 +1,74 @@
 {
   "name": "NEOdonto Odontologia",
-  "rating": 4.8,
-  "user_ratings_total": 48,
+  "rating": 4.9,
+  "user_ratings_total": 97,
   "url": "https://search.google.com/local/reviews?placeid=ChIJmx7_GSz1XpMR3Tz62zsichs",
   "reviews": [
     {
-      "author_name": "Hellen Roberta Ferreira Faeda",
+      "author_name": "Edna Noronha",
       "rating": 5,
-      "text": "Atendimento maravilhoso! Clínica aconchegante, dentista Dra Gabriela Rodrigues, top, prática, atende prontamente super.",
-      "relative_time_description": null,
+      "text": "Bom dia excelente toda a equipe a dr Gabriela Rodrigues Dantas maravilhosa excepcional amei super indico 👏👏👏👏",
+      "relative_time_description": "um mês atrás",
       "time": null,
       "profile_photo_url": null
     },
     {
-      "author_name": "Rita Maria (Ritinha)",
+      "author_name": "Vanessa Venis",
       "rating": 5,
-      "text": "Parabéns à Dra. Gabriela e a toda sua equipe, que são sempre muito atenciosos com meu filho. Quando preciso, estão sempre à disposição fazendo o melhor.",
-      "relative_time_description": null,
+      "text": "Dra Gabriela é maravilhosa! Cuida de toda nossa família sempre com muito carinho.",
+      "relative_time_description": "um mês atrás",
       "time": null,
       "profile_photo_url": null
     },
     {
-      "author_name": "Lucinete Chagas",
+      "author_name": "Adoniran Ribeiro",
       "rating": 5,
-      "text": "Muito bom, médico Dr Marcelo um excelente profissional!",
-      "relative_time_description": null,
+      "text": "O atendimento eh excelente. Uma clínica completa onde você pode fazer todos os procedimentos dentário em um só local.",
+      "relative_time_description": "2 meses atrás",
       "time": null,
       "profile_photo_url": null
     },
     {
-      "author_name": "ed.junio & Gabriel ej&g",
+      "author_name": "Lívia NeoDonto",
       "rating": 5,
-      "text": "Maravilhoso atendimento. E tratamento com doutor Marcelo Aguiar nota 1000.",
-      "relative_time_description": null,
+      "text": "Atendimento maravilhoso, amei as recepcionistas que me serviram um delicioso cappuccino.",
+      "relative_time_description": "um mês atrás",
+      "time": null,
+      "profile_photo_url": null
+    },
+    {
+      "author_name": "Wanderson Guimaraes",
+      "rating": 5,
+      "text": "Que lugar maravilhoso, ótimo atendimento, pessoas educadas, vocês são incríveis.",
+      "relative_time_description": "um mês atrás",
+      "time": null,
+      "profile_photo_url": null
+    },
+    {
+      "author_name": "Janieire Raulino",
+      "rating": 5,
+      "text": "Que experiência maravilhosa que tive hoje com a doutora Gabriela. Amei!",
+      "relative_time_description": "2 meses atrás",
+      "time": null,
+      "profile_photo_url": null
+    },
+    {
+      "author_name": "Gabriel França",
+      "rating": 5,
+      "text": "Excelente atendimento e ambiente muito confortável e climatizado, recomendo.",
+      "relative_time_description": "2 meses atrás",
+      "time": null,
+      "profile_photo_url": null
+    },
+    {
+      "author_name": "Daniela Fernandes Rocha",
+      "rating": 5,
+      "text": "Muito boa!! Ótimo atendimento, e pessoas muito educadas!!",
+      "relative_time_description": "um mês atrás",
       "time": null,
       "profile_photo_url": null
     }
   ],
   "updated_at": "2026-07-07T00:00:00.000Z",
-  "_nota": "Arquivo semente inicial — sera sobrescrito automaticamente pelo GitHub Action assim que o secret GOOGLE_PLACES_API_KEY for configurado."
+  "_nota": "Atualizado manualmente a partir do Google Maps (billing da Places API nao habilitado por escolha do cliente). Para atualizar de novo: abrir o perfil do Google Maps da clinica, ordenar avaliacoes por 'Mais recentes', copiar as novas e editar este arquivo direto no GitHub."
 }
