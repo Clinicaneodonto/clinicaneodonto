@@ -909,9 +909,12 @@
 
 <script>
 (function() {
+  // Antes isso chamava a Places API do Google direto do navegador — o
+  // Google bloqueia essa chamada por CORS, entao nunca funcionava de
+  // verdade (sempre caia no fallback abaixo). Agora passa por um proxy
+  // no nosso proprio backend, que busca no Google pelo servidor.
   const PLACE_ID = 'ChIJmx7_GSz1XpMR3Tz62zsichs';
-  const API_KEY  = 'AIzaSyDX0OM5AhHBMlztqwZgojIsPYrvd_UX5fU';
-  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=name,rating,user_ratings_total,reviews,url&language=pt-BR&key=${API_KEY}`;
+  const url = 'https://neodonto-system-production-cc22.up.railway.app/api/reviews/google';
   const manuais = [
     { author_name: 'Hellen Roberta Ferreira Faeda', rating: 5, text: 'Atendimento maravilhoso! Clínica aconchegante, dentista Dra Gabriela Rodrigues, top, prática, atende prontamente super.', profile_photo_url: null },
     { author_name: 'Rita Maria (Ritinha)', rating: 5, text: 'Parabéns à Dra. Gabriela e a toda sua equipe, que são sempre muito atenciosos com meu filho. Quando preciso, estão sempre à disposição fazendo o melhor.', profile_photo_url: null },
@@ -963,8 +966,8 @@
   }
   window.testiNav = function(dir) { clearInterval(autoplayTimer); goTo(current + dir * perView); startAutoplay(); };
   function startAutoplay() { clearInterval(autoplayTimer); autoplayTimer = setInterval(() => { goTo(current + perView >= total ? 0 : current + perView); }, 4000); }
-  fetch(url).then(r => r.json()).then(data => {
-    const place = data.result; if (!place) return;
+  fetch(url).then(r => r.json()).then(place => {
+    if (!place || place.erro) throw new Error((place && place.erro) || 'sem dados');
     document.getElementById('rating-number').textContent = place.rating?.toFixed(1) || '';
     document.getElementById('rating-stars').textContent = '★'.repeat(Math.round(place.rating || 5));
     document.getElementById('rating-total').textContent = place.user_ratings_total || '48';
