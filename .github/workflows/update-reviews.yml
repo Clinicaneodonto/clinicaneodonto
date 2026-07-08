@@ -1,0 +1,69 @@
+name: Atualizar depoimentos do Google
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # a cada 6 horas
+  workflow_dispatch: {}      # permite rodar manualmente pelo botao "Run workflow"
+
+permissions:
+  contents: write
+
+jobs:
+  update-reviews:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Buscar avaliacoes no Google e gerar reviews.json
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          GOOGLE_PLACE_ID: ChIJmx7_GSz1XpMR3Tz62zsichs
+        run: |
+          node -e '
+          const https = require("https");
+          const key = process.env.GOOGLE_PLACES_API_KEY;
+          const placeId = process.env.GOOGLE_PLACE_ID;
+          if (!key) { console.error("GOOGLE_PLACES_API_KEY nao configurada (Settings > Secrets and variables > Actions)"); process.exit(1); }
+          const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,user_ratings_total,reviews,url&language=pt-BR&key=${key}`;
+          https.get(url, res => {
+            let data = "";
+            res.on("data", c => data += c);
+            res.on("end", () => {
+              let parsed;
+              try { parsed = JSON.parse(data); } catch (e) {
+                console.error("Resposta invalida do Google:", data.slice(0, 500));
+                process.exit(1);
+              }
+              if (parsed.status !== "OK" || !parsed.result) {
+                console.error("Erro Google Places:", parsed.status, parsed.error_message || "");
+                process.exit(1);
+              }
+              const place = parsed.result;
+              const out = {
+                name: place.name || "NEOdonto Odontologia",
+                rating: place.rating ?? null,
+                user_ratings_total: place.user_ratings_total ?? null,
+                url: place.url || `https://search.google.com/local/reviews?placeid=${placeId}`,
+                reviews: (place.reviews || []).map(r => ({
+                  author_name: r.author_name,
+                  rating: r.rating,
+                  text: r.text,
+                  relative_time_description: r.relative_time_description,
+                  time: r.time,
+                  profile_photo_url: r.profile_photo_url || null,
+                })),
+                updated_at: new Date().toISOString(),
+              };
+              require("fs").writeFileSync("reviews.json", JSON.stringify(out, null, 2) + "\n");
+              console.log("reviews.json atualizado:", out.reviews.length, "avaliacoes, nota", out.rating);
+            });
+          }).on("error", e => { console.error(e); process.exit(1); });
+          '
+
+      - name: Commit e push se algo mudou
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reviews.json
+          git diff --cached --quiet || git commit -m "Atualiza avaliacoes do Google [skip ci]"
+          git diff --cached --quiet || git push
