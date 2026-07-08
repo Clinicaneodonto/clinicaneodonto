@@ -1,9 +1,14 @@
 name: Atualizar depoimentos do Google
 
+# Agendamento automatico desligado por enquanto: a Places API exige billing
+# habilitado no projeto do Google Cloud, mesmo dentro da cota gratuita, e
+# nao queremos isso ativado agora. Fica so o disparo manual (botao "Run
+# workflow" na aba Actions) ate decidirmos habilitar billing e reativar
+# o "schedule:" abaixo.
 on:
-  schedule:
-    - cron: '0 */6 * * *'   # a cada 6 horas
   workflow_dispatch: {}      # permite rodar manualmente pelo botao "Run workflow"
+  # schedule:
+  #   - cron: '0 */6 * * *'   # a cada 6 horas (desativado, ver nota acima)
 
 permissions:
   contents: write
